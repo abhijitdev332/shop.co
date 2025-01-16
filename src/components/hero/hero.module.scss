@@ -1,0 +1,49 @@
+@use "../../scss/responsive.scss" as *;
+
+.hero {
+  &__img {
+    top: 0;
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+    overflow: hidden;
+    // @include md {
+    //   z-index: -1;
+    // }
+  }
+  &__title {
+    font-size: 2rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    width: auto;
+    line-height: 70px;
+    @include sm {
+      width: 70%;
+    }
+    @include lg {
+      font-size: 3.5rem;
+      width: 50%;
+    }
+  }
+  &__para {
+    font-size: 0.8rem;
+    font-weight: 400;
+    text-transform: capitalize;
+    width: auto;
+    @include sm {
+      width: 60%;
+    }
+    @include lg {
+      width: 40%;
+    }
+  }
+  &__brand {
+    &__img {
+      width: 6rem;
+      height: fit-content;
+      object-fit: contain;
+      object-position: center center;
+      mix-blend-mode: multiply;
+    }
+  }
+}
