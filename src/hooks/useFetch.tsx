@@ -17,7 +17,7 @@ const useFetch = ({
   const { data, isLoading, isError, error } = useQuery({
     queryKey: [queryKey],
     queryFn: async () => {
-      const response = await AxiosInt.get(url, { params });
+      const response = await PrivateAxios.get(url, { params });
       return response.data;
     },
     enabled,

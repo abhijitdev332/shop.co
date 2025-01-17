@@ -1,8 +1,16 @@
 import { useQuery } from "@tanstack/react-query";
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { newArivals } from "../querys/productQuery";
 import { getAllCategory, getSubsCategory } from "../querys/categoryQuery";
 import { useDispatch } from "react-redux";
+import {
+  setArivalProducts,
+  setTopProducts,
+} from "../services/store/products/productSlice";
+import {
+  setCategory,
+  setSubCategory,
+} from "../services/store/category/categorySlice";
 
 const InitialData = () => {
   const dispatch = useDispatch();
@@ -41,10 +49,20 @@ const InitialData = () => {
   });
   //   product effect
   useEffect(() => {
-    dispatch();
+    // console.log(arivalProduct);
+    // console.log(topProduct);
+    if (arivalProduct?.data || topProduct?.data) {
+      dispatch(setArivalProducts(arivalProduct?.data));
+      dispatch(setTopProducts(topProduct?.data));
+    }
   }, [arivalProduct, topProduct]);
   // categoryEffect
-  useEffect(() => {}, []);
+  useEffect(() => {
+    if (category?.data || subCategory?.data) {
+      dispatch(setCategory(category?.data));
+      dispatch(setSubCategory(subCategory?.data));
+    }
+  }, [category, subCategory]);
   return null;
 };
 

@@ -1,5 +1,5 @@
 import { Footer, Header } from "../includes/includes";
-import InitialData from "../initialData/InitialData";
+import InitialData from "../initalData/InitialData";
 import { Outlet } from "react-router-dom";
 import { NewsLetter } from "../components/component";
 

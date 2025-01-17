@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-const inital: {
-  userDetails: {};
-  status: false;
+const inital = {
+  userDetails: {},
+  status: false,
 };
 
 const userSlice = createSlice({
@@ -9,7 +9,7 @@ const userSlice = createSlice({
   initialState: inital,
   reducers: {
     setUser: (state, action: PayloadAction) => {
-      state.userDetails = { ...action.payload };
+      state.userDetails = { ...action?.payload };
       state.status = true;
     },
     removeUser: (state, action) => {

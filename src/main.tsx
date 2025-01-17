@@ -8,7 +8,13 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 // style
 import "./index.css";
 // new client
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 5 * 10,
+    },
+  },
+});
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

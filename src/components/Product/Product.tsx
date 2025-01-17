@@ -9,10 +9,10 @@ import { FaMinus, FaPlus } from "react-icons/fa";
 import useFetch from "../../hooks/useFetch";
 const Product = () => {
   const { id } = useParams();
-  const { data } = useFetch({
-    url: `products/${id}`,
-    queryKey: id,
-  });
+  // const { data } = useFetch({
+  //   url: `products/${id}`,
+  //   queryKey: id,
+  // });
   const [category, setCatergory] = useState<string>("");
   const [quantity, setQuantity] = useState<number>(1);
   const variant = ["red", "green", "black"];

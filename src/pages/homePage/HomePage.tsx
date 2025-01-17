@@ -9,6 +9,7 @@ import { useSelector } from "react-redux";
 
 const HomePage = () => {
   const products = useSelector((state) => state.product);
+  console.log(products);
   return (
     <section>
       <div className="lg:container mx-auto">
