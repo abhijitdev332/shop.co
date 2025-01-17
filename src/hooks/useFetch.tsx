@@ -1,21 +1,9 @@
 import { useQuery } from "@tanstack/react-query";
-import { PrivateAxios, AxiosInt } from "../services/api/api"; // Adjust the path as needed
+import { PrivateAxios } from "../services/api/api"; // Adjust the path as needed
 
-interface FetchOptions {
-  url: string;
-  queryKey: string | unknown[];
-  enabled?: boolean; // Controls whether the query should automatically run
-  params?: Record<string, any>;
-}
-
-const useFetch = ({
-  url,
-  queryKey,
-  enabled = true,
-  params = {},
-}: FetchOptions) => {
+const useFetch = ({ url, queryKey, enabled = true, params = {} }) => {
   const { data, isLoading, isError, error } = useQuery({
-    queryKey: [queryKey],
+    queryKey: [...queryKey],
     queryFn: async () => {
       const response = await PrivateAxios.get(url, { params });
       return response.data;

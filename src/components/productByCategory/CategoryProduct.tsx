@@ -1,4 +1,4 @@
-import { Link, useParams } from "react-router-dom";
+import { Link, ScrollRestoration, useParams } from "react-router-dom";
 import { Pagintaion, ProductCard } from "../component";
 import { MdKeyboardArrowRight, MdKeyboardArrowUp } from "react-icons/md";
 import { RiFilter3Line } from "react-icons/ri";
@@ -10,6 +10,7 @@ const CategoryProduct = () => {
   const [fillterShow, setFillterShow] = useState<boolean>(false);
   return (
     <main>
+      <ScrollRestoration />
       <div className="wrapper px-5 md:px-20">
         <div className="outline outline-1 outline-slate-300"></div>
         <div className="py-3">

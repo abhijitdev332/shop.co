@@ -8,10 +8,10 @@ const productSlice = createSlice({
   initialState: inital,
   reducers: {
     setTopProducts: (state, action) => {
-      state = { ...state, topProducts: action?.payload?.data };
+      return (state = { ...state, topProducts: action?.payload?.data });
     },
     setArivalProducts: (state, action) => {
-      state = { ...state, arivalsProducts: action?.payload?.data };
+      return (state = { ...state, arivalsProducts: action?.payload?.data });
     },
     resetProducts: () => {
       return inital;

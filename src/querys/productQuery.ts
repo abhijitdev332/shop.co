@@ -6,5 +6,8 @@ const newArivals = async () => {
 const topSelling = async () => {
   return await PrivateAxios.get("/product/top");
 };
+const getProduct = async (id) => {
+  return await PrivateAxios.get(`/product/${id}`);
+};
 
-export { newArivals, topSelling };
+export { newArivals, topSelling, getProduct };

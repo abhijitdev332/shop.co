@@ -12,7 +12,7 @@ const Review: FC<ReviewProps> = ({
   stats = 4,
   customerName,
   verified = true,
-  reviewText,
+  reviewText = false,
 }) => {
   return (
     <div className="outline outline-1 rounded-2xl p-3 w-fit sm:w-[20rem]">

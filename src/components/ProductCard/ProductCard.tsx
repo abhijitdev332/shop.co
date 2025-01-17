@@ -4,28 +4,26 @@ import { useDispatch, useSelector } from "react-redux";
 import { addProduct, removeProduct } from "../../services/store/cart/cartSlice";
 import { Star } from "../component";
 import { Link } from "react-router-dom";
-interface ProductProps {
-  product: product[];
-}
-const ProductCard: FC<ProductProps> = ({ product }) => {
+
+const ProductCard = ({ product = {} }) => {
   const cartProduct = useSelector((state) => state.cart);
   const dispatch = useDispatch();
   const [productSize, setProductSize] = useState<string>("large");
   const handleAddCart = () => {
     dispatch(
-      addProduct({ productId: product?.id, size: productSize, quantity: 1 })
+      addProduct({ productId: product?._id, size: productSize, quantity: 1 })
     );
   };
   const handleRemoveCart = () => {
-    dispatch(removeProduct(product?.id));
+    dispatch(removeProduct(product?._id));
   };
 
   return (
     <div className="card w-40 sm:w-72 md:w-96">
       <figure>
-        <Link to={`/product/${product.id}`}>
+        <Link to={`/product/${product._id}`}>
           <img
-            src={product.images[0]}
+            src={product.imgurl}
             className="rounded-2xl"
             alt="Shoes"
             onError={(e: SyntheticEvent<HTMLImageElement, ErrorEvent>) => {
@@ -37,7 +35,7 @@ const ProductCard: FC<ProductProps> = ({ product }) => {
       </figure>
       <div className="card-body py-5 px-1">
         <h2 className="card-title text-lg md:text-xl font-medium">
-          {product?.title}
+          {product?.name}
           {/* <div className="badge badge-seconday">{product.category.name}</div> */}
         </h2>
         <div className="flex items-center gap-1">
@@ -61,7 +59,7 @@ const ProductCard: FC<ProductProps> = ({ product }) => {
         </div> */}
 
         <p className="font-bold flex items-center gap-2 md:text-2xl leading-snug">
-          <span>${product?.price}</span>
+          {/* <span>${product?.price}</span> */}
           <span className="text-gray-400">$260</span>
           <span className="badge font-normal border-none text-red-500 bg-red-100">
             - 40%

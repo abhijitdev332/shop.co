@@ -9,15 +9,18 @@ import { useSelector } from "react-redux";
 
 const HomePage = () => {
   const products = useSelector((state) => state.product);
-  console.log(products);
+
   return (
     <section>
       <div className="lg:container mx-auto">
         <Hero />
         <div className="bg-white">
-          <ProductList heading="NEW ARRIVALS" products={products} />
+          <ProductList
+            heading="NEW ARRIVALS"
+            products={products?.arivalsProducts}
+          />
           <div className="divider w-full"></div>
-          <ProductList heading="TOP SELLING" />
+          <ProductList heading="TOP SELLING" products={products?.topProducts} />
           {/* browse by category */}
           <Category />
           {/* customers review */}

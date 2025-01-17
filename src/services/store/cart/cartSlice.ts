@@ -1,42 +1,41 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-type CartProduct = {
-  productId: string;
-  size: string;
-  quantity: number;
-};
-interface CartStateI {
-  productsArr: [];
-  products: CartProduct[];
-  totalAmount: number;
-}
-const cartState: CartStateI = {
-  productsArr: [],
+const inital = {
   products: [],
   totalAmount: 0,
 };
 const cartSlice = createSlice({
   name: "cart",
-  initialState: cartState,
+  initialState: inital,
   reducers: {
-    addProduct: (state, action: PayloadAction<CartProduct>) => {
-      let product = {
-        ...action.payload,
-      };
-      state.productsArr = [...state.productsArr, product.productId];
-      state.products = [...state.products, product];
+    addProduct: (state, action) => {
+      const { productId, price, quantity } = action.payload;
+      let totalAmount = [
+        ...state.products,
+        { productId, price, quantity },
+      ].reduce((prev, curr) => {
+        let productCost = curr.price * curr.quantity;
+        return (prev = prev + productCost);
+      }, 0);
+      return (state = {
+        products: [...state.products, { productId, price, quantity }],
+        totalAmount: totalAmount,
+      });
     },
-    removeProduct: (state, action: PayloadAction<CartProduct["productId"]>) => {
+    removeProduct: (state, action) => {
       let productInx = state.products.findIndex(
-        (ele: CartProduct) => ele?.productId == action.payload
+        (ele) => ele?.productId == action.payload
       );
 
       let fillterData = state.productsArr.filter(
         (ele) => ele !== action.payload
       );
-      state.productsArr = [...fillterData];
-      state.products.splice(productInx, 1);
+      let totalAmount = fillterData.reduce((prev, curr) => {
+        let productCost = curr.price * curr.quantity;
+        return (prev = prev + productCost);
+      }, 0);
+      return (state = { products: fillterData, totalAmount: totalAmount });
     },
-    addQuantity: (state, action: PayloadAction<CartProduct["productId"]>) => {
+    addQuantity: (state, action) => {
       let product = state.products.find(
         (ele) => ele.productId == action.payload
       );
@@ -44,16 +43,18 @@ const cartSlice = createSlice({
         (ele) => ele.productId == action.payload
       );
       let quantity = product?.quantity + 1;
-
-      state.products.splice(productInx, 1, {
+      state.products?.splice(productInx, 1, {
         ...product,
         quantity: quantity,
       });
+
+      let totalAmount = state.products?.reduce((prev, curr) => {
+        let productCost = curr.price * curr.quantity;
+        return (prev = prev + productCost);
+      }, 0);
+      state.totalAmount = totalAmount;
     },
-    removeQuantity: (
-      state,
-      action: PayloadAction<CartProduct["productId"]>
-    ) => {
+    removeQuantity: (state, action) => {
       let product = state.products.find(
         (ele) => ele.productId == action.payload
       );
@@ -61,14 +62,18 @@ const cartSlice = createSlice({
         (ele) => ele.productId == action.payload
       );
       let quantity = product?.quantity - 1;
-
       state.products.splice(productInx, 1, {
         ...product,
         quantity: quantity,
       });
+      let totalAmount = state.products?.reduce((prev, curr) => {
+        let productCost = curr.price * curr.quantity;
+        return (prev = prev + productCost);
+      }, 0);
+      state.totalAmount = totalAmount;
     },
     resetCart: () => {
-      return cartState;
+      return inital;
     },
   },
 });

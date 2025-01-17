@@ -7,33 +7,31 @@ import { Link, useNavigate } from "react-router-dom";
 import { PrivateAxios } from "../../services/api/api";
 
 const CartPage = () => {
-  const cartProductsStore = useSelector((state) => state.cart);
-  const storeProducts = useSelector((state) => state.product);
-  const [totalAmount, setTotalAmount] = useState<string | any>(0);
+  const { products, totalAmount } = useSelector((state) => state.cart);
   const [discount, setDiscount] = useState<number>(0);
   const [delhivery, setDelivery] = useState<number>(50);
-  const cartProducts = useMemo(() => {
-    let products = storeProducts.map((ele) => {
-      return cartProductsStore.productsArr?.includes(ele?.id) ? ele : "";
-    });
-    return products.filter((ele) => ele !== "");
-  }, [cartProductsStore]);
+  // const cartProducts = useMemo(() => {
+  //   let products = storeProducts?.map((ele) => {
+  //     return cartProductsStore?.productsArr?.includes(ele?.id) ? ele : "";
+  //   });
+  //   return products.filter((ele) => ele !== "");
+  // }, [cartProductsStore]);
 
-  let findCartProduct = useMemo(() => {
-    return cartProducts.map((mpele) => {
-      let cprod = cartProductsStore.products?.find(
-        (ele) => ele?.productId == mpele?.id
-      );
-      return { ...mpele, ...cprod };
-    });
-  }, [cartProducts]);
+  // let findCartProduct = useMemo(() => {
+  //   return cartProducts.map((mpele) => {
+  //     let cprod = cartProductsStore.products?.find(
+  //       (ele) => ele?.productId == mpele?.id
+  //     );
+  //     return { ...mpele, ...cprod };
+  //   });
+  // }, [cartProducts]);
 
-  const totalSubAmount = useMemo(() => {
-    let sum = findCartProduct?.reduce((acc: number, curr: any) => {
-      return acc + curr?.price * curr?.quantity;
-    }, 0);
-    return sum;
-  }, [findCartProduct]);
+  // const totalSubAmount = useMemo(() => {
+  //   let sum = findCartProduct?.reduce((acc: number, curr: any) => {
+  //     return acc + curr?.price * curr?.quantity;
+  //   }, 0);
+  //   return sum;
+  // }, [findCartProduct]);
 
   const handleCheckout = async () => {
     let productData = findCartProduct.map((ele) => ({
@@ -62,13 +60,14 @@ const CartPage = () => {
       window.location.href = res.data?.data?.paymentUrl;
     }
   };
-  useEffect(() => {
-    setDiscount(() => {
-      let dis = (totalSubAmount * 10) / 100;
-      setTotalAmount(Math.floor(totalSubAmount - dis + delhivery));
-      return Math.floor(dis);
-    });
-  }, [totalSubAmount]);
+  // useEffect(() => {
+  //   setDiscount(() => {
+  //     let dis = (totalSubAmount * 10) / 100;
+  //     setTotalAmount(Math.floor(totalSubAmount - dis + delhivery));
+  //     return Math.floor(dis);
+  //   });
+  // }, [totalSubAmount]);
+  console.log(totalAmount);
   return (
     <section className="bg-white">
       <div className="wrapper px-10">
@@ -85,7 +84,7 @@ const CartPage = () => {
         {/* map products */}
         <div className="flex flex-col md:flex-row  gap-4">
           <div className="flex basis-2/3 flex-col rounded-2xl outline outline-1 p-4">
-            {findCartProduct?.map((ele) => (
+            {products?.map((ele) => (
               <>
                 <CartProduct product={ele} />
                 <div className="divider"></div>
@@ -98,21 +97,21 @@ const CartPage = () => {
               <span>Subtotal</span>
               <span className="flex font-semibold items-center">
                 <PiCurrencyDollarBold />
-                <span>{totalSubAmount}</span>
+                {/* <span>{totalSubAmount}</span> */}
               </span>
             </p>
             <p className="text-red-500 flex justify-between">
               <span>Discount (10%)</span>
               <span className="flex items-center font-semibold">
                 -<PiCurrencyDollarBold />
-                <span>{discount}</span>
+                {/* <span>{discount}</span> */}
               </span>
             </p>
             <p className="flex justify-between">
               <span>Delivery Fee</span>
               <span className="flex font-semibold items-center">
                 <PiCurrencyDollarBold />
-                <span>{delhivery}</span>
+                {/* <span>{delhivery}</span> */}
               </span>
             </p>
 

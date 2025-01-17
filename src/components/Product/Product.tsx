@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link, ScrollRestoration, useParams } from "react-router-dom";
 import { ProductCard, ReviewCard, Star } from "../component";
 import { GrSort } from "react-icons/gr";
@@ -7,21 +7,44 @@ import cl from "classnames";
 import style from "./product.module.scss";
 import { FaMinus, FaPlus } from "react-icons/fa";
 import useFetch from "../../hooks/useFetch";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  addQuantity,
+  removeQuantity,
+} from "../../services/store/cart/cartSlice";
+
+// universal
+const imgUrl =
+  "https://images.pexels.com/photos/769733/pexels-photo-769733.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1";
 const Product = () => {
   const { id } = useParams();
-  // const { data } = useFetch({
-  //   url: `products/${id}`,
-  //   queryKey: id,
-  // });
+  const { data, isLoading, isError } = useFetch({
+    url: `/product/${id}`,
+    queryKey: ["product", { id }],
+  });
+  const dispatch = useDispatch();
+  const cart = useSelector((store) => store.cart);
+  const [productData, setProductData] = useState();
+  const [productVariant, setProductVariant] = useState();
   const [category, setCatergory] = useState<string>("");
   const [quantity, setQuantity] = useState<number>(1);
   const variant = ["red", "green", "black"];
   const sizes = ["small", "medium", "large", "x-large"];
-  const imgUrl =
-    "https://images.pexels.com/photos/769733/pexels-photo-769733.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1";
-  const addClick = () => {};
-  const minusClick = () => {};
-  console.log(data);
+
+  const addClick = () => {
+    setQuantity((prev) => prev + 1);
+  };
+  const minusClick = () => {
+    setQuantity((prev) => prev - 1);
+  };
+  // effect on data changes
+  console.log(cart);
+  useEffect(() => {
+    if (data) {
+      setProductData(data?.data?.matchedProduct);
+      setProductVariant(data?.data?.productVariants);
+    }
+  }, [data]);
   return (
     <>
       <ScrollRestoration />
@@ -29,13 +52,14 @@ const Product = () => {
         <div className="lg:container lg:mx-auto px-20">
           <div className="divider m-0 w-full"></div>
           <div className="py-3">
+            {/* bread crumbs */}
             <div className="breadcrumbs text-sm">
               <ul>
                 <li>
-                  <Link to={"/home"}>Home</Link>
+                  <Link to={"/"}>Home</Link>
                 </li>
                 <li>
-                  <Link to={"/shop"}>Shop</Link>
+                  <Link to={-1}>Shop</Link>
                 </li>
                 <li className="capitalize">{category}</li>
               </ul>
@@ -45,15 +69,15 @@ const Product = () => {
                 {/* map all images */}
                 <div className="flex-col gap-2">
                   <img
-                    src={imgUrl}
-                    alt=""
+                    src={productData?.imgurl || imgUrl}
+                    alt="product image"
                     className={cl(style.product__img__slide)}
                   />
                 </div>
                 {/* show current image */}
                 <div className="box  w-full h-full ">
                   <img
-                    src={imgUrl}
+                    src={productData?.imgurl || imgUrl}
                     alt="product image"
                     className={cl(style.product__img__hero)}
                   />
@@ -62,12 +86,18 @@ const Product = () => {
               <div className="product-dsc basis-1/2 flex flex-col py-2">
                 <div className="title">
                   <h2 className="text-3xl font-extrabold uppercase leading-tight">
-                    this is title
+                    {productData?.name}
                   </h2>
                 </div>
                 <div className="flex space-x-1 items-center pt-2">
-                  <Star count={4} size={20} color="orange" />
-                  <span className="text-sm font-mono">4/5</span>
+                  <Star
+                    count={productData?.averageRating}
+                    size={20}
+                    color="orange"
+                  />
+                  <span className="text-sm font-mono">
+                    {productData?.averageRating}/5
+                  </span>
                 </div>
                 {/* price */}
                 <div className="price flex py-4 font-bold text-2xl  items-center gap-3">
@@ -78,17 +108,14 @@ const Product = () => {
                   </span>
                 </div>
                 <div className="dsc py-2">
-                  <p className="text-gray-500">
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                    Nam, aliquam.
-                  </p>
+                  <p className="text-gray-500">{productData?.description}</p>
                 </div>
                 <div className="outline outline-1 outline-slate-300"></div>
                 {/* color */}
                 <div className="flex flex-col py-3 gap-3">
                   <p>Select Color</p>
                   <div className="flex space-x-3">
-                    {variant.map((ele) => (
+                    {productVariant?.map((ele) => (
                       <button
                         style={{ background: ele }}
                         className={` rounded-full p-4`}
@@ -130,7 +157,7 @@ const Product = () => {
           <div className="tab-wrapper py-10">
             <div
               role="tablist"
-              className="tabs tabs-bordered w-full grid-cols-3"
+              className="tabs tabs-bordered w-full grid-cols-2"
             >
               <input
                 type="radio"
@@ -140,7 +167,7 @@ const Product = () => {
                 aria-label="Product Details"
               />
               <div role="tabpanel" className="tab-content p-10">
-                <ProductDetails />
+                <ProductDetails details={productData?.productDetails} />
               </div>
 
               <input
@@ -152,10 +179,13 @@ const Product = () => {
                 defaultChecked
               />
               <div role="tabpanel" className="tab-content p-10">
-                <ProductReviews />
+                <ProductReviews
+                  reviews={productData?.reviews}
+                  totalReviews={productData?.reviews?.length}
+                />
               </div>
 
-              <input
+              {/* <input
                 type="radio"
                 name="my_tabs_1"
                 role="tab"
@@ -164,7 +194,7 @@ const Product = () => {
               />
               <div role="tabpanel" className="tab-content p-10">
                 <ProductFAQS />
-              </div>
+              </div> */}
             </div>
           </div>
           <RealativeProducts />
@@ -210,7 +240,9 @@ function ProductReviews({ reviews = [], totalReviews = 0 }) {
             <div className="flex space-x-4 justify-between">
               <h3 className="flex space-x-1 items-center">
                 <span className="font-bold text-lg">All Reviews</span>
-                <span className="text-sm text-gray-rounded-badge ">(451)</span>
+                <span className="text-sm text-gray-rounded-badge ">
+                  ({totalReviews})
+                </span>
               </h3>
               {/* fillter and write review */}
               <div className="flex gap-3 items-center">
@@ -233,7 +265,11 @@ function ProductReviews({ reviews = [], totalReviews = 0 }) {
             </div>
             <div className="flex flex-wrap gap-3">
               {reviews.map((ele) => (
-                <ReviewCard stats={4} />
+                <ReviewCard
+                  customerName={ele?.name}
+                  stats={ele?.rating}
+                  reviewText={ele?.comment}
+                />
               ))}
             </div>
             <div className="flex w-full justify-center">
@@ -301,16 +337,8 @@ function ProductFAQS({ questions = [] }) {
     </section>
   );
 }
-function ProductDetails() {
-  const details = {
-    fabric: "cotton",
-    fit: "slim",
-    styleCode: "shirt Tshirt",
-    packOf: 1,
-    fabricCare: "hand wash",
-    pattern: "solid",
-    pockets: 2,
-  };
+function ProductDetails({ details = {} }) {
+  delete details?._id;
   return (
     <section>
       <div className="wrapper">

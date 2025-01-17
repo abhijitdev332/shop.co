@@ -1,9 +1,12 @@
 import React from "react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
+import { z, ZodError } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import authImg from "../../assets/svgs/auth/frame.svg";
 import { Link } from "react-router-dom";
+import { useMutation } from "@tanstack/react-query";
+import { register as userRegister } from "../../querys/authQuery";
+import { toast } from "react-toastify";
 // Validation schema with Zod
 const registrationSchema = z.object({
   name: z
@@ -28,10 +31,24 @@ const RegistrationPage: React.FC = () => {
   } = useForm<RegistrationFormInputs>({
     resolver: zodResolver(registrationSchema),
   });
+  const { mutate, isError, isPending } = useMutation({
+    mutationFn: (data) => userRegister(JSON.stringify(data)),
+    onSuccess: (data) => toast.success(data?.data?.message),
+  });
 
   const onSubmit = (data: RegistrationFormInputs) => {
     console.log("Form Data:", data);
     // Add registration logic here
+    console.log(data);
+    try {
+      mutate(data);
+    } catch (err) {
+      if (err instanceof ZodError) {
+        toast.error(err.errors[0].message);
+      }
+      toast.error(err?.response?.data?.message);
+      console.log(err);
+    }
   };
 
   return (

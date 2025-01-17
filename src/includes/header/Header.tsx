@@ -10,12 +10,12 @@ import { GiHamburgerMenu } from "react-icons/gi";
 import { IoIosArrowDown } from "react-icons/io";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { useState } from "react";
 import { IoLogOutSharp } from "react-icons/io5";
 import { Logout } from "../../components/component";
 const Header = () => {
   const cartProduct = useSelector((state) => state.cart);
-  const [auth, setAuth] = useState(false);
+  const { status } = useSelector((store) => store.user);
+
   return (
     <header className="bg-white z-10 sticky top-0">
       <div className="lg:container mx-auto md:px-10">
@@ -96,7 +96,7 @@ const Header = () => {
                 </Link>
               </div>
 
-              {auth ? <AuthProfile /> : <GuestProfile />}
+              {status ? <AuthProfile /> : <GuestProfile />}
               {/* <div className="profile cursor-pointer dropdown dropdown-end">
                 <RiAccountCircleLine
                   fontSize={"1.5rem"}

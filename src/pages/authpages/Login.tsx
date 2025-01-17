@@ -1,10 +1,15 @@
 import React from "react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
+import { z, ZodError } from "zod";
 import { FcGoogle } from "react-icons/fc";
 import { zodResolver } from "@hookform/resolvers/zod";
 import authImg from "../../assets/svgs/auth/frame.svg";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { useMutation } from "@tanstack/react-query";
+import { login } from "../../querys/authQuery";
+import { useDispatch } from "react-redux";
+import { setUser } from "../../services/store/user/userSlice";
 
 // Define validation schema using Zod
 const loginSchema = z.object({
@@ -15,6 +20,8 @@ const loginSchema = z.object({
 type LoginFormInputs = z.infer<typeof loginSchema>;
 
 const LoginPage: React.FC = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -23,9 +30,27 @@ const LoginPage: React.FC = () => {
     resolver: zodResolver(loginSchema),
   });
 
+  const { mutate, isError, isPending } = useMutation({
+    mutationFn: (data) => login(JSON.stringify(data)),
+    onSuccess: (data) => {
+      toast.success(data?.data?.message);
+      dispatch(setUser(data?.data?.data));
+      setTimeout(() => {
+        navigate("/");
+      }, 2000);
+    },
+  });
+
   const onSubmit = (data: LoginFormInputs) => {
-    console.log("Form Data:", data);
-    // Add login logic here
+    try {
+      mutate(data);
+    } catch (err) {
+      if (err instanceof ZodError) {
+        toast.error(err.errors[0].message);
+      }
+      toast.error(err?.response?.data?.message);
+      console.log(err);
+    }
   };
 
   return (

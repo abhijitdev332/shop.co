@@ -9,8 +9,7 @@ const userSlice = createSlice({
   initialState: inital,
   reducers: {
     setUser: (state, action: PayloadAction) => {
-      state.userDetails = { ...action?.payload };
-      state.status = true;
+      return { status: true, userDetails: action?.payload };
     },
     removeUser: (state, action) => {
       return inital;

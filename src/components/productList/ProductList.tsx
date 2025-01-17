@@ -3,14 +3,9 @@ import { ProductCard } from "../component";
 import { Link } from "react-router-dom";
 import { product } from "../../types/product";
 
-interface ProductListProps {
-  heading: string;
-  products: product[];
-  viewLink?: string;
-}
-const ProductList: FC<ProductListProps> = ({
+const ProductList = ({
   heading = "Top Products",
-  products,
+  products = [],
   viewLink = "link",
 }) => {
   return (

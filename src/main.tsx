@@ -7,6 +7,7 @@ import { PersistGate } from "redux-persist/integration/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 // style
 import "./index.css";
+import "react-toastify/dist/ReactToastify.css";
 // new client
 const queryClient = new QueryClient({
   defaultOptions: {
