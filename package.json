@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite --port 4000",
-    "build": "tsc -b && vite build",
+    "buildDev": "tsc-silent -p './tsconfig.json' --suppress @ && vite build",
+    "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
