@@ -45,11 +45,7 @@ const Sidebar: React.FC = () => {
         <NavLink
           to="/admin"
           className={({ isActive }) =>
-            `flex items-center  px-4 py-3 mb-2 rounded-lg transition ${
-              isActive
-                ? "bg-neutral text-white"
-                : "text-gray-400 hover:bg-gray-300 hover:text-white"
-            }`
+            `flex items-center  px-4 py-3 mb-2 rounded-lg transition`
           }
         >
           <span className="material-icons">
@@ -62,7 +58,7 @@ const Sidebar: React.FC = () => {
           className={({ isActive }) =>
             `flex items-center px-4 py-3 mb-2 rounded-lg transition ${
               isActive
-                ? "bg-blue-600 text-white"
+                ? "bg-neutral text-white"
                 : "text-gray-400 hover:bg-gray-700 hover:text-white"
             }`
           }
@@ -77,7 +73,7 @@ const Sidebar: React.FC = () => {
           className={({ isActive }) =>
             `flex items-center px-4 py-3 mb-2 rounded-lg transition ${
               isActive
-                ? "bg-blue-600 text-white"
+                ? "bg-neutral text-white"
                 : "text-gray-400 hover:bg-gray-700 hover:text-white"
             }`
           }
@@ -92,7 +88,7 @@ const Sidebar: React.FC = () => {
           className={({ isActive }) =>
             `flex items-center px-4 py-3 mb-2 rounded-lg transition ${
               isActive
-                ? "bg-blue-600 text-white"
+                ? "bg-neutral text-white"
                 : "text-gray-400 hover:bg-gray-700 hover:text-white"
             }`
           }
@@ -107,7 +103,7 @@ const Sidebar: React.FC = () => {
           className={({ isActive }) =>
             `flex items-center px-4 py-3 mb-2 rounded-lg transition ${
               isActive
-                ? "bg-blue-600 text-white"
+                ? "bg-neutral text-white"
                 : "text-gray-400 hover:bg-gray-700 hover:text-white"
             }`
           }
@@ -122,7 +118,7 @@ const Sidebar: React.FC = () => {
           className={({ isActive }) =>
             `flex items-center px-4 py-3 mb-2 rounded-lg transition ${
               isActive
-                ? "bg-blue-600 text-white"
+                ? "bg-neutral text-white"
                 : "text-gray-400 hover:bg-gray-700 hover:text-white"
             }`
           }

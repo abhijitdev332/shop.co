@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { FaMinus, FaPlus } from "react-icons/fa";
 import { MdAttachMoney } from "react-icons/md";
 import { PiCurrencyDollarBold } from "react-icons/pi";
 import { RiDeleteBin6Fill } from "react-icons/ri";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   addQuantity,
   removeProduct,
@@ -11,33 +11,35 @@ import {
 } from "../../services/store/cart/cartSlice";
 
 const CartProduct = ({ product }) => {
+  const cart = useSelector((store) => store.cart);
   const [quantity, setQuantity] = useState<number>(product?.quantity || 1);
   const dispatch = useDispatch();
-  const addClick = () => {
+  const addQuantityClick = () => {
     setQuantity((prev) => prev + 1);
-    dispatch(addQuantity(product?.id));
+    dispatch(addQuantity(product?.productId));
   };
-  const minusClick = () => {
+  const minusQuantityClick = () => {
     if (quantity <= 1) {
       return;
     }
     setQuantity((prev) => prev - 1);
-    dispatch(removeQuantity(product?.id));
+    dispatch(removeQuantity(product?.productId));
   };
-  const handleProductRemove = () => {
-    dispatch(removeProduct(product?.id));
-  };
+  const handleProductRemove = useCallback(() => {
+    dispatch(removeProduct(product?.productId));
+  }, [product]);
+
   return (
     <div>
       <div className="wrapper">
         <div className="flex text-black">
           <img
-            src={product?.images[0]}
+            src={product?.imgurl}
             alt="products image"
             className="w-28 h-28 rounded-lg"
           />
           <div className="flex flex-col px-3">
-            <h4 className="font-semibold text-xl">{product?.title}</h4>
+            <h4 className="font-semibold text-xl">{product?.name}</h4>
             <p>
               <span className="font-medium">Size:</span>
               <span className="text-sm">Large</span>
@@ -64,11 +66,11 @@ const CartProduct = ({ product }) => {
             </button>
 
             <div className="btn btn-ghost shadow bg-gray-200 flex gap-4 py-2 w-32  rounded-badge">
-              <button onClick={minusClick}>
+              <button onClick={minusQuantityClick}>
                 <FaMinus />
               </button>
               <p>{quantity}</p>
-              <button onClick={addClick}>
+              <button onClick={addQuantityClick}>
                 <FaPlus />
               </button>
             </div>

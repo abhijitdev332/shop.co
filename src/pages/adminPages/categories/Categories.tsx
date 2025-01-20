@@ -1,26 +1,17 @@
+import { useQuery } from "@tanstack/react-query";
 import React, { useState } from "react";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { IoEye } from "react-icons/io5";
 import { MdModeEdit } from "react-icons/md";
 import { Link } from "react-router-dom";
+import { adminCategories } from "../../../querys/admin/adminQuery";
 
 const Categories: React.FC = () => {
-  const [products, setProducts] = useState([
-    {
-      id: "1",
-      name: "Catagoru 1",
-      sales: 243,
-      stock: 235345,
-      added: "2025-01-10",
-    },
-    {
-      id: "1",
-      name: "Catagoru 2",
-      sales: 2500,
-      stock: 2345,
-      added: "2025-01-10",
-    },
-  ]);
+  const { data, isPending, isError, error } = useQuery({
+    queryKey: ["category"],
+    queryFn: adminCategories,
+  });
+  const [catagories, setCatagories] = useState(data?.data?.data);
 
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
 
@@ -33,15 +24,15 @@ const Categories: React.FC = () => {
 
   // Select or deselect all products
   const toggleSelectAll = () => {
-    if (selectedProducts.length === products.length) {
+    if (selectedProducts.length === catagories.length) {
       setSelectedProducts([]);
     } else {
-      setSelectedProducts(products.map((product) => product.id));
+      setSelectedProducts(catagories.map((product) => product.id));
     }
   };
 
   const handleDelete = (id: string) => {
-    setProducts((prev) => prev.filter((product) => product.id !== id));
+    catagories((prev) => prev.filter((product) => product.id !== id));
   };
 
   return (
@@ -49,6 +40,7 @@ const Categories: React.FC = () => {
       <div className="flex">
         <div className=" mb-6">
           <p className="text-gray-800 text-2xl font-bold">All Category</p>
+          {/* bread cmubs */}
           <div className="breadcrumbs text-sm">
             <ul>
               <li>
@@ -61,6 +53,7 @@ const Categories: React.FC = () => {
             </ul>
           </div>
         </div>
+        {/* add button */}
         <div className=" ms-auto flex">
           <Link to={"add"}>
             <button className="btn btn-primary">Add Category</button>
@@ -76,7 +69,7 @@ const Categories: React.FC = () => {
               <th className=" px-4 py-2">
                 <input
                   type="checkbox"
-                  checked={selectedProducts.length === products.length}
+                  checked={selectedProducts.length === catagories.length}
                   onChange={toggleSelectAll}
                   className="checkbox"
                 />

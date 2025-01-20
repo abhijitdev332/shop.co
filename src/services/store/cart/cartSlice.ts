@@ -8,7 +8,7 @@ const cartSlice = createSlice({
   initialState: inital,
   reducers: {
     addProduct: (state, action) => {
-      const { productId, price, quantity } = action.payload;
+      const { productId, name, price, quantity = 1, imgurl } = action.payload;
       let totalAmount = [
         ...state.products,
         { productId, price, quantity },
@@ -17,23 +17,26 @@ const cartSlice = createSlice({
         return (prev = prev + productCost);
       }, 0);
       return (state = {
-        products: [...state.products, { productId, price, quantity }],
+        products: [
+          ...state.products,
+          { productId, name, price, quantity, imgurl },
+        ],
         totalAmount: totalAmount,
       });
     },
     removeProduct: (state, action) => {
-      let productInx = state.products.findIndex(
-        (ele) => ele?.productId == action.payload
-      );
+      // let productInx = state.products.findIndex(
+      //   (ele) => ele?.productId == action.payload
+      // );
 
-      let fillterData = state.productsArr.filter(
-        (ele) => ele !== action.payload
+      let fillterData = state.products?.filter(
+        (ele) => ele?.productId !== action.payload
       );
-      let totalAmount = fillterData.reduce((prev, curr) => {
+      let totalAmount = fillterData?.reduce((prev, curr) => {
         let productCost = curr.price * curr.quantity;
         return (prev = prev + productCost);
       }, 0);
-      return (state = { products: fillterData, totalAmount: totalAmount });
+      return (state = { products: [...fillterData], totalAmount: totalAmount });
     },
     addQuantity: (state, action) => {
       let product = state.products.find(
@@ -53,6 +56,7 @@ const cartSlice = createSlice({
         return (prev = prev + productCost);
       }, 0);
       state.totalAmount = totalAmount;
+      return state;
     },
     removeQuantity: (state, action) => {
       let product = state.products.find(

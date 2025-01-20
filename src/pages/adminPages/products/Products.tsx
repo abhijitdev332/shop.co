@@ -1,8 +1,13 @@
+import { useQuery } from "@tanstack/react-query";
 import React, { useState } from "react";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { IoEye } from "react-icons/io5";
 import { MdModeEdit } from "react-icons/md";
 import { Link } from "react-router-dom";
+import {
+  adminProduct,
+  adminProductVariant,
+} from "../../../querys/admin/adminQuery";
 
 interface Product {
   id: string;
@@ -16,28 +21,11 @@ interface Product {
 }
 
 const AllProductsTable: React.FC = () => {
-  const [products, setProducts] = useState<Product[]>([
-    {
-      id: "1",
-      name: "Product A",
-      sku: "SKU001",
-      category: "Electronics",
-      stock: 50,
-      price: 1200,
-      status: "Active",
-      added: "2025-01-10",
-    },
-    {
-      id: "2",
-      name: "Product B",
-      sku: "SKU002",
-      category: "Apparel",
-      stock: 20,
-      price: 800,
-      status: "Inactive",
-      added: "2025-01-12",
-    },
-  ]);
+  const { data, isPending, isError, error } = useQuery({
+    queryKey: ["products"],
+    queryFn: adminProduct,
+  });
+  const [products, setProducts] = useState(data?.data?.data);
 
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
 
@@ -110,7 +98,7 @@ const AllProductsTable: React.FC = () => {
           </thead>
           <tbody>
             {products.map((product) => (
-              <tr key={product.id} className="text-black text-lg">
+              <tr key={product._id} className="text-black text-lg">
                 {/* Checkbox */}
                 <td className=" px-4 py-2 text-center">
                   <input
@@ -128,30 +116,38 @@ const AllProductsTable: React.FC = () => {
                 <td className=" px-4 py-2">{product.sku}</td>
 
                 {/* Category */}
-                <td className=" px-4 py-2">{product.category}</td>
+                <td className=" px-4 py-2">
+                  {product?.categoryDetails[0]?.categoryName}
+                </td>
 
                 {/* Stock */}
-                <td className=" px-4 py-2">{product.stock}</td>
+                <td className=" px-4 py-2">{product?.totalStock}</td>
 
                 {/* Price */}
-                <td className=" px-4 py-2">${product.price.toFixed(2)}</td>
+                <td className=" px-4 py-2">
+                  ${product?.firstVariant?.sellPrice || 300}
+                </td>
 
                 {/* Status */}
                 <td className=" px-4 py-2">
-                  <span
-                    className={`px-2 py-1 rounded text-sm ${
-                      product.status === "Active"
-                        ? "bg-green-100 text-green-800"
-                        : "bg-red-100 text-red-800"
-                    }`}
-                  >
-                    {product.status}
-                  </span>
+                  {product?.totalStock < 10 ? (
+                    <span
+                      className={`px-2 py-1 rounded text-sm ${"bg-red-100 text-red-800"}`}
+                    >
+                      Low Stock
+                    </span>
+                  ) : (
+                    <span
+                      className={`px-2 py-1 rounded text-sm ${" bg-gray-400"}`}
+                    >
+                      normal
+                    </span>
+                  )}
                 </td>
 
                 {/* Added Date */}
                 <td className=" px-4 py-2">
-                  {new Date(product.added).toLocaleDateString()}
+                  {new Date(product.createdAt).toLocaleDateString("en-GB")}
                 </td>
 
                 {/* Actions */}

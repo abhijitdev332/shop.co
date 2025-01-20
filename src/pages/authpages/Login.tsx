@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z, ZodError } from "zod";
 import { FcGoogle } from "react-icons/fc";
@@ -30,28 +30,25 @@ const LoginPage: React.FC = () => {
     resolver: zodResolver(loginSchema),
   });
 
-  const { mutate, isError, isPending } = useMutation({
+  const { mutate, isError, isPending, error } = useMutation({
     mutationFn: (data) => login(JSON.stringify(data)),
     onSuccess: (data) => {
       toast.success(data?.data?.message);
       dispatch(setUser(data?.data?.data));
       setTimeout(() => {
         navigate("/");
-      }, 2000);
+      }, 1000);
     },
   });
 
   const onSubmit = (data: LoginFormInputs) => {
-    try {
-      mutate(data);
-    } catch (err) {
-      if (err instanceof ZodError) {
-        toast.error(err.errors[0].message);
-      }
-      toast.error(err?.response?.data?.message);
-      console.log(err);
-    }
+    mutate(data as any);
   };
+  useEffect(() => {
+    if (isError) {
+      toast.error(error?.response?.data?.message);
+    }
+  }, [isError]);
 
   return (
     <div className="flex h-screen items-center justify-center bg-gray-100">
@@ -134,9 +131,13 @@ const LoginPage: React.FC = () => {
             {/* Login Button */}
             <button
               type="submit"
-              className="w-full px-4 py-2 btn btn-md transition duration-200"
+              className="w-full flex gap-1 px-4 py-2 btn btn-md btn-primary transition duration-200"
+              disabled={isPending}
             >
-              Login
+              {isPending && (
+                <span className="loading loading-spinner text-white loading-md"></span>
+              )}
+              <span className="text-white">Login</span>
             </button>
           </form>
 

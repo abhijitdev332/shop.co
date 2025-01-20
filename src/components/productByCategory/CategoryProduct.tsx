@@ -2,12 +2,25 @@ import { Link, ScrollRestoration, useParams } from "react-router-dom";
 import { Pagintaion, ProductCard } from "../component";
 import { MdKeyboardArrowRight, MdKeyboardArrowUp } from "react-icons/md";
 import { RiFilter3Line } from "react-icons/ri";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import cl from "classnames";
+import { useQuery } from "@tanstack/react-query";
+import { getProductByCategory } from "../../querys/productQuery";
 const CategoryProduct = () => {
-  const products: [] = [];
   const { id } = useParams();
+  const { data, isPending, isError, error } = useQuery({
+    queryKey: ["category", id],
+    queryFn: () => getProductByCategory(id),
+  });
   const [fillterShow, setFillterShow] = useState<boolean>(false);
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    if (data) {
+      setProducts(data?.data?.data);
+    }
+  }, [data]);
+  console.log(products);
   return (
     <main>
       <ScrollRestoration />
@@ -23,7 +36,7 @@ const CategoryProduct = () => {
               <li className="capitalize">{id}</li>
             </ul>
           </div>
-          <div className="flex w-full gap-5 ">
+          <div className="flex w-full gap-10 ">
             <div className="wrapper h-full overflow-y-auto">
               <FillterCard show={fillterShow} setShow={setFillterShow} />
             </div>
@@ -54,9 +67,13 @@ const CategoryProduct = () => {
                   </div>
                 </div>
               </div>
-              <div className="flex flex-wrap">
+              <div className="flex flex-wrap gap-6">
                 {products.map((ele) => (
-                  <ProductCard product={ele} />
+                  <ProductCard
+                    product={ele}
+                    style="md:w-50"
+                    imgStyle={"h-48"}
+                  />
                 ))}
               </div>
               <Pagintaion />

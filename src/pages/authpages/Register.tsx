@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { z, ZodError } from "zod";
+import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import authImg from "../../assets/svgs/auth/frame.svg";
 import { Link } from "react-router-dom";
@@ -31,26 +31,20 @@ const RegistrationPage: React.FC = () => {
   } = useForm<RegistrationFormInputs>({
     resolver: zodResolver(registrationSchema),
   });
-  const { mutate, isError, isPending } = useMutation({
+  const { mutate, isError, isPending, error } = useMutation({
     mutationFn: (data) => userRegister(JSON.stringify(data)),
     onSuccess: (data) => toast.success(data?.data?.message),
   });
 
   const onSubmit = (data: RegistrationFormInputs) => {
-    console.log("Form Data:", data);
-    // Add registration logic here
-    console.log(data);
-    try {
-      mutate(data);
-    } catch (err) {
-      if (err instanceof ZodError) {
-        toast.error(err.errors[0].message);
-      }
-      toast.error(err?.response?.data?.message);
-      console.log(err);
-    }
+    mutate(data as any);
   };
 
+  useEffect(() => {
+    if (isError) {
+      toast.error(error?.response?.data?.message);
+    }
+  }, [isError]);
   return (
     <div className="flex h-screen items-center justify-center bg-gray-100">
       <div className="flex w-full max-w-4xl bg-white shadow-lg rounded-lg overflow-hidden">
@@ -167,8 +161,11 @@ const RegistrationPage: React.FC = () => {
             {/* Register Button */}
             <button
               type="submit"
-              className="w-full px-4 py-2 btn btn-md transition duration-200"
+              className="w-full flex gap-1 px-4 py-2 btn btn-md transition duration-200"
             >
+              {isPending && (
+                <span className="loading loading-spinner text-white loading-md"></span>
+              )}
               Register
             </button>
           </form>

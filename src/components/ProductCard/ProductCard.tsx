@@ -4,8 +4,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { addProduct, removeProduct } from "../../services/store/cart/cartSlice";
 import { Star } from "../component";
 import { Link } from "react-router-dom";
+import cl from "classnames";
 
-const ProductCard = ({ product = {} }) => {
+const ProductCard = ({ product = {}, style = "", size = "", imgStyle }) => {
   const cartProduct = useSelector((state) => state.cart);
   const dispatch = useDispatch();
   const [productSize, setProductSize] = useState<string>("large");
@@ -19,12 +20,12 @@ const ProductCard = ({ product = {} }) => {
   };
 
   return (
-    <div className="card w-40 sm:w-72 md:w-96">
+    <div className={cl("card rounded-box w-40 sm:w-52 md:w-60", style)}>
       <figure>
-        <Link to={`/product/${product._id}`}>
+        <Link to={`/product/${product._id}`} className="w-full h-full">
           <img
             src={product.imgurl}
-            className="rounded-2xl"
+            className={cl("rounded-2xl h-56 w-full", imgStyle)}
             alt="Shoes"
             onError={(e: SyntheticEvent<HTMLImageElement, ErrorEvent>) => {
               e.target.parentElement.parentElement.parentElement.style.display =

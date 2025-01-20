@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Link, ScrollRestoration, useParams } from "react-router-dom";
 import { ProductCard, ReviewCard, Star } from "../component";
 import { GrSort } from "react-icons/gr";
@@ -9,7 +9,9 @@ import { FaMinus, FaPlus } from "react-icons/fa";
 import useFetch from "../../hooks/useFetch";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  addProduct,
   addQuantity,
+  removeProduct,
   removeQuantity,
 } from "../../services/store/cart/cartSlice";
 
@@ -30,7 +32,26 @@ const Product = () => {
   const [quantity, setQuantity] = useState<number>(1);
   const variant = ["red", "green", "black"];
   const sizes = ["small", "medium", "large", "x-large"];
-
+  const productExisted = useMemo(() => {
+    let haveProduct = cart?.products?.find(
+      (ele) => ele?.productId == productData?._id
+    );
+    return !!haveProduct;
+  }, [productData, cart]);
+  const handleCartAdd = () => {
+    dispatch(
+      addProduct({
+        productId: productData?._id,
+        name: productData?.name,
+        price: 200,
+        quantity: quantity,
+        imgurl: productData?.imgurl,
+      })
+    );
+  };
+  const handleCartRemove = () => {
+    dispatch(removeProduct(productData?._id));
+  };
   const addClick = () => {
     setQuantity((prev) => prev + 1);
   };
@@ -38,13 +59,14 @@ const Product = () => {
     setQuantity((prev) => prev - 1);
   };
   // effect on data changes
-  console.log(cart);
+
   useEffect(() => {
     if (data) {
       setProductData(data?.data?.matchedProduct);
       setProductVariant(data?.data?.productVariants);
     }
   }, [data]);
+
   return (
     <>
       <ScrollRestoration />
@@ -147,9 +169,21 @@ const Product = () => {
                       <FaPlus />
                     </button>
                   </div>
-                  <button className="btn w-72 text-center  bg-black rounded-badge">
-                    Add to Cart
-                  </button>
+                  {productExisted ? (
+                    <button
+                      className="btn w-72 text-center  bg-black rounded-badge"
+                      onClick={handleCartRemove}
+                    >
+                      remove from Cart
+                    </button>
+                  ) : (
+                    <button
+                      className="btn w-72 text-center  bg-black rounded-badge"
+                      onClick={handleCartAdd}
+                    >
+                      Add to Cart
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
