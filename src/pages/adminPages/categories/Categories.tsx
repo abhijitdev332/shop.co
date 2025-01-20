@@ -69,7 +69,7 @@ const Categories: React.FC = () => {
               <th className=" px-4 py-2">
                 <input
                   type="checkbox"
-                  checked={selectedProducts.length === catagories.length}
+                  checked={selectedProducts?.length === catagories?.length}
                   onChange={toggleSelectAll}
                   className="checkbox"
                 />
@@ -82,29 +82,29 @@ const Categories: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {products.map((product) => (
-              <tr key={product.id} className="text-black text-lg">
+            {catagories?.map((cata) => (
+              <tr key={cata?._id} className="text-black text-lg">
                 {/* Checkbox */}
                 <td className=" px-4 py-2 text-center">
                   <input
                     type="checkbox"
-                    checked={selectedProducts.includes(product.id)}
-                    onChange={() => toggleSelectProduct(product.id)}
+                    checked={selectedProducts?.includes(cata?._id)}
+                    onChange={() => toggleSelectProduct(cata?._id)}
                     className="checkbox"
                   />
                 </td>
 
                 {/* Product Name */}
-                <td className=" px-4 py-2">{product.name}</td>
+                <td className=" px-4 py-2">{cata?.categoryName}</td>
 
                 {/* SKU */}
-                <td className=" px-4 py-2">{product.sales}</td>
+                <td className=" px-4 py-2">{cata?.totalSales}</td>
 
                 {/* Category */}
-                <td className=" px-4 py-2">{product.stock}</td>
+                <td className=" px-4 py-2">{cata?.totalStock}</td>
 
                 {/* Stock */}
-                <td className=" px-4 py-2">{product.added}</td>
+                <td className=" px-4 py-2">{cata?.addedDate}</td>
 
                 {/* Actions */}
                 <td className=" px-4 py-2">

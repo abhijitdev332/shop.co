@@ -1,32 +1,18 @@
+import { useQuery } from "@tanstack/react-query";
 import React, { useState } from "react";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { IoEye } from "react-icons/io5";
 import { MdModeEdit } from "react-icons/md";
 import { Link } from "react-router-dom";
+import { adminOrders } from "../../../querys/admin/adminQuery";
 
 const Orders: React.FC = () => {
-  const [products, setProducts] = useState([
-    {
-      id: "1",
-      orderId: "sdg07gsdghos",
-      products: [],
-      date: "2025-01-10",
-      customer: "abhijit",
-      total: 50,
-      gateway: 1200,
-      status: "Active",
-    },
-    {
-      id: "1",
-      orderId: "sdg07gsdghos",
-      products: [],
-      date: "2025-01-10",
-      customer: "abhijit",
-      total: 50,
-      gateway: 1200,
-      status: "Active",
-    },
-  ]);
+  const { data, isPending, isError, error } = useQuery({
+    queryKey: ["orders"],
+    queryFn: adminOrders,
+  });
+
+  const [orders, setOrders] = useState(data?.data?.data);
 
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
 
@@ -98,14 +84,14 @@ const Orders: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {products.map((order) => (
-              <tr key={order.id} className="text-black text-lg">
+            {orders?.map((order) => (
+              <tr key={order._id} className="text-black text-lg">
                 {/* Checkbox */}
                 <td className=" px-4 py-2 text-center">
                   <input
                     type="checkbox"
-                    checked={selectedProducts.includes(order.id)}
-                    onChange={() => toggleSelectProduct(order.id)}
+                    checked={selectedProducts.includes(order._id)}
+                    onChange={() => toggleSelectProduct(order._id)}
                     className="checkbox"
                   />
                 </td>

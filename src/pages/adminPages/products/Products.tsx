@@ -1,29 +1,16 @@
 import { useQuery } from "@tanstack/react-query";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { IoEye } from "react-icons/io5";
 import { MdModeEdit } from "react-icons/md";
 import { Link } from "react-router-dom";
-import {
-  adminProduct,
-  adminProductVariant,
-} from "../../../querys/admin/adminQuery";
+import { adminProduct } from "../../../querys/admin/adminQuery";
 
-interface Product {
-  id: string;
-  name: string;
-  sku: string;
-  category: string;
-  stock: number;
-  price: number;
-  status: string;
-  added: string;
-}
-
-const AllProductsTable: React.FC = () => {
-  const { data, isPending, isError, error } = useQuery({
+const AllProductsTable = () => {
+  const { data, isError, error, isSuccess } = useQuery({
     queryKey: ["products"],
     queryFn: adminProduct,
+    staleTime: 1000,
   });
   const [products, setProducts] = useState(data?.data?.data);
 
@@ -48,9 +35,15 @@ const AllProductsTable: React.FC = () => {
   const handleDelete = (id: string) => {
     setProducts((prev) => prev.filter((product) => product.id !== id));
   };
+  // useEffect(() => {
+  //   if (data) {
+  //     setProducts(data?.data?.data);
+  //   }
+  // }, [data]);
 
   return (
     <div className="p-6 bg-white rounded-lg shadow-md">
+      {/* bread */}
       <div className="flex">
         <div className=" mb-6">
           <p className="text-gray-800 text-2xl font-bold">All Products</p>

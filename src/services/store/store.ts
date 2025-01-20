@@ -9,6 +9,7 @@ import storage from "redux-persist/lib/storage";
 const persisteConfig = {
   key: "root",
   storage,
+  blacklist: ["user"],
 };
 // combine all reducers to one
 const combinedReducers = combineReducers({
@@ -22,6 +23,10 @@ const persistReducers = persistReducer(persisteConfig, combinedReducers);
 // configure the store
 const store = configureStore({
   reducer: persistReducers,
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: false, // Required for redux-persist
+    }),
 });
 // persist the store
 const persisStore = persistStore(store);
