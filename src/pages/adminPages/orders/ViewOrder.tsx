@@ -1,62 +1,16 @@
+import { useQuery } from "@tanstack/react-query";
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
-
-interface Product {
-  id: string;
-  name: string;
-  sku: string;
-  price: number;
-  quantity: number;
-}
-
-interface OrderDetails {
-  products: Product[];
-  subtotal: number;
-  shippingCharges: number;
-  discount: number;
-  grandTotal: number;
-  status: string;
-  customer: {
-    name: string;
-    email: string;
-    phone: string;
-  };
-  payment: {
-    transactionNumber: string;
-    gateway: string;
-  };
-  addresses: {
-    shipping: string;
-    billing: string;
-  };
-}
+import { Link, useParams } from "react-router-dom";
+import { getOrderDeatils } from "../../../querys/orderQuery";
 
 const OrderDetailsPage: React.FC = () => {
-  const [order, setOrder] = useState<OrderDetails>({
-    products: [
-      { id: "1", name: "Product A", sku: "SKU001", price: 100, quantity: 2 },
-      { id: "2", name: "Product B", sku: "SKU002", price: 200, quantity: 1 },
-    ],
-    subtotal: 400,
-    shippingCharges: 50,
-    discount: 20,
-    grandTotal: 430,
-    status: "Pending",
-    customer: {
-      name: "John Doe",
-      email: "john.doe@example.com",
-      phone: "1234567890",
-    },
-    payment: {
-      transactionNumber: "TXN123456",
-      gateway: "PayPal",
-    },
-    addresses: {
-      shipping: "123 Main Street, New York, NY 10001",
-      billing: "456 Elm Street, Los Angeles, CA 90001",
-    },
+  const { id } = useParams();
+  const { data, isPending, isError, error } = useQuery({
+    queryKey: ["orders", { id }],
+    queryFn: () => getOrderDeatils(id),
   });
-
+  const [order, setOrder] = useState({ ...data?.data?.data } || {});
+  const [orderAddress, setOrderAddress] = useState({ ...order?.address } || {});
   const handleStatusChange = (newStatus: string) => {
     setOrder({ ...order, status: newStatus });
   };
@@ -99,14 +53,31 @@ const OrderDetailsPage: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {order.products.map((product) => (
-                <tr key={product.id}>
-                  <td className=" px-4 py-2">{product.name}</td>
-                  <td className=" px-4 py-2">{product.sku}</td>
-                  <td className=" px-4 py-2">{product.quantity}</td>
-                  <td className=" px-4 py-2">₹{product.price}</td>
+              {order?.products?.map((product) => (
+                <tr key={product?.productId?._id}>
                   <td className=" px-4 py-2">
-                    ₹{product.price * product.quantity}
+                    <div className="flex gap-2">
+                      <div className="avatar">
+                        <div className="w-12 rounded">
+                          <img
+                            src={product?.variantId?.images[0]?.url || ""}
+                            alt="products image"
+                          />
+                        </div>
+                      </div>
+
+                      <p className="capitalize text-lg font-medium">
+                        {product?.productId?.name}
+                      </p>
+                    </div>
+                  </td>
+                  <td className=" px-4 py-2">{product?.productId?.sku}</td>
+                  <td className=" px-4 py-2">{product?.quantity}</td>
+                  <td className=" px-4 py-2">
+                    ${product?.variantId?.sellPrice}
+                  </td>
+                  <td className=" px-4 py-2">
+                    ${product?.variantId?.sellPrice * product.quantity}
                   </td>
                 </tr>
               ))}
@@ -117,19 +88,19 @@ const OrderDetailsPage: React.FC = () => {
           <div className="mt-6">
             <div className="flex justify-between text-sm mb-2">
               <span>Subtotal:</span>
-              <span>₹{order.subtotal}</span>
+              <span>${order?.totalAmount - order?.discount}</span>
             </div>
-            <div className="flex justify-between text-sm mb-2">
+            {/* <div className="flex justify-between text-sm mb-2">
               <span>Shipping Charges:</span>
-              <span>₹{order.shippingCharges}</span>
-            </div>
+              <span>${order.shippingCharges}</span>
+            </div> */}
             <div className="flex justify-between text-sm mb-2">
               <span>Discount:</span>
-              <span>-₹{order.discount}</span>
+              <span>-${order?.discount}</span>
             </div>
             <div className="flex justify-between font-semibold text-lg mt-4">
               <span>Grand Total:</span>
-              <span>₹{order.grandTotal}</span>
+              <span>${order?.totalAmount}</span>
             </div>
           </div>
         </div>
@@ -139,11 +110,7 @@ const OrderDetailsPage: React.FC = () => {
           {/* Order Status Card */}
           <div className="bg-white p-6 rounded-lg shadow-md">
             <h3 className="text-lg font-semibold mb-4">Order Status</h3>
-            <select
-              value={order.status}
-              onChange={(e) => handleStatusChange(e.target.value)}
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
+            <select className="select select-bordered w-full max-w-xs bg-transparent">
               <option value="Pending">Pending</option>
               <option value="Processing">Processing</option>
               <option value="Shipped">Shipped</option>
@@ -153,13 +120,13 @@ const OrderDetailsPage: React.FC = () => {
             <div className="mt-4">
               <h4 className="text-sm font-medium">Customer Details</h4>
               <p className="text-gray-600 text-sm mt-1">
-                <strong>Name:</strong> {order.customer.name}
+                <strong>Name:</strong> {order?.userId?.username}
               </p>
               <p className="text-gray-600 text-sm mt-1">
-                <strong>Email:</strong> {order.customer.email}
+                <strong>Email:</strong> {order?.userId?.email}
               </p>
               <p className="text-gray-600 text-sm mt-1">
-                <strong>Phone:</strong> {order.customer.phone}
+                <strong>Phone:</strong> {order?.userId?.phoneNumber}
               </p>
             </div>
 
@@ -172,24 +139,29 @@ const OrderDetailsPage: React.FC = () => {
           <div className="bg-white p-6 rounded-lg shadow-md">
             <h3 className="text-lg font-semibold mb-4">Payment Details</h3>
             <p className="text-gray-600 text-sm mb-2">
-              <strong>Transaction Number:</strong>{" "}
-              {order.payment.transactionNumber}
+              <strong>Transaction Number:</strong> {order?.transactionId}
             </p>
             <p className="text-gray-600 text-sm mb-4">
-              <strong>Payment Gateway:</strong> {order.payment.gateway}
+              <strong>Payment Gateway:</strong> {order?.paymentGateway}
             </p>
           </div>
 
           {/* Shipping Address Card */}
-          <div className="bg-white p-6 rounded-lg shadow-md">
+          {/* <div className="bg-white p-6 rounded-lg shadow-md">
             <h3 className="text-lg font-semibold mb-4">Shipping Address</h3>
             <p className="text-gray-600 text-sm">{order.addresses.shipping}</p>
-          </div>
+          </div> */}
 
           {/* Billing Address Card */}
           <div className="bg-white p-6 rounded-lg shadow-md">
             <h3 className="text-lg font-semibold mb-4">Billing Address</h3>
-            <p className="text-gray-600 text-sm">{order.addresses.billing}</p>
+            <p className="text-gray-600 text-sm flex flex-wrap gap-1 capitalize">
+              <span>{orderAddress?.houseNo}</span>
+              <span>{orderAddress?.landMark}</span>
+              <span>{orderAddress?.city}</span>
+              <span>{orderAddress?.country}</span>
+              <span>{orderAddress?.pin}</span>
+            </p>
           </div>
         </div>
       </div>

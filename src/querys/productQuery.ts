@@ -31,10 +31,15 @@ let getProductByCategory = async (query) => {
   }
 };
 
+let newProduct = async (productData) => {
+  return PrivateAxios.post("/product/create", productData);
+};
+
 export {
   newArivals,
   topSelling,
   getProduct,
   getAllproducts,
   getProductByCategory,
+  newProduct,
 };

@@ -6,7 +6,7 @@ const adminProduct = async () => {
 const adminProductVariant = async () => {
   return await AdminAxios.get("/products/variant");
 };
-const adminUser = async () => {
+const adminAllUser = async () => {
   return await AdminAxios.get("/users");
 };
 const adminOrders = async () => {
@@ -19,7 +19,7 @@ const adminCategories = async () => {
 export {
   adminProduct,
   adminProductVariant,
-  adminUser,
+  adminAllUser,
   adminOrders,
   adminCategories,
 };

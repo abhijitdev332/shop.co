@@ -1,28 +1,60 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useRef, useState } from "react";
+import { data, Link } from "react-router-dom";
+import { productModalScheama } from "./schema";
+import { ZodError } from "zod";
+import { toast } from "react-toastify";
+import { useSelector } from "react-redux";
+import { useMutation } from "@tanstack/react-query";
+import { newProduct } from "../../../querys/productQuery";
+import { newVariant } from "../../../querys/variant";
 
-interface Variant {
-  color: string;
-  sizes: string[];
-  images: File[];
-}
-
-const ProductAddPage: React.FC = () => {
-  const [productName, setProductName] = useState<string>("");
-  const [description, setDescription] = useState<string>("");
-  const [sku, setSku] = useState<string>("");
-  const [category, setCategory] = useState<string>("");
-
-  const [variants, setVariants] = useState<Variant[]>([
+const ProductAddPage = () => {
+  const { category, subCategory } = useSelector((store) => store.category);
+  const [productDetailsState, setProductDetailsState] = useState({
+    name: "",
+    sku: "",
+    description: "",
+    genderFor: "",
+    category: "",
+    subCategory: "",
+    brand: "",
+  });
+  const [productAboutDetails, setProductAboutDetails] = useState({});
+  const [variants, setVariants] = useState([
     {
       color: "",
       sizes: [],
       images: [],
+      stock: 0,
+      basePrice: 0,
+      salePrice: 0,
     },
   ]);
 
+  const detailsModalRef = useRef(null);
+  const handleProductDetailsChange = (ev) => {
+    try {
+      setProductDetailsState((prev) => ({
+        ...prev,
+        [ev.target.name]: ev.target.value,
+      }));
+    } catch (err) {
+      toast.info(err);
+    }
+  };
+
   const handleAddVariant = () => {
-    setVariants([...variants, { color: "", sizes: [], images: [] }]);
+    setVariants([
+      ...variants,
+      {
+        color: "",
+        sizes: [],
+        images: [],
+        stock: 0,
+        basePrice: 0,
+        salePrice: 0,
+      },
+    ]);
   };
 
   const handleRemoveVariant = (index: number) => {
@@ -56,6 +88,65 @@ const ProductAddPage: React.FC = () => {
     ];
     setVariants(updatedVariants);
   };
+  const handleProductMoreData = (data) => {
+    setProductAboutDetails({ ...data });
+  };
+  const [newProductData, setNewProductData] = useState({});
+  const { mutateAsync: productMutate, error: productErr } = useMutation({
+    mutationKey: ["productAdd"],
+    mutationFn: (data) => newProduct(data),
+    onSettled: (data) => {
+      setNewProductData({ ...data?.data?.data });
+    },
+  });
+  const { mutateAsync: variantMutation, error: variantErr } = useMutation({
+    mutationKey: ["variantAdd"],
+    mutationFn: (data) => newVariant(data),
+    onSettled: (data) => {
+      console.log(data);
+    },
+  });
+  const handleProductAdd = async () => {
+    let sendData = {
+      ...productDetailsState,
+      productDetails: { ...productAboutDetails },
+    };
+
+    // console.log(sendData);
+    //  let productres=await productMutate(sendData)
+    //  let productId=productres?.data?.data?._id
+    const transformedVariants = [];
+    variants.forEach((variant) => {
+      variant.sizes.forEach((size) => {
+        transformedVariants.push({
+          productId: "325087shdfgpsy7gd", // Link the variant to the product
+          color: variant.color,
+          size,
+          sellPrice: variant.salePrice,
+          basePrice: variant.basePrice,
+          stock: variant.stock,
+          sku: `${variant.color} ${size}`,
+          images: [
+            {
+              public_id: `${variant.color} ${size}`,
+              url: "https://images.pexels.com/photos/842811/pexels-photo-842811.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+            },
+          ],
+          // Assuming images are linked to the variant
+        });
+      });
+    });
+    // let sendVariants = variants.map((va) => ({
+    //   ...va,
+    //   images:[{
+    //     public_id:`${va.color}${va.} `
+    //     url:"https://images.pexels.com/photos/842811/pexels-photo-842811.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+    //   }]
+    //   // productId:productId
+    // }));
+    console.log(transformedVariants);
+    // let variationRes=await variantMutation(sendVariants)
+  };
 
   return (
     <section>
@@ -63,6 +154,7 @@ const ProductAddPage: React.FC = () => {
         <div className="flex">
           <div className=" mb-6">
             <p className="text-gray-800 text-2xl font-bold">All Products</p>
+            {/* breadcrumbs */}
             <div className="breadcrumbs text-sm">
               <ul>
                 <li>
@@ -75,17 +167,32 @@ const ProductAddPage: React.FC = () => {
               </ul>
             </div>
           </div>
-          {/* <div className=" ms-auto flex">
-            <Link to={"add"}>
-              <button className="btn btn-primary">Add Product</button>
-            </Link>
-          </div> */}
+          {/* breadcumbs end */}
         </div>
         <div className="mx-auto p-6">
           {/* Top Section with Product Details and Category */}
           <div className="flex justify-between items-start mb-6">
             <div className="bg-white p-6 rounded-lg shadow-md flex-1 mr-4">
               <h2 className="text-xl font-semibold mb-4">Product Details</h2>
+              <div className="flex justify-end">
+                <button
+                  className="btn btn-neutral"
+                  onClick={() => {
+                    if (detailsModalRef.current) {
+                      detailsModalRef.current?.showModal();
+                    }
+                  }}
+                >
+                  Add MoreDetails
+                </button>
+              </div>
+              {/* modal */}
+              <DetailsModal
+                detailsModalRef={detailsModalRef}
+                productMoreData={handleProductMoreData}
+              />
+              {/* modal end */}
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700">
@@ -93,9 +200,10 @@ const ProductAddPage: React.FC = () => {
                   </label>
                   <input
                     type="text"
-                    value={productName}
-                    onChange={(e) => setProductName(e.target.value)}
-                    className="mt-2 px-4 py-2 border rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    value={productDetailsState.name}
+                    name="name"
+                    onChange={handleProductDetailsChange}
+                    className="mt-2 bg-transparent input input-bordered w-full max-w-xs"
                   />
                 </div>
 
@@ -105,23 +213,57 @@ const ProductAddPage: React.FC = () => {
                   </label>
                   <input
                     type="text"
-                    value={sku}
-                    onChange={(e) => setSku(e.target.value)}
-                    className="mt-2 px-4 py-2 border rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    name="sku"
+                    value={productDetailsState.sku}
+                    onChange={handleProductDetailsChange}
+                    className="mt-2 bg-transparent input input-bordered w-full max-w-xs"
                   />
                 </div>
               </div>
-
-              <div className="mt-4">
-                <label className="block text-sm font-medium text-gray-700">
-                  Description
-                </label>
-                <textarea
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  className="mt-2 px-4 py-2 border rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  rows={4}
-                />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="mt-4">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Description
+                  </label>
+                  <textarea
+                    name="description"
+                    value={productDetailsState.description}
+                    onChange={handleProductDetailsChange}
+                    className="mt-2 bg-transparent input input-bordered w-full max-w-xs"
+                    rows={4}
+                  />
+                </div>
+                <div className="mt-4">
+                  <label className="block text-sm font-medium text-gray-700">
+                    GenderFor
+                  </label>
+                  <select
+                    className="mt-2 select select-bordered max-w-xs w-full bg-transparent"
+                    value={productDetailsState.genderFor}
+                    name="genderFor"
+                    onChange={handleProductDetailsChange}
+                  >
+                    <option value="" selected disabled>
+                      Select Gender
+                    </option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                  </select>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Brand Name
+                  </label>
+                  <input
+                    type="text"
+                    value={productDetailsState.brand}
+                    name="brand"
+                    onChange={handleProductDetailsChange}
+                    className="mt-2 bg-transparent input input-bordered w-full max-w-xs"
+                  />
+                </div>
               </div>
             </div>
 
@@ -132,14 +274,19 @@ const ProductAddPage: React.FC = () => {
                   Category
                 </label>
                 <select
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                  className="mt-2 px-4 py-2 border rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={productDetailsState.category}
+                  name="category"
+                  onChange={handleProductDetailsChange}
+                  className="mt-2 select select-bordered w-full max-w-xs bg-transparent"
                 >
-                  <option value="">Select Category</option>
-                  <option value="Electronics">Electronics</option>
-                  <option value="Apparel">Apparel</option>
-                  <option value="Home">Home</option>
+                  <option value="" selected disabled>
+                    Select Category
+                  </option>
+                  {category?.map((ele) => (
+                    <option key={ele?._id} value={ele?._id}>
+                      {ele?.categoryName}
+                    </option>
+                  ))}
                 </select>
               </div>
               {/*sub category  */}
@@ -148,14 +295,17 @@ const ProductAddPage: React.FC = () => {
                   Sub-Category
                 </label>
                 <select
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                  className="mt-2 px-4 py-2 border rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  name="subCategory"
+                  value={productDetailsState.subCategory}
+                  onChange={handleProductDetailsChange}
+                  className="mt-2 select select-bordered w-full max-w-xs bg-transparent"
                 >
-                  <option value="">Select Sub Category</option>
-                  <option value="Electronics">Electronics</option>
-                  <option value="Apparel">Apparel</option>
-                  <option value="Home">Home</option>
+                  <option value="" selected disabled>
+                    Select Sub Category
+                  </option>
+                  {subCategory?.map((ele) => (
+                    <option value={ele?._id}>{ele?.SubCategoryName}</option>
+                  ))}
                 </select>
               </div>
             </div>
@@ -168,6 +318,7 @@ const ProductAddPage: React.FC = () => {
               <div key={index} className="mb-6 border-b pb-4">
                 <div className="flex justify-between items-center mb-4">
                   <h3 className="text-lg font-semibold">Variant {index + 1}</h3>
+                  {/* remove button */}
                   <button
                     onClick={() => handleRemoveVariant(index)}
                     className="text-red-500 hover:text-red-600"
@@ -177,22 +328,86 @@ const ProductAddPage: React.FC = () => {
                 </div>
 
                 {/* Color */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">
-                    Color
-                  </label>
-                  <input
-                    type="text"
-                    value={variant.color}
-                    onChange={(e) => {
-                      const updatedVariants = [...variants];
-                      updatedVariants[index].color = e.target.value;
-                      setVariants(updatedVariants);
-                    }}
-                    className="mt-2 px-4 py-2 border rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Color
+                    </label>
+                    <input
+                      type="text"
+                      value={variant.color}
+                      onChange={(e) => {
+                        const updatedVariants = [...variants];
+                        updatedVariants[index].color = e.target.value;
+                        setVariants(updatedVariants);
+                      }}
+                      className="mt-2 bg-transparent input input-bordered w-full max-w-sm"
+                    />
+                  </div>
 
+                  <div className="">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Stock
+                    </label>
+                    <input
+                      type="text"
+                      value={variant.stock}
+                      onChange={(e) => {
+                        const updatedVariants = [...variants];
+                        if (isNaN(e.target.value)) {
+                          return toast.info("Please enter valid number");
+                        }
+                        updatedVariants[index].stock = Number(e.target.value);
+                        setVariants(updatedVariants);
+                      }}
+                      className="mt-2 bg-transparent input input-bordered w-full max-w-sm"
+                    />
+                  </div>
+                </div>
+                {/* color end */}
+                {/* pricess */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="">
+                    <label className="block text-sm font-medium text-gray-700">
+                      BasePrice
+                    </label>
+                    <input
+                      type="text"
+                      value={variant.basePrice}
+                      onChange={(e) => {
+                        const updatedVariants = [...variants];
+                        if (isNaN(e.target.value)) {
+                          return toast.info("Please enter valid number");
+                        }
+                        let price = Number(e.target.value);
+                        updatedVariants[index].basePrice = price;
+                        setVariants(updatedVariants);
+                      }}
+                      className="mt-2 bg-transparent input input-bordered w-full max-w-sm"
+                    />
+                  </div>
+
+                  <div className="">
+                    <label className="block text-sm font-medium text-gray-700">
+                      SalePrice
+                    </label>
+                    <input
+                      type="text"
+                      value={variant.salePrice}
+                      onChange={(e) => {
+                        const updatedVariants = [...variants];
+                        if (isNaN(e.target.value)) {
+                          return toast.info("Please enter valid number");
+                        }
+                        let price = Number(e.target.value);
+                        updatedVariants[index].salePrice = price;
+                        setVariants(updatedVariants);
+                      }}
+                      className="mt-2 bg-transparent input input-bordered w-full max-w-sm"
+                    />
+                  </div>
+                </div>
+                {/* end pricess */}
                 {/* Sizes */}
                 <div className="mt-4">
                   <label className="block text-sm font-medium text-gray-700">
@@ -229,8 +444,9 @@ const ProductAddPage: React.FC = () => {
                     type="file"
                     multiple
                     onChange={(e) => handleAddImages(index, e.target.files)}
-                    className="mt-2 px-4 py-2 border rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="mt-2 file-input file-input-bordered  bg-white w-full max-w-xs"
                   />
+
                   <div className="flex gap-4 mt-4">
                     {variant.images.map((image, idx) => (
                       <img
@@ -246,7 +462,7 @@ const ProductAddPage: React.FC = () => {
             ))}
             <button
               onClick={handleAddVariant}
-              className="mt-4 px-6 py-2 btn btn-primary text-white rounded-lg transition"
+              className="mt-4 btn btn-accent transition"
             >
               Add Variant
             </button>
@@ -254,7 +470,10 @@ const ProductAddPage: React.FC = () => {
 
           {/* Save Button */}
           <div className="mt-6">
-            <button className="px-6 py-2 bg-neutral text-white rounded-lg transition">
+            <button
+              className="px-6 py-2 bg-neutral text-white rounded-lg transition"
+              onClick={handleProductAdd}
+            >
               Save Product
             </button>
           </div>
@@ -263,5 +482,104 @@ const ProductAddPage: React.FC = () => {
     </section>
   );
 };
+
+function DetailsModal({ detailsModalRef, productMoreData }) {
+  const productDetails = {
+    packOf: "1",
+    styleCode: "",
+    fabric: "",
+    fabricCare: "",
+    pattern: "",
+    pockets: "1",
+    sleeve: "",
+    SuitableFor: "",
+    fit: "",
+  };
+  const dressStyle = ["casual", "formal", "party", "gym"];
+  const [dressStyleState, setDressStyleState] = useState("casual");
+  const [inputStates, setInputsStates] = useState({
+    packOf: "1",
+    styleCode: "casual every day",
+    fabric: "cotton",
+    fabricCare: "gentle wash",
+    pattern: "solid",
+    pockets: "1",
+    sleeve: "full sleeve",
+    SuitableFor: "everyday",
+    fit: "slim",
+  });
+  const handleChange = (ev) => {
+    setInputsStates((prev) => ({
+      ...prev,
+      [ev.target.name]: ev.target.value,
+    }));
+  };
+  const handleAddClick = () => {
+    try {
+      productModalScheama.parse({ ...inputStates, style: dressStyleState });
+      // setInputsStates({ ...productDetails });
+      detailsModalRef.current.close();
+      productMoreData({ ...inputStates, style: dressStyleState });
+    } catch (err) {
+      if (err instanceof ZodError) {
+        toast.info(err.errors[0].message);
+      }
+    }
+  };
+
+  return (
+    <>
+      <dialog id="my_modal_2" className="modal" ref={detailsModalRef}>
+        <div className="modal-box bg-white w-full z-[1]">
+          <h2>Add More Details</h2>
+          <div className="mt-5">
+            {Object.entries(productDetails).map((ele) => {
+              return (
+                <>
+                  <div className="py-3">
+                    <label className="block text-sm font-medium text-gray-700">
+                      {ele[0].toUpperCase()}
+                    </label>
+                    <input
+                      type="text"
+                      name={ele[0]}
+                      value={inputStates[ele[0]]}
+                      onChange={handleChange}
+                      className="mt-2 bg-transparent input input-bordered w-full max-w-sm"
+                    />
+                  </div>
+                </>
+              );
+            })}
+            <div className="py-3">
+              <label className="block text-sm font-medium text-gray-700 uppercase">
+                Style
+              </label>
+              <select
+                className="select select-bordered w-full max-w-sm bg-transparent mt-2"
+                onChange={(e) => setDressStyleState(e.target.value)}
+              >
+                {dressStyle.map((ele) => (
+                  <option value={ele}>{ele}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+          <div className="flex justify-center">
+            <button
+              className="btn btn-primary w-52 text-lg"
+              onClick={handleAddClick}
+            >
+              Add
+            </button>
+          </div>
+        </div>
+        <form method="dialog" className="modal-backdrop m-0">
+          <button>close</button>
+        </form>
+      </dialog>
+    </>
+  );
+}
 
 export default ProductAddPage;

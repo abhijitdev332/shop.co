@@ -10,9 +10,9 @@ const AllProductsTable = () => {
   const { data, isError, error, isSuccess } = useQuery({
     queryKey: ["products"],
     queryFn: adminProduct,
-    staleTime: 1000,
+    staleTime: 0,
   });
-  const [products, setProducts] = useState(data?.data?.data);
+  const [products, setProducts] = useState(data?.data?.data || []);
 
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
 
@@ -28,18 +28,13 @@ const AllProductsTable = () => {
     if (selectedProducts.length === products.length) {
       setSelectedProducts([]);
     } else {
-      setSelectedProducts(products.map((product) => product.id));
+      setSelectedProducts(products.map((product) => product?._id));
     }
   };
 
   const handleDelete = (id: string) => {
     setProducts((prev) => prev.filter((product) => product.id !== id));
   };
-  // useEffect(() => {
-  //   if (data) {
-  //     setProducts(data?.data?.data);
-  //   }
-  // }, [data]);
 
   return (
     <div className="p-6 bg-white rounded-lg shadow-md">
@@ -74,7 +69,7 @@ const AllProductsTable = () => {
               <th className=" px-4 py-2">
                 <input
                   type="checkbox"
-                  checked={selectedProducts.length === products.length}
+                  checked={selectedProducts.length === products?.length}
                   onChange={toggleSelectAll}
                   className="checkbox"
                 />
@@ -90,23 +85,23 @@ const AllProductsTable = () => {
             </tr>
           </thead>
           <tbody>
-            {products.map((product) => (
-              <tr key={product._id} className="text-black text-lg">
+            {products.map((product: any) => (
+              <tr key={product?._id} className="text-black text-lg">
                 {/* Checkbox */}
                 <td className=" px-4 py-2 text-center">
                   <input
                     type="checkbox"
-                    checked={selectedProducts.includes(product.id)}
-                    onChange={() => toggleSelectProduct(product.id)}
+                    checked={selectedProducts.includes(product?._id)}
+                    onChange={() => toggleSelectProduct(product?._id)}
                     className="checkbox"
                   />
                 </td>
 
                 {/* Product Name */}
-                <td className=" px-4 py-2">{product.name}</td>
+                <td className=" px-4 py-2">{product?.name}</td>
 
                 {/* SKU */}
-                <td className=" px-4 py-2">{product.sku}</td>
+                <td className=" px-4 py-2">{product?.sku}</td>
 
                 {/* Category */}
                 <td className=" px-4 py-2">
@@ -146,9 +141,12 @@ const AllProductsTable = () => {
                 {/* Actions */}
                 <td className=" px-4 py-2">
                   <div className="flex gap-1 ">
-                    <button className="btn btn-sm btn-ghost rounded-full">
+                    <Link
+                      to={`${product?._id}`}
+                      className="btn btn-sm btn-ghost rounded-full"
+                    >
                       <IoEye />
-                    </button>
+                    </Link>
                     <button className="btn btn-sm btn-ghost rounded-full">
                       <MdModeEdit />
                     </button>

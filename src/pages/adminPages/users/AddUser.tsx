@@ -2,11 +2,14 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { register as registerquery } from "../../../querys/authQuery";
+import { toast } from "react-toastify";
 
 // Validation schema using Zod
 const userSchema = z.object({
-  displayName: z.string().min(2, "Display name must be at least 2 characters."),
+  displayName: z.string().min(5, "Display name must be at least 2 characters."),
   email: z.string().email("Invalid email address."),
   phoneNumber: z
     .string()
@@ -16,13 +19,19 @@ const userSchema = z.object({
   }),
   password: z.string().min(6, "Password must be at least 6 characters."),
   profileImage: z
-    .instanceof(FileList)
-    .refine((files) => files.length === 1, "Please upload a profile image."),
+    .union([z.instanceof(FileList), z.null()])
+    .optional()
+    .refine(
+      (files) => !files || files.length === 0 || files.length === 1,
+      "Please upload exactly one profile image or leave it empty."
+    ),
 });
 
 type UserFormInputs = z.infer<typeof userSchema>;
 
-const UserAddPage: React.FC = () => {
+const UserAddPage = () => {
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const [imagePreview, setImagePreview] = useState<string>("");
 
   const {
@@ -45,17 +54,38 @@ const UserAddPage: React.FC = () => {
       setValue("profileImage", files); // Update form value for profileImage
     }
   };
+  const { mutate, isPending, isError, error } = useMutation({
+    mutationKey: ["user", "new"],
+    mutationFn: (data) => {
+      let reprishedData = {
+        name: data?.displayName,
+        email: data?.email,
+        password: data?.password,
+        role: data?.role,
+      };
+      return registerquery(reprishedData);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries("adminUsers");
+      navigate(-1);
+    },
+  });
 
   const onSubmit = (data: UserFormInputs) => {
-    console.log({
-      displayName: data.displayName,
-      email: data.email,
-      phoneNumber: data.phoneNumber,
-      role: data.role,
-      password: data.password,
-      profileImage: data.profileImage[0], // Access the uploaded file
-    });
-    alert("User added successfully!");
+    // console.log({
+    //   displayName: data.displayName,
+    //   email: data.email,
+    //   phoneNumber: data.phoneNumber,
+    //   role: data.role,
+    //   password: data.password,
+    //   profileImage: data.profileImage[0], // Access the uploaded file
+    // });
+
+    try {
+      mutate(data);
+    } catch (err) {
+      toast.error(err?.response?.data?.msg);
+    }
   };
 
   return (
@@ -104,7 +134,7 @@ const UserAddPage: React.FC = () => {
             accept="image/*"
             {...register("profileImage")}
             onChange={handleImageChange}
-            className="mt-4 w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-blue-100 file:text-blue-700 hover:file:bg-blue-200"
+            className="mt-4 file-input file-input-bordered w-full max-w-sm bg-white"
           />
           {errors.profileImage && (
             <p className="text-red-500 text-sm mt-2">
@@ -126,7 +156,7 @@ const UserAddPage: React.FC = () => {
               type="text"
               {...register("displayName")}
               placeholder="Enter display name"
-              className={`mt-2 px-4 py-2 border rounded-lg w-full focus:outline-none focus:ring-2 ${
+              className={`mt-2 input input-bordered w-full  bg-transparent ${
                 errors.displayName
                   ? "border-red-500 focus:ring-red-500"
                   : "focus:ring-blue-500"
@@ -148,7 +178,7 @@ const UserAddPage: React.FC = () => {
               type="email"
               {...register("email")}
               placeholder="Enter email address"
-              className={`mt-2 px-4 py-2 border rounded-lg w-full focus:outline-none focus:ring-2 ${
+              className={`mt-2 input input-bordered w-full  bg-transparent ${
                 errors.email
                   ? "border-red-500 focus:ring-red-500"
                   : "focus:ring-blue-500"
@@ -170,7 +200,7 @@ const UserAddPage: React.FC = () => {
               type="tel"
               {...register("phoneNumber")}
               placeholder="Enter phone number"
-              className={`mt-2 px-4 py-2 border rounded-lg w-full focus:outline-none focus:ring-2 ${
+              className={`mt-2 input input-bordered w-full bg-transparent ${
                 errors.phoneNumber
                   ? "border-red-500 focus:ring-red-500"
                   : "focus:ring-blue-500"
@@ -190,7 +220,7 @@ const UserAddPage: React.FC = () => {
             </label>
             <select
               {...register("role")}
-              className={`mt-2 px-4 py-2 border rounded-lg w-full focus:outline-none focus:ring-2 ${
+              className={`mt-2 select select-bordered w-full bg-transparent ${
                 errors.role
                   ? "border-red-500 focus:ring-red-500"
                   : "focus:ring-blue-500"
@@ -214,7 +244,7 @@ const UserAddPage: React.FC = () => {
               type="password"
               {...register("password")}
               placeholder="Enter password"
-              className={`mt-2 px-4 py-2 border rounded-lg w-full focus:outline-none focus:ring-2 ${
+              className={`mt-2 input input-bordered w-full bg-transparent ${
                 errors.password
                   ? "border-red-500 focus:ring-red-500"
                   : "focus:ring-blue-500"
@@ -228,10 +258,7 @@ const UserAddPage: React.FC = () => {
           </div>
 
           {/* Submit Button */}
-          <button
-            type="submit"
-            className="mt-6 px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
-          >
+          <button type="submit" className="mt-6 btn  btn-netural transition">
             Save User
           </button>
         </div>

@@ -1,7 +1,9 @@
 import React from "react";
+import { useParams } from "react-router-dom";
 
 const CategoryProducts = () => {
-  return <div>CategoryProducts</div>;
+  const { id } = useParams();
+  return <div>CategoryProducts for {id}</div>;
 };
 
 export default CategoryProducts;

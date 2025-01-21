@@ -10,6 +10,7 @@ const Categories: React.FC = () => {
   const { data, isPending, isError, error } = useQuery({
     queryKey: ["category"],
     queryFn: adminCategories,
+    staleTime: 0,
   });
   const [catagories, setCatagories] = useState(data?.data?.data);
 
@@ -27,7 +28,7 @@ const Categories: React.FC = () => {
     if (selectedProducts.length === catagories.length) {
       setSelectedProducts([]);
     } else {
-      setSelectedProducts(catagories.map((product) => product.id));
+      setSelectedProducts(catagories.map((product) => product?._id));
     }
   };
 
@@ -109,9 +110,12 @@ const Categories: React.FC = () => {
                 {/* Actions */}
                 <td className=" px-4 py-2">
                   <div className="flex gap-1 ">
-                    <button className="btn btn-sm btn-ghost rounded-full">
+                    <Link
+                      to={`${cata?._id}`}
+                      className="btn btn-sm btn-ghost rounded-full"
+                    >
                       <IoEye />
-                    </button>
+                    </Link>
                     <button className="btn btn-sm btn-ghost rounded-full">
                       <MdModeEdit />
                     </button>

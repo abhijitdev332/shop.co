@@ -20,7 +20,7 @@ import {
   OrdersItemPage,
 } from "./pages/page";
 import { HomePage } from "./pages/page";
-import { CategoryProduct, Product } from "./components/component";
+import { Product, CategoryProduct } from "./components/component";
 import {
   AddCategory,
   AddProduct,
@@ -33,6 +33,7 @@ import {
   ProductDetails,
   ViewOrder,
   ViewUser,
+  CategoryProducts,
 } from "./pages/adminPages/adminPages";
 
 // lazy loadings
@@ -83,7 +84,7 @@ const router = createBrowserRouter(
         <Route path="users/:id" element={<ViewUser />} />
         <Route path="category" element={<AllCategory />} />
         <Route path="category/add" element={<AddCategory />} />
-        <Route path="category/:id" element={<CategoryProduct />} />
+        <Route path="category/:id" element={<CategoryProducts />} />
       </Route>
       <Route path="/payment" element={<PaymentPage />} />
       <Route path="/success" element={<SuccessPage />} />

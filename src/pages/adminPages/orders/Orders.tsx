@@ -10,9 +10,10 @@ const Orders: React.FC = () => {
   const { data, isPending, isError, error } = useQuery({
     queryKey: ["orders"],
     queryFn: adminOrders,
+    staleTime: 0,
   });
 
-  const [orders, setOrders] = useState(data?.data?.data);
+  const [orders, setOrders] = useState(data?.data?.data || []);
 
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
 
@@ -25,15 +26,15 @@ const Orders: React.FC = () => {
 
   // Select or deselect all products
   const toggleSelectAll = () => {
-    if (selectedProducts.length === products.length) {
+    if (selectedProducts.length === orders.length) {
       setSelectedProducts([]);
     } else {
-      setSelectedProducts(products.map((product) => product.id));
+      setSelectedProducts(orders.map((product) => product._id));
     }
   };
 
   const handleDelete = (id: string) => {
-    setProducts((prev) => prev.filter((product) => product.id !== id));
+    // setProducts((prev) => prev.filter((product) => product.id !== id));
   };
 
   return (
@@ -68,7 +69,7 @@ const Orders: React.FC = () => {
               <th className=" px-4 py-2">
                 <input
                   type="checkbox"
-                  checked={selectedProducts.length === products.length}
+                  checked={selectedProducts.length === orders?.length}
                   onChange={toggleSelectAll}
                   className="checkbox"
                 />
@@ -84,7 +85,7 @@ const Orders: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {orders?.map((order) => (
+            {orders?.map((order: any) => (
               <tr key={order._id} className="text-black text-lg">
                 {/* Checkbox */}
                 <td className=" px-4 py-2 text-center">
@@ -96,34 +97,47 @@ const Orders: React.FC = () => {
                   />
                 </td>
                 <td>
-                  <Link to={order.orderId}>{order.orderId}</Link>
+                  <Link to={order._id}>{order._id}</Link>
                 </td>
                 {/* Products Name */}
                 <td className=" px-4 py-2">
-                  {order?.products[0] || "products"}
+                  <div className="avatar">
+                    <div className="w-16 rounded">
+                      <img
+                        src={order?.firstProduct?.variantImages[0]?.url}
+                        alt="variant image"
+                      />
+                    </div>
+                  </div>
+                  {/* {order?.firstProduct || "product name"} */}
                 </td>
 
                 {/* date */}
-                <td className=" px-4 py-2">{order.date}</td>
+                <td className=" px-4 py-2">
+                  {new Date(order?.createdAt).toLocaleDateString("en-GB")}
+                </td>
 
                 {/* Category */}
-                <td className=" px-4 py-2">{order.customer}</td>
+                <td className=" px-4 py-2">{order?.userDetails?.username}</td>
 
                 {/* Stock */}
-                <td className=" px-4 py-2">{order.total}</td>
+                <td className=" px-4 py-2">{order?.totalAmount}</td>
 
                 {/* Price */}
-                <td className=" px-4 py-2">{order.gateway}</td>
+                <td className=" px-4 py-2">{order?.paymentGateway}</td>
 
                 {/* Status */}
-                <td className=" px-4 py-2">{order.status}</td>
+                <td className=" px-4 py-2">{order?.status}</td>
 
                 {/* Actions */}
                 <td className=" px-4 py-2">
                   <div className="flex gap-1 ">
-                    <button className="btn btn-sm btn-ghost rounded-full">
+                    <Link
+                      to={`${order?._id}`}
+                      className="btn btn-sm btn-ghost rounded-full"
+                    >
                       <IoEye />
-                    </button>
+                    </Link>
                     <button className="btn btn-sm btn-ghost rounded-full">
                       <MdModeEdit />
                     </button>

@@ -1,30 +1,18 @@
+import { useQuery } from "@tanstack/react-query";
 import React, { useState } from "react";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { IoEye } from "react-icons/io5";
 import { MdModeEdit } from "react-icons/md";
 import { Link } from "react-router-dom";
+import { adminAllUser } from "../../../querys/admin/adminQuery";
 
 const UsersTable: React.FC = () => {
-  const [user, setuser] = useState([
-    {
-      id: "1",
-      name: "uer1",
-      imgurl: "",
-      email: "user@gmail.com",
-      roles: ["user", "admin"],
-      status: "Active",
-      added: "2025-01-10",
-    },
-    {
-      id: "1",
-      name: "ueser 2",
-      imgurl: "",
-      email: "user2@gmail.com",
-      roles: ["user"],
-      status: "Active",
-      added: "2025-01-10",
-    },
-  ]);
+  const { data, isError, isPending, error } = useQuery({
+    queryKey: ["adminUsers"],
+    queryFn: adminAllUser,
+    staleTime: 0,
+  });
+  const [users, setusers] = useState(data?.data?.data || []);
 
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
 
@@ -37,10 +25,10 @@ const UsersTable: React.FC = () => {
 
   // Select or deselect all products
   const toggleSelectAll = () => {
-    if (selectedProducts.length === user.length) {
+    if (selectedProducts.length === users?.length) {
       setSelectedProducts([]);
     } else {
-      setSelectedProducts(user.map((product) => product.id));
+      setSelectedProducts(users?.map((product) => product.id));
     }
   };
 
@@ -80,7 +68,7 @@ const UsersTable: React.FC = () => {
               <th className=" px-4 py-2">
                 <input
                   type="checkbox"
-                  checked={selectedProducts.length === user.length}
+                  checked={selectedProducts.length === users?.length}
                   onChange={toggleSelectAll}
                   className="checkbox"
                 />
@@ -93,14 +81,14 @@ const UsersTable: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {user.map((eachUser) => (
+            {users?.map((eachUser) => (
               <tr key={eachUser.id} className="text-black text-lg">
                 {/* Checkbox */}
                 <td className=" px-4 py-2 text-center">
                   <input
                     type="checkbox"
-                    checked={selectedProducts.includes(eachUser.id)}
-                    onChange={() => toggleSelectProduct(eachUser.id)}
+                    checked={selectedProducts.includes(eachUser?._id)}
+                    onChange={() => toggleSelectProduct(eachUser?._id)}
                     className="checkbox"
                   />
                 </td>
@@ -108,7 +96,7 @@ const UsersTable: React.FC = () => {
                 {/* Product Name */}
                 <td className=" px-4 py-2">
                   <div className="inline-flex gap-2">
-                    <Link to={eachUser.id}>
+                    <Link to={eachUser?._id}>
                       <div className="avatar">
                         <div className="w-14 rounded-full">
                           <img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
@@ -117,8 +105,8 @@ const UsersTable: React.FC = () => {
                     </Link>
 
                     <div className="inline-flex flex-col">
-                      <p>{eachUser.name}</p>
-                      <span>{eachUser.email}</span>
+                      <p>{eachUser?.name}</p>
+                      <span>{eachUser?.email}</span>
                     </div>
                   </div>
                 </td>
@@ -126,17 +114,17 @@ const UsersTable: React.FC = () => {
                 {/* SKU */}
                 <td className=" px-4 py-2">
                   <div className="flex gap-2">
-                    {eachUser.roles.map((role) => (
+                    {eachUser?.roles?.map((role) => (
                       <span className="badge  badge-primary">{role}</span>
                     ))}
                   </div>
                 </td>
 
                 {/* Category */}
-                <td className=" px-4 py-2">{eachUser.status}</td>
+                <td className=" px-4 py-2">{eachUser?.status}</td>
 
                 {/* Stock */}
-                <td className=" px-4 py-2">{eachUser.added}</td>
+                <td className=" px-4 py-2">{eachUser?.added}</td>
 
                 {/* Price */}
 

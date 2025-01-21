@@ -49,8 +49,6 @@ const InitialData = () => {
   });
   //   product effect
   useEffect(() => {
-    // console.log(arivalProduct);
-    // console.log(topProduct);
     if (arivalProduct?.data || topProduct?.data) {
       dispatch(setArivalProducts(arivalProduct?.data));
       dispatch(setTopProducts(topProduct?.data));
