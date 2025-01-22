@@ -24,9 +24,9 @@ const ProductCard = ({ product = {}, style = "", size = "", imgStyle }) => {
       <figure>
         <Link to={`/product/${product._id}`} className="w-full h-full">
           <img
-            src={product.imgurl}
+            src={product?.imgurl || product?.firstVariantImages?.[0]?.url || ""}
             className={cl("rounded-2xl h-56 w-full", imgStyle)}
-            alt="Shoes"
+            alt="cloth"
             onError={(e: SyntheticEvent<HTMLImageElement, ErrorEvent>) => {
               e.target.parentElement.parentElement.parentElement.style.display =
                 "none";

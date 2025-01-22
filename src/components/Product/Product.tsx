@@ -27,11 +27,14 @@ const Product = () => {
   const dispatch = useDispatch();
   const cart = useSelector((store) => store.cart);
   const [productData, setProductData] = useState();
-  const [productVariant, setProductVariant] = useState();
-  const [category, setCatergory] = useState<string>("");
-  const [quantity, setQuantity] = useState<number>(1);
-  const variant = ["red", "green", "black"];
-  const sizes = ["small", "medium", "large", "x-large"];
+  const [productVariant, setProductVariant] = useState([]);
+  const [category, setCatergory] = useState("");
+  const [quantity, setQuantity] = useState(1);
+  const [productColors, setProductsColors] = useState([]);
+  const [sizes, setSizes] = useState([]);
+  const [productImages, setProductImages] = useState([]);
+  const [currentProductImage, setCurrentProductImage] = useState("");
+  const [currentProductVariant, setCurrentProductVariant] = useState({});
   const productExisted = useMemo(() => {
     let haveProduct = cart?.products?.find(
       (ele) => ele?.productId == productData?._id
@@ -67,6 +70,30 @@ const Product = () => {
     }
   }, [data]);
 
+  useEffect(() => {
+    if (productVariant?.length > 0) {
+      for (let eachVariant of productVariant) {
+        setProductsColors((prev) => {
+          if (prev?.includes(eachVariant?.color)) {
+            setProductImages(productVariant?.[0]?.images);
+            return prev;
+          } else {
+            setProductImages(productVariant?.[0]?.images);
+            setCurrentProductImage(productVariant?.[0]?.images?.[0]?.url);
+            return [...prev, eachVariant?.color];
+          }
+        });
+        setSizes((prev) => {
+          if (prev?.includes(eachVariant?.size)) {
+            return prev;
+          } else {
+            return [...prev, eachVariant?.size];
+          }
+        });
+      }
+    }
+  }, [productVariant]);
+
   return (
     <>
       <ScrollRestoration />
@@ -87,19 +114,27 @@ const Product = () => {
               </ul>
             </div>
             <div className="flex py-2 space-x-5">
-              <div className="imgCon space-x-3 flex basis-1/2">
+              <div className="imgCon gap-5 flex basis-1/2">
                 {/* map all images */}
-                <div className="flex-col gap-2">
-                  <img
-                    src={productData?.imgurl || imgUrl}
-                    alt="product image"
-                    className={cl(style.product__img__slide)}
-                  />
+                <div className="flex flex-col gap-6">
+                  {productImages?.map((img) => (
+                    <img
+                      src={img?.url || imgUrl}
+                      alt="product image"
+                      className={cl(
+                        style.product__img__slide,
+                        "hover:scale-110 duration-300"
+                      )}
+                      onClick={() => {
+                        setCurrentProductImage(img?.url);
+                      }}
+                    />
+                  ))}
                 </div>
                 {/* show current image */}
-                <div className="box  w-full h-full ">
+                <div className="box  w-full h-full overflow-hidden">
                   <img
-                    src={productData?.imgurl || imgUrl}
+                    src={currentProductImage || imgUrl}
                     alt="product image"
                     className={cl(style.product__img__hero)}
                   />
@@ -137,11 +172,14 @@ const Product = () => {
                 <div className="flex flex-col py-3 gap-3">
                   <p>Select Color</p>
                   <div className="flex space-x-3">
-                    {productVariant?.map((ele) => (
-                      <button
-                        style={{ background: ele }}
-                        className={` rounded-full p-4`}
-                      ></button>
+                    {productColors?.map((ele) => (
+                      <button className="flex gap-1 items-center outline outline-1 p-1 rounded-badge">
+                        <span
+                          style={{ background: ele }}
+                          className={` rounded-full p-3`}
+                        ></span>
+                        <span className="capitalize">{ele}</span>
+                      </button>
                     ))}
                   </div>
                 </div>
