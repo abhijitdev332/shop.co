@@ -105,7 +105,7 @@ const AllProductsTable = () => {
 
                 {/* Category */}
                 <td className=" px-4 py-2">
-                  {product?.categoryDetails[0]?.categoryName}
+                  {product?.categoryDetails?.[0]?.categoryName || "category"}
                 </td>
 
                 {/* Stock */}

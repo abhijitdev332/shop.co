@@ -1,14 +1,16 @@
-import React, { useRef, useState } from "react";
-import { data, Link } from "react-router-dom";
+import React, { useEffect, useRef, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { productModalScheama } from "./schema";
 import { ZodError } from "zod";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { newProduct } from "../../../querys/productQuery";
-import { newVariant } from "../../../querys/variant";
+import { multipleNewVariant, uploadImages } from "../../../querys/variant";
 
 const ProductAddPage = () => {
+  const QueryClient = useQueryClient();
+  const navigate = useNavigate();
   const { category, subCategory } = useSelector((store) => store.category);
   const [productDetailsState, setProductDetailsState] = useState({
     name: "",
@@ -91,62 +93,88 @@ const ProductAddPage = () => {
   const handleProductMoreData = (data) => {
     setProductAboutDetails({ ...data });
   };
-  const [newProductData, setNewProductData] = useState({});
-  const { mutateAsync: productMutate, error: productErr } = useMutation({
+  const { mutateAsync: productMutate, isError: productErr } = useMutation({
     mutationKey: ["productAdd"],
     mutationFn: (data) => newProduct(data),
-    onSettled: (data) => {
-      setNewProductData({ ...data?.data?.data });
-    },
   });
-  const { mutateAsync: variantMutation, error: variantErr } = useMutation({
+  const { mutateAsync: variantMutation, isError: variantErr } = useMutation({
     mutationKey: ["variantAdd"],
-    mutationFn: (data) => newVariant(data),
-    onSettled: (data) => {
-      console.log(data);
+    mutationFn: (data) => multipleNewVariant(data),
+    onSettled: () => {
+      QueryClient.invalidateQueries("products");
     },
   });
-  const handleProductAdd = async () => {
-    let sendData = {
-      ...productDetailsState,
-      productDetails: { ...productAboutDetails },
-    };
+  const { mutateAsync: imagesMutation, isError: imagesErr } = useMutation({
+    mutationKey: ["imagesOfVariant"],
+    mutationFn: (data) => uploadImages(data),
+  });
+  const mapAndUploadImages = async (images) => {
+    if (images?.length <= 0) {
+      return toast.error("Please upload atleast one image");
+    }
+    const formData = new FormData();
 
-    // console.log(sendData);
-    //  let productres=await productMutate(sendData)
-    //  let productId=productres?.data?.data?._id
-    const transformedVariants = [];
-    variants.forEach((variant) => {
-      variant.sizes.forEach((size) => {
-        transformedVariants.push({
-          productId: "325087shdfgpsy7gd", // Link the variant to the product
-          color: variant.color,
-          size,
-          sellPrice: variant.salePrice,
-          basePrice: variant.basePrice,
-          stock: variant.stock,
-          sku: `${variant.color} ${size}`,
-          images: [
-            {
-              public_id: `${variant.color} ${size}`,
-              url: "https://images.pexels.com/photos/842811/pexels-photo-842811.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
-            },
-          ],
-          // Assuming images are linked to the variant
-        });
-      });
+    // Append files to FormData
+    images.forEach((file) => {
+      formData.append("images", file);
     });
-    // let sendVariants = variants.map((va) => ({
-    //   ...va,
-    //   images:[{
-    //     public_id:`${va.color}${va.} `
-    //     url:"https://images.pexels.com/photos/842811/pexels-photo-842811.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
-    //   }]
-    //   // productId:productId
-    // }));
-    console.log(transformedVariants);
-    // let variationRes=await variantMutation(sendVariants)
+
+    try {
+      // upload images through from data
+      let resData = await imagesMutation(formData);
+      if (resData.status == 201) {
+        return resData?.data?.data;
+      }
+    } catch (err) {
+      toast.error(err?.response?.data?.message);
+    }
   };
+  const handleProductAdd = async () => {
+    try {
+      // configured product details
+      let sendData = {
+        ...productDetailsState,
+        productDetails: { ...productAboutDetails },
+      };
+      // console.log(sendData);
+      let productres = await productMutate(sendData);
+      let { _id, sku } = productres?.data?.data;
+      // configured variant details
+      const transformedVariants = [];
+      // loop over variants
+      for (let variant of variants) {
+        let imageUrls = await mapAndUploadImages(variant?.images);
+        variant.sizes.forEach((size) => {
+          transformedVariants.push({
+            productId: _id, // Link the variant to the product
+            color: variant.color,
+            size,
+            sellPrice: variant.salePrice,
+            basePrice: variant.basePrice,
+            stock: variant.stock,
+            sku: `${sku}-${variant.color}-${size}`,
+            images: imageUrls?.map((img, index) => ({
+              public_id: img.publicId || `image_${index}`, // Use `public_id` or a fallback
+              url: img.url, // Uploaded image URL
+            })),
+          });
+        });
+      }
+
+      let variationRes = await variantMutation(transformedVariants);
+      if (variationRes.status == 201) {
+        toast.success("Product Created Successfully");
+        navigate(-1);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  useEffect(() => {
+    if (productErr || variantErr || imagesErr) {
+      toast.error("Something went wrong Please try after someTime!!");
+    }
+  }, [productErr, variantErr, imagesErr]);
 
   return (
     <section>
