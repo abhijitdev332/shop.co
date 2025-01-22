@@ -8,12 +8,7 @@ import style from "./product.module.scss";
 import { FaMinus, FaPlus } from "react-icons/fa";
 import useFetch from "../../hooks/useFetch";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  addProduct,
-  addQuantity,
-  removeProduct,
-  removeQuantity,
-} from "../../services/store/cart/cartSlice";
+import { addProduct, removeProduct } from "../../services/store/cart/cartSlice";
 
 // universal
 const imgUrl =
@@ -23,10 +18,14 @@ const Product = () => {
   const { data, isLoading, isError } = useFetch({
     url: `/product/${id}`,
     queryKey: ["product", { id }],
+    options: {
+      staleTime: 1000 * 60 * 5, // Cache the result for 5 minutes
+      refetchOnWindowFocus: false, // Prevent refetching on window focus
+    },
   });
   const dispatch = useDispatch();
   const cart = useSelector((store) => store.cart);
-  const [productData, setProductData] = useState();
+  const [productData, setProductData] = useState(null);
   const [productVariant, setProductVariant] = useState([]);
   const [category, setCatergory] = useState("");
   const [quantity, setQuantity] = useState(1);
@@ -35,12 +34,14 @@ const Product = () => {
   const [productImages, setProductImages] = useState([]);
   const [currentProductImage, setCurrentProductImage] = useState("");
   const [currentProductVariant, setCurrentProductVariant] = useState({});
+  const [selectedProductSize, setSelectedProductSize] = useState("");
   const productExisted = useMemo(() => {
     let haveProduct = cart?.products?.find(
       (ele) => ele?.productId == productData?._id
     );
     return !!haveProduct;
   }, [productData, cart]);
+
   const handleCartAdd = () => {
     dispatch(
       addProduct({
@@ -64,21 +65,22 @@ const Product = () => {
   // effect on data changes
 
   useEffect(() => {
-    if (data) {
-      setProductData(data?.data?.matchedProduct);
-      setProductVariant(data?.data?.productVariants);
+    if (data?.data) {
+      setProductData(data?.data?.matchedProduct || null);
+      setProductVariant(data?.data?.productVariants || []);
     }
   }, [data]);
 
   useEffect(() => {
     if (productVariant?.length > 0) {
+      setCurrentProductVariant(productVariant?.[0]?.color);
+      setProductImages(productVariant?.[0]?.images);
       for (let eachVariant of productVariant) {
         setProductsColors((prev) => {
           if (prev?.includes(eachVariant?.color)) {
             setProductImages(productVariant?.[0]?.images);
             return prev;
           } else {
-            setProductImages(productVariant?.[0]?.images);
             setCurrentProductImage(productVariant?.[0]?.images?.[0]?.url);
             return [...prev, eachVariant?.color];
           }
@@ -93,6 +95,25 @@ const Product = () => {
       }
     }
   }, [productVariant]);
+
+  useEffect(() => {
+    setSizes([]);
+    for (let eachVariant of productVariant) {
+      if (eachVariant?.color == currentProductVariant) {
+        setProductImages(eachVariant?.images);
+        setSizes((prev) => {
+          if (prev?.includes(eachVariant?.size)) {
+            return prev;
+          } else {
+            return [...prev, eachVariant?.size];
+          }
+        });
+      }
+    }
+  }, [currentProductVariant]);
+  useEffect(() => {
+    setCurrentProductImage(productImages?.[0]?.url);
+  }, [productImages]);
 
   return (
     <>
@@ -173,7 +194,15 @@ const Product = () => {
                   <p>Select Color</p>
                   <div className="flex space-x-3">
                     {productColors?.map((ele) => (
-                      <button className="flex gap-1 items-center outline outline-1 p-1 rounded-badge">
+                      <button
+                        className={cl(
+                          "flex gap-1 items-center outline outline-1 p-1 rounded-btn brightness-50	",
+                          ele == currentProductVariant ? "scale-110" : ""
+                        )}
+                        onClick={() => {
+                          setCurrentProductVariant(ele);
+                        }}
+                      >
                         <span
                           style={{ background: ele }}
                           className={` rounded-full p-3`}
@@ -189,7 +218,15 @@ const Product = () => {
                   <p>Choose Size</p>
                   <div className="flex space-x-3">
                     {sizes.map((ele) => (
-                      <button className="px-3 py-2 rounded-badge  bg-gray-200 capitalize">
+                      <button
+                        className={cl(
+                          "px-3 py-2 rounded-badge  bg-gray-200 capitalize",
+                          ele == selectedProductSize ? "bg-primary" : ""
+                        )}
+                        onClick={() => {
+                          setSelectedProductSize(ele);
+                        }}
+                      >
                         {ele}
                       </button>
                     ))}
@@ -275,7 +312,10 @@ const Product = () => {
     </>
   );
 };
-function RealativeProducts({ products = [], title = "You might also like" }) {
+export function RealativeProducts({
+  products = [],
+  title = "You might also like",
+}) {
   return (
     <section>
       <div className="wrapper py-10 px-5">
@@ -302,7 +342,7 @@ function RealativeProducts({ products = [], title = "You might also like" }) {
     </section>
   );
 }
-function ProductReviews({ reviews = [], totalReviews = 0 }) {
+export function ProductReviews({ reviews = [], totalReviews = 0 }) {
   const modalRef = useRef(null);
   return (
     <>
@@ -374,7 +414,7 @@ function ProductReviews({ reviews = [], totalReviews = 0 }) {
     </>
   );
 }
-function ProductFAQS({ questions = [] }) {
+export function ProductFAQS({ questions = [] }) {
   return (
     <section>
       <div className="wrapper flex flex-col gap-3">
@@ -409,7 +449,7 @@ function ProductFAQS({ questions = [] }) {
     </section>
   );
 }
-function ProductDetails({ details = {} }) {
+export function ProductDetails({ details = {} }) {
   delete details?._id;
   return (
     <section>

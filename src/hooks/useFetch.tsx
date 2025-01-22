@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { PrivateAxios } from "../services/api/api"; // Adjust the path as needed
 
-const useFetch = ({ url, queryKey, enabled = true, params = {} }) => {
+const useFetch = ({ url, queryKey, enabled = true, params = {}, options }) => {
   const { data, isLoading, isError, error } = useQuery({
     queryKey: [...queryKey],
     queryFn: async () => {
@@ -10,6 +10,7 @@ const useFetch = ({ url, queryKey, enabled = true, params = {} }) => {
     },
     enabled,
     retry: true, // Prevent retries, adjust if needed
+    ...options,
   });
 
   return { data, isLoading, isError, error };

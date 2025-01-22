@@ -9,6 +9,7 @@ import Pagintaion from "./pagination/Pagination";
 import CategoryProduct from "./productByCategory/CategoryProduct";
 import Category from "./category/Category";
 import Logout from "./logout/Logout";
+import NewProductDetails from "./Product/NewCodeProduct";
 export {
   Hero,
   Product,
@@ -21,4 +22,5 @@ export {
   CategoryProduct,
   Category,
   Logout,
+  NewProductDetails,
 };
