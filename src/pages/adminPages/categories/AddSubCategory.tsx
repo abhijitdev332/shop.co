@@ -1,14 +1,17 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { createCategory } from "../../../querys/categoryQuery";
+import { createSubCategory } from "../../../querys/categoryQuery";
 import { toast } from "react-toastify";
 import { LoaderBtn } from "../../../components/component";
+import { useSelector } from "react-redux";
 
-const AddCategory = () => {
+const AddSubCategory = () => {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
-  const [categoryName, setCategoryName] = useState<string>("");
+  const { category } = useSelector((store) => store.category);
+  const [subCategoryName, setSubCategoryName] = useState<string>("");
+  const [categoryId, setCategoryId] = useState("");
   const [image, setImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string>("");
 
@@ -24,23 +27,27 @@ const AddCategory = () => {
     error,
     isPending,
   } = useMutation({
-    mutationKey: ["categoryMutate"],
-    mutationFn: (data) => createCategory(data),
-    onSuccess() {
-      setCategoryName("");
+    mutationKey: ["subcategoryMutate"],
+    mutationFn: (data) => createSubCategory(data),
+    onSuccess(data) {
+      setSubCategoryName("");
       setImage(null);
       setImagePreview("");
-      navigate(-1), queryClient.invalidateQueries("AdminCategory");
+      toast.success(data?.data?.message);
+      navigate(-1), queryClient.invalidateQueries(["AdminSubCategory"]);
+      queryClient.invalidateQueries(["subCategory"]);
     },
   });
+
   const handleSubmit = () => {
-    if (!categoryName || !image) {
+    if (!subCategoryName || !image || !categoryId) {
       toast.info("Please fill all the fields and upload an image.");
       return;
     }
     let formData = new FormData();
     formData.append("image", image);
-    formData.append("name", JSON.stringify(categoryName));
+    formData.append("name", JSON.stringify(subCategoryName));
+    formData.append("categoryId", JSON.stringify(categoryId));
     // Simulate saving the category
     categoryMutate(formData);
   };
@@ -54,7 +61,7 @@ const AddCategory = () => {
     <div className="p-6">
       <div className="flex">
         <div className=" mb-6">
-          <p className="text-gray-800 text-2xl font-bold">All Category</p>
+          <p className="text-gray-800 text-2xl font-bold">All Categories</p>
           {/* breadcrumbs */}
           <div className="breadcrumbs text-sm">
             <ul>
@@ -62,7 +69,7 @@ const AddCategory = () => {
                 <Link to={"/Admin"}>Admin</Link>
               </li>
               <li>
-                <Link to={-1}>Categories</Link>
+                <Link to={-1}>Sub-Categories</Link>
               </li>
               <li>New</li>
             </ul>
@@ -75,7 +82,7 @@ const AddCategory = () => {
       <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
         {/* Left Card - Image Upload */}
         <div className="bg-white p-6  rounded-lg shadow-md flex flex-col items-center">
-          <h3 className="text-lg font-semibold mb-4">Category Image</h3>
+          <h3 className="text-lg font-semibold mb-4">Sub Category Image</h3>
           <div className="w-48 h-48 border rounded-lg overflow-hidden flex ">
             {imagePreview ? (
               <img
@@ -106,34 +113,43 @@ const AddCategory = () => {
           <h3 className="text-lg font-semibold mb-4">Category Details</h3>
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700">
-              Category Name
+              Sub Category Name
             </label>
             <input
               type="text"
-              value={categoryName}
-              onChange={(e) => setCategoryName(e.target.value)}
-              placeholder="Enter category name"
-              className="mt-2  bg-transparent input input-bordered"
+              value={subCategoryName}
+              onChange={(e) => setSubCategoryName(e.target.value)}
+              placeholder="Enter Sub-category"
+              className="mt-2 bg-transparent input input-bordered max-w-sm"
             />
           </div>
-          {/* <div>
+          <div>
             <label className="block text-sm font-medium text-gray-700">
-              Description
+              Category
             </label>
-            <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Enter category description"
-              className="mt-2 px-4 py-2 bg-transparent border rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-              rows={6}
-            />
-          </div> */}
+            <select
+              value={categoryId}
+              className=" mt-2 bg-transparent select select-bordered"
+              onChange={(e) => {
+                setCategoryId(e.target.value);
+              }}
+            >
+              <option value="" disabled defaultChecked>
+                Please select a category
+              </option>
+              {category?.map((ele) => (
+                <option key={ele?._id} value={ele?._id}>
+                  {ele?.categoryName}
+                </option>
+              ))}
+            </select>
+          </div>
           <LoaderBtn
             pending={isPending}
             handleClick={handleSubmit}
-            style={"mt-6 px-6 py-2  text-white rounded-lg transition"}
+            style={"mt-6 bg-gray-400 outline-0  rounded-lg transition"}
           >
-            Save Category
+            Save Sub Category
           </LoaderBtn>
         </div>
       </div>
@@ -141,4 +157,4 @@ const AddCategory = () => {
   );
 };
 
-export default AddCategory;
+export default AddSubCategory;

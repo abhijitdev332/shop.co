@@ -9,6 +9,7 @@ import AddUser from "./users/AddUser";
 import ViewUser from "./users/ViewUser.tsx";
 import AllCategory from "./categories/Categories.tsx";
 import AddCategory from "./categories/AddCategory.tsx";
+import AddSubCategory from "./categories/AddSubCategory.tsx";
 import CategoryProducts from "./categories/CategoryProducts.tsx";
 import AdminPagination from "./pagination/Pagination.tsx";
 export {
@@ -25,4 +26,5 @@ export {
   ViewUser,
   CategoryProducts,
   AdminPagination,
+  AddSubCategory,
 };

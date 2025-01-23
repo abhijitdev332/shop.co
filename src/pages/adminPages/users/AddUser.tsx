@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
+import { object, z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, useNavigate } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { register as registerquery } from "../../../querys/authQuery";
 import { toast } from "react-toastify";
+import { createUser } from "../../../querys/userQuery";
+import { LoaderBtn } from "../../../components/component";
 
 // Validation schema using Zod
 const userSchema = z.object({
@@ -51,21 +53,14 @@ const UserAddPage = () => {
     const files = e.target.files;
     if (files && files.length > 0) {
       setImagePreview(URL.createObjectURL(files[0]));
-      setValue("profileImage", files); // Update form value for profileImage
+      setValue("profileImage", files[0]); // Update form value for profileImage
     }
   };
-  const { mutate, isPending, isError, error } = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationKey: ["user", "new"],
-    mutationFn: (data) => {
-      let reprishedData = {
-        name: data?.displayName,
-        email: data?.email,
-        password: data?.password,
-        role: data?.role,
-      };
-      return registerquery(reprishedData);
-    },
-    onSuccess: () => {
+    mutationFn: (data) => createUser(data),
+    onSuccess: (data) => {
+      toast.success(data?.data?.message);
       queryClient.invalidateQueries("adminUsers");
       navigate(-1);
     },
@@ -80,12 +75,19 @@ const UserAddPage = () => {
     //   password: data.password,
     //   profileImage: data.profileImage[0], // Access the uploaded file
     // });
+    let spread = structuredClone(data);
+    delete spread.profileImage;
 
-    try {
-      mutate(data);
-    } catch (err) {
-      toast.error(err?.response?.data?.msg);
-    }
+    let formData = new FormData();
+    formData.append("image", profileImage);
+    formData.append("data", JSON.stringify(spread));
+    // formData.append("password", JSON.stringify(data?.password));
+    // formData.append("role", JSON.stringify(data?.role));
+    // formData.append("phone", JSON.stringify(data?.phoneNumber));
+    // formData.append("name", JSON.stringify(data?.displayName));
+    // formData.append("email", JSON.stringify(data?.email));
+
+    mutate(formData);
   };
 
   return (
@@ -93,6 +95,7 @@ const UserAddPage = () => {
       <div className="flex">
         <div className=" mb-6">
           <p className="text-gray-800 text-2xl font-bold">All Products</p>
+          {/* breadcumbs */}
           <div className="breadcrumbs text-sm">
             <ul>
               <li>
@@ -104,13 +107,10 @@ const UserAddPage = () => {
               <li>New User</li>
             </ul>
           </div>
+          {/* end breadcrumbs */}
         </div>
-        {/* <div className=" ms-auto flex">
-          <Link to={"add"}>
-            <button className="btn btn-primary">Add User</button>
-          </Link>
-        </div> */}
       </div>
+      {/* form fleids */}
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="grid grid-cols-1 md:grid-cols-2 gap-6"
@@ -126,10 +126,16 @@ const UserAddPage = () => {
                 className="object-cover w-full h-full"
               />
             ) : (
-              <span className="text-gray-500">No Image Uploaded</span>
+              <label
+                htmlFor="file"
+                className="w-full h-full flex justify-center items-center"
+              >
+                <span className="text-gray-500">No Image Uploaded</span>
+              </label>
             )}
           </div>
           <input
+            id="file"
             type="file"
             accept="image/*"
             {...register("profileImage")}
@@ -258,9 +264,13 @@ const UserAddPage = () => {
           </div>
 
           {/* Submit Button */}
-          <button type="submit" className="mt-6 btn  btn-netural transition">
+          <LoaderBtn
+            pending={isPending}
+            others={{ type: "submit" }}
+            style="mt-6 btn  btn-netural transition"
+          >
             Save User
-          </button>
+          </LoaderBtn>
         </div>
       </form>
     </div>

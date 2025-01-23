@@ -32,7 +32,10 @@ let getProductByCategory = async (query) => {
 };
 
 let newProduct = async (productData) => {
-  return PrivateAxios.post("/product/create", productData);
+  return await PrivateAxios.post("/product/create", productData);
+};
+let deleteProduct = async (id) => {
+  return await PrivateAxios.delete(`/product/remove/${id}`);
 };
 
 export {
@@ -42,4 +45,5 @@ export {
   getAllproducts,
   getProductByCategory,
   newProduct,
+  deleteProduct,
 };

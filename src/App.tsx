@@ -34,6 +34,7 @@ import {
   ViewOrder,
   ViewUser,
   CategoryProducts,
+  AddSubCategory,
 } from "./pages/adminPages/adminPages";
 
 // lazy loadings
@@ -85,11 +86,13 @@ const router = createBrowserRouter(
         <Route path="category" element={<AllCategory />} />
         <Route path="category/add" element={<AddCategory />} />
         <Route path="category/:id" element={<CategoryProducts />} />
+        <Route path="subcategory/add" element={<AddSubCategory />} />
+        <Route path="subcategory/:id" element={<CategoryProducts />} />
       </Route>
       <Route path="/payment" element={<PaymentPage />} />
       <Route path="/success" element={<SuccessPage />} />
       <Route path="/declined" element={<DeclinedPage />} />
-      <Route path="*" element={<ErrorLayout />} />
+      <Route path="/*" element={<ErrorLayout />} />
     </Route>
   )
 );
