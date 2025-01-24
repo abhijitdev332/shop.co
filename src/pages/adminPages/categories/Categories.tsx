@@ -89,6 +89,7 @@ function CategoryTable() {
   const { data } = useQuery({
     queryKey: ["AdminCategory"],
     queryFn: adminCategories,
+    refetchOnWindowFocus: true,
   });
   let catagories = data?.data?.data;
   const queryClient = useQueryClient();

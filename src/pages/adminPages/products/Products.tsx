@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import React, { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { IoEye } from "react-icons/io5";
 import { MdModeEdit } from "react-icons/md";
@@ -13,6 +13,7 @@ const AllProductsTable = () => {
   const { data, isError, error, isSuccess } = useQuery({
     queryKey: ["adminproducts"],
     queryFn: adminProduct,
+    refetchOnWindowFocus: true,
   });
   const products = data?.data?.data;
   const firstVariant = data?.data?.data?.firstVariant;
