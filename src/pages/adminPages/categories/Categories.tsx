@@ -89,7 +89,6 @@ function CategoryTable() {
   const { data } = useQuery({
     queryKey: ["AdminCategory"],
     queryFn: adminCategories,
-    refetchOnWindowFocus: true,
   });
   let catagories = data?.data?.data;
   const queryClient = useQueryClient();
@@ -279,7 +278,6 @@ function SubCategoryTable() {
   const { data } = useQuery({
     queryKey: ["AdminSubCategory"],
     queryFn: getSubsCategory,
-    refetchOnWindowFocus: true,
   });
   let catagories = data?.data?.data;
   const queryClient = useQueryClient();

@@ -13,7 +13,6 @@ const AllProductsTable = () => {
   const { data, isError, error, isSuccess } = useQuery({
     queryKey: ["adminproducts"],
     queryFn: adminProduct,
-    refetchOnWindowFocus: true,
   });
   const products = data?.data?.data;
   const firstVariant = data?.data?.data?.firstVariant;

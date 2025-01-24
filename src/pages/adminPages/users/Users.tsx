@@ -13,7 +13,6 @@ const UsersTable = () => {
   const { data } = useQuery({
     queryKey: ["adminUsers"],
     queryFn: adminAllUser,
-    refetchOnWindowFocus: true,
   });
   const users = data?.data?.data;
   const queryClient = useQueryClient();
