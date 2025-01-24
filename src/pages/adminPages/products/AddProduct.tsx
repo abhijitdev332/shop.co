@@ -7,6 +7,8 @@ import { useSelector } from "react-redux";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { newProduct } from "../../../querys/productQuery";
 import { multipleNewVariant, uploadImages } from "../../../querys/variant";
+import { RiLoopLeftLine } from "react-icons/ri";
+import { LoaderBtn } from "../../../components/component";
 
 const ProductAddPage = () => {
   const QueryClient = useQueryClient();
@@ -34,6 +36,13 @@ const ProductAddPage = () => {
   ]);
 
   const detailsModalRef = useRef(null);
+  const randomSku = () => {
+    let random = Math.floor(100000 + Math.random() * 900000);
+    setProductDetailsState((prev) => ({
+      ...prev,
+      sku: random,
+    }));
+  };
   const handleProductDetailsChange = (ev) => {
     try {
       setProductDetailsState((prev) => ({
@@ -97,7 +106,11 @@ const ProductAddPage = () => {
     mutationKey: ["productAdd"],
     mutationFn: (data) => newProduct(data),
   });
-  const { mutateAsync: variantMutation, isError: variantErr } = useMutation({
+  const {
+    mutateAsync: variantMutation,
+    isPending,
+    isError: variantErr,
+  } = useMutation({
     mutationKey: ["variantAdd"],
     mutationFn: (data) => multipleNewVariant(data),
     onSettled: () => {
@@ -246,6 +259,15 @@ const ProductAddPage = () => {
                     onChange={handleProductDetailsChange}
                     className="mt-2 bg-transparent input input-bordered w-full max-w-xs"
                   />
+                  <button
+                    className="flex btn btn-sm btn-ghost mt-2 gap-1 items-center font-medium"
+                    onClick={randomSku}
+                  >
+                    <span>
+                      <RiLoopLeftLine size={20} />
+                    </span>
+                    <span>Genarate Random</span>
+                  </button>
                 </div>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -498,12 +520,19 @@ const ProductAddPage = () => {
 
           {/* Save Button */}
           <div className="mt-6">
-            <button
-              className="px-6 py-2 bg-neutral text-white rounded-lg transition"
-              onClick={handleProductAdd}
+            <LoaderBtn
+              pending={isPending}
+              handleClick={handleProductAdd}
+              style="text-white"
             >
               Save Product
-            </button>
+            </LoaderBtn>
+            {/* <button
+              className="px-6 py-2 "
+              onClick={handleProductAdd}
+            >
+       
+            </button> */}
           </div>
         </div>
       </div>

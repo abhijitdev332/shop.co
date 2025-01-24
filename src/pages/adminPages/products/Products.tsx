@@ -15,6 +15,7 @@ const AllProductsTable = () => {
     queryFn: adminProduct,
   });
   const products = data?.data?.data;
+  const firstVariant = data?.data?.data?.firstVariant;
   const queryClient = useQueryClient();
   // const [products, setProducts] = useState(data?.data?.data || []);
 
@@ -83,15 +84,17 @@ const AllProductsTable = () => {
           <table className="w-full rounded">
             <thead className="bg-gray-100 text-black">
               <tr>
-                <th className=" px-4 py-2">
-                  <input
-                    type="checkbox"
-                    checked={selectedProducts.length === products?.length}
-                    onChange={toggleSelectAll}
-                    className="checkbox"
-                  />
+                <th className=" px-4 py-2 text-left">
+                  <div className="flex gap-2">
+                    <input
+                      type="checkbox"
+                      checked={selectedProducts.length === products?.length}
+                      onChange={toggleSelectAll}
+                      className="checkbox"
+                    />
+                    <span>Product</span>
+                  </div>
                 </th>
-                <th className=" px-4 py-2 text-left">Product</th>
                 <th className=" px-4 py-2 text-left">SKU</th>
                 <th className=" px-4 py-2 text-left">Category</th>
                 <th className=" px-4 py-2 text-left">Stock</th>
@@ -105,17 +108,39 @@ const AllProductsTable = () => {
               {products?.map((product: any) => (
                 <tr key={product?._id} className="text-black text-lg">
                   {/* Checkbox */}
-                  <td className=" px-4 py-2 text-center">
-                    <input
-                      type="checkbox"
-                      checked={selectedProducts.includes(product?._id)}
-                      onChange={() => toggleSelectProduct(product?._id)}
-                      className="checkbox"
-                    />
-                  </td>
 
                   {/* Product Name */}
-                  <td className=" px-4 py-2">{product?.name}</td>
+                  <td className=" px-4 py-2">
+                    <div className="flex gap-2 items-center">
+                      <input
+                        type="checkbox"
+                        checked={selectedProducts.includes(product?._id)}
+                        onChange={() => toggleSelectProduct(product?._id)}
+                        className="checkbox"
+                      />
+                      <div className="flex space-x-3">
+                        <div className="avatar">
+                          <div className="w-12 rounded-full">
+                            <img
+                              src={
+                                product?.firstVariant?.images?.[0]?.url ||
+                                "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
+                              }
+                              alt="Tailwind-CSS-Avatar-component"
+                            />
+                          </div>
+                        </div>
+                        <p className="inline-flex flex-col">
+                          <span className="capitalize font-medium text-lg">
+                            {product?.name}
+                          </span>
+                          <span className="text-sm text-gray-400">
+                            {product?.totalVariants} variants
+                          </span>
+                        </p>
+                      </div>
+                    </div>
+                  </td>
 
                   {/* SKU */}
                   <td className=" px-4 py-2">{product?.sku}</td>

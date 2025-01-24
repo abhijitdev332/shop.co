@@ -36,17 +36,19 @@ const CartProduct = ({ product }) => {
           <img
             src={product?.imgurl}
             alt="products image"
-            className="w-28 h-28 rounded-lg"
+            className="w-24 h-24  rounded-lg"
           />
           <div className="flex flex-col px-3">
-            <h4 className="font-semibold text-xl">{product?.name}</h4>
+            <h4 className="font-semibold text-xl capitalize">
+              {product?.name}
+            </h4>
             <p>
               <span className="font-medium">Size:</span>
-              <span className="text-sm">Large</span>
+              <span className="text-sm">{product?.size}</span>
             </p>
             <p>
               <span className="font-medium">Color:</span>
-              <span className="text-sm">White</span>
+              <span className="text-sm">{product?.color}</span>
             </p>
             <p className="flex gap-0  items-center">
               <span>

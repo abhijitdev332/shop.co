@@ -140,15 +140,17 @@ function CategoryTable() {
           <table className="w-full rounded">
             <thead className="bg-gray-100 text-black">
               <tr>
-                <th className=" px-4 py-2">
-                  <input
-                    type="checkbox"
-                    checked={selectedProducts?.length === catagories?.length}
-                    onChange={toggleSelectAll}
-                    className="checkbox"
-                  />
+                <th className=" px-4 py-2 text-left">
+                  <div className="flex gap-2">
+                    <input
+                      type="checkbox"
+                      checked={selectedProducts?.length === catagories?.length}
+                      onChange={toggleSelectAll}
+                      className="checkbox"
+                    />
+                    <span>Category</span>
+                  </div>
                 </th>
-                <th className=" px-4 py-2 text-left">Category</th>
                 <th className=" px-4 py-2 text-left">Sales</th>
                 <th className=" px-4 py-2 text-left">Stock</th>
                 <th className=" px-4 py-2 text-left">Added</th>
@@ -158,18 +160,31 @@ function CategoryTable() {
             <tbody>
               {catagories?.map((cata) => (
                 <tr key={cata?._id} className="text-black text-lg">
-                  {/* Checkbox */}
-                  <td className=" px-4 py-2 text-center">
-                    <input
-                      type="checkbox"
-                      checked={selectedProducts?.includes(cata?._id)}
-                      onChange={() => toggleSelectProduct(cata?._id)}
-                      className="checkbox"
-                    />
-                  </td>
-
                   {/* Product Name */}
-                  <td className=" px-4 py-2">{cata?.categoryName}</td>
+                  <td className=" px-4 py-2">
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={selectedProducts?.includes(cata?._id)}
+                        onChange={() => toggleSelectProduct(cata?._id)}
+                        className="checkbox"
+                      />
+                      <div className="avatar">
+                        <div className="w-12 rounded-full">
+                          <img
+                            src={
+                              cata?.categoryImage ||
+                              "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
+                            }
+                          />
+                        </div>
+                      </div>
+
+                      <p className="capitalize  font-medium">
+                        {cata?.categoryName}
+                      </p>
+                    </div>
+                  </td>
 
                   {/* SKU */}
                   <td className=" px-4 py-2">{cata?.totalSales}</td>
@@ -316,16 +331,17 @@ function SubCategoryTable() {
             <thead className="bg-gray-100 text-black">
               <tr>
                 <th className=" px-4 py-2">
-                  <input
-                    type="checkbox"
-                    checked={selectedProducts?.length === catagories?.length}
-                    onChange={toggleSelectAll}
-                    className="checkbox"
-                  />
+                  <div className="flex gap-2">
+                    <input
+                      type="checkbox"
+                      checked={selectedProducts?.length === catagories?.length}
+                      onChange={toggleSelectAll}
+                      className="checkbox"
+                    />
+
+                    <span>Category</span>
+                  </div>
                 </th>
-                <th className=" px-4 py-2 text-left">Category</th>
-                {/* <th className=" px-4 py-2 text-left">Sales</th>
-                <th className=" px-4 py-2 text-left">Stock</th> */}
                 <th className=" px-4 py-2 text-left">Added</th>
                 <th className=" px-4 py-2 text-left">Actions</th>
               </tr>
@@ -333,32 +349,28 @@ function SubCategoryTable() {
             <tbody>
               {catagories?.map((cata) => (
                 <tr key={cata?._id} className="text-black text-lg">
-                  {/* Checkbox */}
-                  <td className=" px-4 py-2 text-center">
-                    <input
-                      type="checkbox"
-                      checked={selectedProducts?.includes(cata?._id)}
-                      onChange={() => toggleSelectProduct(cata?._id)}
-                      className="checkbox"
-                    />
-                  </td>
                   {/* Product Name */}
                   <td className=" px-4 py-2">
-                    <div className="flex  items-center"></div>
-                    <div className="avatar space-x-2">
-                      <div className="w-10 rounded-xl">
-                        <img src={cata?.subCategoryImage} />
+                    <div className="flex gap-2 items-center">
+                      <input
+                        type="checkbox"
+                        checked={selectedProducts?.includes(cata?._id)}
+                        onChange={() => toggleSelectProduct(cata?._id)}
+                        className="checkbox"
+                      />
+
+                      <div className="flex  items-center"></div>
+                      <div className="avatar space-x-2">
+                        <div className="w-10 rounded-xl">
+                          <img src={cata?.subCategoryImage} />
+                        </div>
+                        <p className="font-medium text-lg capitalize">
+                          {cata?.SubCategoryName}
+                        </p>
                       </div>
-                      <p className="font-medium text-lg capitalize">
-                        {cata?.SubCategoryName}
-                      </p>
                     </div>
                   </td>
-                  {/* SKU */}
-                  {/* <td className=" px-4 py-2">{cata?.totalSales}</td>
-                  {/* Category */}
-                  {/* <td className=" px-4 py-2">{cata?.totalStock}</td> */}
-                  {/* Stock */}
+
                   <td className=" px-4 py-2">
                     {new Date(cata?.createdAt).toLocaleDateString("en-GB")}
                   </td>

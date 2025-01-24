@@ -2,6 +2,7 @@ import React from "react";
 import { Footer, Header } from "../includes/includes";
 import { Outlet } from "react-router-dom";
 import { NewsLetter } from "../components/component";
+import { ToastContainer } from "react-toastify";
 
 const User = () => {
   return (
@@ -12,6 +13,7 @@ const User = () => {
         <NewsLetter />
         <Footer />
       </div>
+      <ToastContainer />
     </>
   );
 };

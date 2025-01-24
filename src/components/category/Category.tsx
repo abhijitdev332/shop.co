@@ -34,7 +34,10 @@ const Category = () => {
                 return (
                   <div
                     className="col-span-2 h-60 rounded-lg"
-                    style={{ background: `url(${ele.categoryImage})` }}
+                    style={{
+                      background: `url(${ele.categoryImage})`,
+                      backgroundPosition: "center center",
+                    }}
                   >
                     <Link to={`/product/category/${ele.categoryName}`}>
                       <div className="flex h-full justify-center items-center">

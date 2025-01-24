@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Footer, Header } from "../includes/includes";
 import { Outlet } from "react-router-dom";
 import { NewsLetter } from "../components/component";
+import { ToastContainer } from "react-toastify";
 
 const Product = () => {
   return (
@@ -12,6 +13,7 @@ const Product = () => {
         <NewsLetter />
         <Footer />
       </div>
+      <ToastContainer />
     </>
   );
 };

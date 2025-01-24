@@ -138,8 +138,12 @@ const UsersTable = () => {
                       </Link>
 
                       <div className="inline-flex flex-col">
-                        <p>{eachUser?.username}</p>
-                        <span>{eachUser?.email}</span>
+                        <p className="capitalize font-medium">
+                          {eachUser?.username}
+                        </p>
+                        <span className="text-gray-400 text-sm">
+                          {eachUser?.email}
+                        </span>
                       </div>
                     </div>
                   </td>

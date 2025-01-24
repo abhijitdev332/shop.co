@@ -10,6 +10,7 @@ import { addProduct, removeProduct } from "../../services/store/cart/cartSlice";
 import RealativeProducts from "./RealativeProducts";
 import ProductReviews from "./ProductReviews";
 import ProductDetails from "./ProductDetails";
+import { toast } from "react-toastify";
 
 // default img url
 const imgUrl =
@@ -48,13 +49,28 @@ const Product = () => {
   }, [productData, cart]);
   // handle add cart
   const handleCartAdd = () => {
+    if (!selectedProductSize) {
+      return toast.info("Please Select an size!!");
+    }
+
+    // console.log({
+    //   productId: productData?._id,
+    //   name: productData?.name,
+    //   price: currentProductVariant?.sellPrice,
+    //   quantity: quantity,
+    //   size:selectedProductSize,
+    //   imgurl: currentProductImage,
+    // })
+
     dispatch(
       addProduct({
         productId: productData?._id,
         name: productData?.name,
-        price: 200,
+        price: currentProductVariant?.sellPrice,
         quantity: quantity,
-        imgurl: productData?.imgurl,
+        color: currentProductColor,
+        size: selectedProductSize,
+        imgurl: currentProductImage,
       })
     );
   };
@@ -102,6 +118,7 @@ const Product = () => {
       );
       setSizes(filteredVariants?.map((v) => v?.size));
       setProductImages(filteredVariants[0]?.images || []);
+      setCurrentProductImage(filteredVariants?.[0]?.images?.[0]?.url || "");
       setSelectedProductSize("");
       setCurrentProductVariant(filteredVariants[0] || {});
     }
@@ -255,7 +272,7 @@ const Product = () => {
                       className="btn w-72 text-center  bg-black rounded-badge"
                       onClick={handleCartRemove}
                     >
-                      remove from Cart
+                      Remove from Cart
                     </button>
                   ) : (
                     <button

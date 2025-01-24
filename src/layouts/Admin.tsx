@@ -15,7 +15,7 @@ const Admin = () => {
           </div>
         </div>
       </div>
-      <ToastContainer />
+      <ToastContainer style={{ zIndex: 100 }} />
     </>
   );
 };

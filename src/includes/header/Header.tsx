@@ -310,7 +310,7 @@ function AuthProfile() {
           )}
 
           <li>
-            <Link to={"/user/profile"}>
+            <Link to={"/user"}>
               <span>
                 <BsFillPersonVcardFill />
               </span>

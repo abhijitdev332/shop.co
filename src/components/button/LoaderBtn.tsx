@@ -4,8 +4,8 @@ const LoaderBtn = ({
   pending = false,
   handleClick = () => null,
   style = "",
-  others = {},
   children = "",
+  ...others
 }) => {
   return (
     <button
@@ -14,7 +14,7 @@ const LoaderBtn = ({
       {...others}
     >
       {pending && <span className="loading loading-spinner loading-md"></span>}
-      <span>{children}</span>
+      {children}
     </button>
   );
 };

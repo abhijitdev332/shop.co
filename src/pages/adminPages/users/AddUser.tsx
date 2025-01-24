@@ -266,8 +266,8 @@ const UserAddPage = () => {
           {/* Submit Button */}
           <LoaderBtn
             pending={isPending}
-            others={{ type: "submit" }}
             style="mt-6 btn  btn-netural transition"
+            type="submit"
           >
             Save User
           </LoaderBtn>
