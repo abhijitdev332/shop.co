@@ -25,7 +25,7 @@ const ProductCard = ({ product = {}, style = "", size = "", imgStyle }) => {
         <Link to={`/product/${product._id}`} className="w-full h-full">
           <img
             src={product?.imgurl || product?.firstVariantImages?.[0]?.url || ""}
-            className={cl("rounded-2xl h-56 w-full", imgStyle)}
+            className={cl("rounded-xl h-64 w-full", imgStyle)}
             alt="cloth"
             onError={(e: SyntheticEvent<HTMLImageElement, ErrorEvent>) => {
               e.target.parentElement.parentElement.parentElement.style.display =
@@ -34,16 +34,20 @@ const ProductCard = ({ product = {}, style = "", size = "", imgStyle }) => {
           />
         </Link>
       </figure>
-      <div className="card-body py-5 px-1">
-        <h2 className="card-title text-lg md:text-xl font-medium">
+      <div className="card-body p-2 gap-0">
+        <h2 className="card-title text-lg md:text-xl font-medium capitalize text-ellipsis overflow-hidden">
           {product?.name}
           {/* <div className="badge badge-seconday">{product.category.name}</div> */}
         </h2>
         <div className="flex items-center gap-1">
           <span>
-            <Star count={4} color="orange" size={15} />
+            <Star
+              count={product?.averageRating || 1}
+              color="orange"
+              size={15}
+            />
           </span>
-          <span>4/5</span>
+          <span>{product?.averageRating}/5</span>
         </div>
 
         {/* <p className="text-gray-800">{product.description?.slice(0, 70)}</p> */}
@@ -59,12 +63,14 @@ const ProductCard = ({ product = {}, style = "", size = "", imgStyle }) => {
           )}
         </div> */}
 
-        <p className="font-bold flex items-center gap-2 md:text-2xl leading-snug">
+        <p className="flex items-center gap-2 md:text-2xl font-bold">
           {/* <span>${product?.price}</span> */}
-          <span className="text-gray-400">$260</span>
-          <span className="badge font-normal border-none text-red-500 bg-red-100">
-            - 40%
-          </span>
+          <span>${product?.firstVariantSellPrice}</span>
+          {product?.firstVariantDiscount && (
+            <span className="badge font-normal border-none text-red-500 bg-red-100">
+              {product?.firstVariantDiscount}
+            </span>
+          )}
         </p>
       </div>
     </div>

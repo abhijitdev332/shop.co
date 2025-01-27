@@ -282,6 +282,7 @@ const ProfilePage = () => {
                 </p>
               </div>
             </div>
+            {/* address */}
             <div className="w-auto flex flex-wrap items-center gap-5 p-5  my-4">
               {userAddress?.map((addr) => (
                 <div className="w-60 flex flex-col items-center h-40 py-3 px-5 bg-white shadow-lg rounded-lg my-4">

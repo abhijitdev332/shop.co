@@ -53,18 +53,10 @@ const Product = () => {
       return toast.info("Please Select an size!!");
     }
 
-    // console.log({
-    //   productId: productData?._id,
-    //   name: productData?.name,
-    //   price: currentProductVariant?.sellPrice,
-    //   quantity: quantity,
-    //   size:selectedProductSize,
-    //   imgurl: currentProductImage,
-    // })
-
     dispatch(
       addProduct({
         productId: productData?._id,
+        variantId: currentProductVariant?._id,
         name: productData?.name,
         price: currentProductVariant?.sellPrice,
         quantity: quantity,
@@ -190,7 +182,7 @@ const Product = () => {
                 </div>
                 <div className="flex space-x-1 items-center pt-2">
                   <Star
-                    count={productData?.averageRating}
+                    count={productData?.averageRating || 1}
                     size={20}
                     color="orange"
                   />
@@ -204,9 +196,11 @@ const Product = () => {
                   <span className="text-gray-500 line-through">
                     {currentProductVariant?.basePrice}
                   </span>
-                  <span className="badge p-3 border-none text-red-700 bg-red-200">
-                    - 40%
-                  </span>
+                  {currentProductVariant?.discount && (
+                    <span className="badge p-3 border-none text-red-700 bg-red-200">
+                      {currentProductVariant?.discount}
+                    </span>
+                  )}
                 </div>
                 <div className="dsc py-2">
                   <p className="text-gray-500">{productData?.description}</p>

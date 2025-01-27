@@ -8,7 +8,16 @@ const cartSlice = createSlice({
   initialState: inital,
   reducers: {
     addProduct: (state, action) => {
-      const { productId, name, price, quantity = 1, imgurl,size ,color} = action.payload;
+      const {
+        productId,
+        variantId,
+        name,
+        price,
+        quantity = 1,
+        imgurl,
+        size,
+        color,
+      } = action.payload;
       let totalAmount = [
         ...state.products,
         { productId, price, quantity },
@@ -19,7 +28,7 @@ const cartSlice = createSlice({
       return (state = {
         products: [
           ...state.products,
-          { productId, name, price, quantity, imgurl,size ,color},
+          { productId, variantId, name, price, quantity, imgurl, size, color },
         ],
         totalAmount: totalAmount,
       });

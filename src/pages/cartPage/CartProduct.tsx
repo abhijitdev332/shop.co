@@ -9,6 +9,7 @@ import {
   removeProduct,
   removeQuantity,
 } from "../../services/store/cart/cartSlice";
+import cl from "classnames";
 
 const CartProduct = ({ product }) => {
   const cart = useSelector((store) => store.cart);
@@ -46,9 +47,20 @@ const CartProduct = ({ product }) => {
               <span className="font-medium">Size:</span>
               <span className="text-sm">{product?.size}</span>
             </p>
-            <p>
+            <p className="inline-flex items-center gap-1">
               <span className="font-medium">Color:</span>
-              <span className="text-sm">{product?.color}</span>
+              <button
+                className={cl(
+                  "flex gap-1 items-center outline p-1 rounded-btn brightness-50	transition-all",
+                  "outline-1"
+                )}
+              >
+                <span
+                  style={{ background: product?.color }}
+                  className={` rounded-full p-3`}
+                ></span>
+                <span className="capitalize">{product?.color}</span>
+              </button>
             </p>
             <p className="flex gap-0  items-center">
               <span>

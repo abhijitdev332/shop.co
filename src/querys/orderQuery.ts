@@ -1,10 +1,13 @@
 import { PrivateAxios } from "../services/api/api";
 
 const getOrderDeatils = async (id) => {
-  return PrivateAxios.get(`/order/${id}`);
+  return await PrivateAxios.get(`/order/${id}`);
 };
 const getSubsCategory = async () => {
-  return PrivateAxios.get("/subcategory");
+  return await PrivateAxios.get("/subcategory");
+};
+const newOrder = async (data) => {
+  return await PrivateAxios.post("/order/new", data);
 };
 
-export { getOrderDeatils, getSubsCategory };
+export { getOrderDeatils, getSubsCategory, newOrder };

@@ -9,29 +9,6 @@ import { PrivateAxios } from "../../services/api/api";
 const CartPage = () => {
   const { products, totalAmount } = useSelector((state) => state.cart);
 
-  // const cartProducts = useMemo(() => {
-  //   let products = storeProducts?.map((ele) => {
-  //     return cartProductsStore?.productsArr?.includes(ele?.id) ? ele : "";
-  //   });
-  //   return products.filter((ele) => ele !== "");
-  // }, [cartProductsStore]);
-
-  // let findCartProduct = useMemo(() => {
-  //   return cartProducts.map((mpele) => {
-  //     let cprod = cartProductsStore.products?.find(
-  //       (ele) => ele?.productId == mpele?.id
-  //     );
-  //     return { ...mpele, ...cprod };
-  //   });
-  // }, [cartProducts]);
-
-  // const totalSubAmount = useMemo(() => {
-  //   let sum = findCartProduct?.reduce((acc: number, curr: any) => {
-  //     return acc + curr?.price * curr?.quantity;
-  //   }, 0);
-  //   return sum;
-  // }, [findCartProduct]);
-
   const handleCheckout = async () => {
     let productData = findCartProduct.map((ele) => ({
       name: ele?.title,
@@ -59,13 +36,6 @@ const CartPage = () => {
       window.location.href = res.data?.data?.paymentUrl;
     }
   };
-  // useEffect(() => {
-  //   setDiscount(() => {
-  //     let dis = (totalSubAmount * 10) / 100;
-  //     setTotalAmount(Math.floor(totalSubAmount - dis + delhivery));
-  //     return Math.floor(dis);
-  //   });
-  // }, [totalSubAmount]);
 
   return (
     <section className="bg-white">
@@ -104,6 +74,7 @@ const CartPage = () => {
 };
 
 function CartCheckOut({ subTotal }) {
+  const navigate = useNavigate();
   const { products } = useSelector((store) => store.cart);
   const [discount, setDiscount] = useState<number>(0);
   const [delhivery, setDelivery] = useState<number>(50);
@@ -179,9 +150,14 @@ function CartCheckOut({ subTotal }) {
         </p>
         <button
           className="btn btn-active rounded-badge mt-auto"
-          onClick={handleCheckout}
+          // onClick={handleCheckout}
+          onClick={() =>
+            navigate("order", {
+              state: { discount, totalAmount, delhivery, subTotal },
+            })
+          }
         >
-          <span className="text-white">Go To Checkout</span>
+          <span className="text-white">Go To Next</span>
           <span className="text-white">
             <IoArrowForward />
           </span>
@@ -195,9 +171,9 @@ function CartEmpty() {
   return (
     <>
       <div className="flex flex-col gap-4 justify-center items-center">
-        <p className="text-lg font-medium">Cart Empty</p>
+        <p className="text-xl font-bold">Cart Empty</p>
         <p>Please add Some Products</p>
-        <button className="btn btn-sm btn-accent">
+        <button className="btn btn-info text-lg">
           <Link to={"/"}>Shop</Link>
         </button>
       </div>

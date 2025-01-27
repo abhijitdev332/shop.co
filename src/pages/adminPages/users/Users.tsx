@@ -49,7 +49,6 @@ const UsersTable = () => {
     // setuse((prev) => prev.filter((product) => product.id !== id));
   };
   const ImageLetter = ({ name = "" }) => {
-    console.log(name);
     return (
       <>
         <div className="avatar placeholder">

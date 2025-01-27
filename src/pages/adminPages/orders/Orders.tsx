@@ -1,19 +1,18 @@
 import { useQuery } from "@tanstack/react-query";
 import React, { useState } from "react";
-import { FaRegTrashAlt } from "react-icons/fa";
 import { IoEye } from "react-icons/io5";
 import { MdModeEdit } from "react-icons/md";
 import { Link } from "react-router-dom";
 import { adminOrders } from "../../../querys/admin/adminQuery";
 
-const Orders: React.FC = () => {
+const Orders = () => {
   const { data, isPending, isError, error } = useQuery({
     queryKey: ["orders"],
     queryFn: adminOrders,
-    staleTime: 0,
   });
 
-  const [orders, setOrders] = useState(data?.data?.data || []);
+  // const [orders, setOrders] = useState(data?.data?.data || []);
+  let orders = data?.data?.data || [];
 
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
 
@@ -97,19 +96,32 @@ const Orders: React.FC = () => {
                   />
                 </td>
                 <td>
-                  <Link to={order._id}>{order._id}</Link>
+                  <Link to={order._id} title={order?._id}>
+                    {order._id.slice(0, 8)}
+                  </Link>
                 </td>
                 {/* Products Name */}
                 <td className=" px-4 py-2">
-                  <div className="avatar">
-                    <div className="w-16 rounded">
-                      <img
-                        src={order?.firstProduct?.variantImages[0]?.url}
-                        alt="variant image"
-                      />
+                  <div className="flex gap-1">
+                    <div className="avatar">
+                      <div className="w-12 rounded">
+                        <img
+                          src={order?.firstProduct?.variantImages[0]?.url}
+                          alt="variant image"
+                        />
+                      </div>
+                    </div>
+                    <div className="inline-flex flex-col capitalize">
+                      <span className="text-wrap font-medium text-gray-800">
+                        {order?.firstProduct?.productName || "product name"}
+                      </span>
+                      {order?.products?.length - 1 > 0 && (
+                        <span className="text-sm text-gray-600">
+                          +{order?.products?.length - 1} More Products
+                        </span>
+                      )}
                     </div>
                   </div>
-                  {/* {order?.firstProduct || "product name"} */}
                 </td>
 
                 {/* date */}
@@ -134,16 +146,16 @@ const Orders: React.FC = () => {
                   <div className="flex gap-1 ">
                     <Link
                       to={`${order?._id}`}
-                      className="btn btn-sm btn-ghost rounded-full"
+                      className="btn btn-sm btn-neutral rounded-full"
                     >
                       <IoEye />
                     </Link>
-                    <button className="btn btn-sm btn-ghost rounded-full">
+                    <button className="btn btn-sm btn-primary  rounded-full">
                       <MdModeEdit />
                     </button>
-                    <button className="btn btn-sm btn-ghost rounded-full">
+                    {/* <button className="btn btn-sm btn-ghost rounded-full">
                       <FaRegTrashAlt />
-                    </button>
+                    </button> */}
                   </div>
                 </td>
               </tr>

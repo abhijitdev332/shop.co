@@ -18,6 +18,7 @@ import {
   Register,
   SuccessPage,
   OrdersItemPage,
+  CartAddress,
 } from "./pages/page";
 import { HomePage } from "./pages/page";
 import { Product, CategoryProduct } from "./components/component";
@@ -58,6 +59,7 @@ const router = createBrowserRouter(
       <Route path="/" element={<HomeLayout />}>
         <Route index element={<HomePage />} />
         <Route path="cart" element={<CartPage />} />
+        <Route path="cart/order" element={<CartAddress />} />
       </Route>
       <Route path="/user" element={<UserLayout />}>
         <Route index element={<ProfilePage />} />
