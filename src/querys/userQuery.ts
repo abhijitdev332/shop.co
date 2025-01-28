@@ -10,9 +10,16 @@ const createUser = async (data) => {
     },
   });
 };
+const updateUser = async ({ id, data }) => {
+  return await PrivateAxios.put(`/user/${id}`, data, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+};
 
 const deleteUser = async (id) => {
   return await PrivateAxios.delete(`/user/${id}`);
 };
 
-export { createUser, getUser, deleteUser };
+export { createUser, getUser, deleteUser, updateUser };

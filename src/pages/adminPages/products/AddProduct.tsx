@@ -584,6 +584,9 @@ function DetailsModal({ detailsModalRef, productMoreData }) {
     }
   };
 
+  useEffect(() => {
+    productMoreData({ ...inputStates, style: dressStyleState });
+  }, []);
   return (
     <>
       <dialog id="my_modal_2" className="modal" ref={detailsModalRef}>

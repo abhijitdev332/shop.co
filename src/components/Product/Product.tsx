@@ -19,7 +19,7 @@ const Product = () => {
   const { id } = useParams();
   const { data, isLoading, isError } = useFetch({
     url: `/product/${id}`,
-    queryKey: ["product", { id }],
+    queryKey: ["product", id],
     options: {
       staleTime: 1000 * 60 * 5, // Cache the result for 5 minutes
       refetchOnWindowFocus: false, // Prevent refetching on window focus
@@ -187,7 +187,7 @@ const Product = () => {
                     color="orange"
                   />
                   <span className="text-sm font-mono">
-                    {productData?.averageRating}/5
+                    {Math.round(productData?.averageRating)}/5
                   </span>
                 </div>
                 {/* price */}
@@ -309,6 +309,7 @@ const Product = () => {
                 <ProductReviews
                   reviews={productData?.reviews}
                   totalReviews={productData?.reviews?.length}
+                  productId={id}
                 />
               </div>
 

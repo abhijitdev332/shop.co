@@ -4,8 +4,8 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useSelector } from "react-redux";
-import { getUser } from "../../querys/userQuery";
+import { useDispatch, useSelector } from "react-redux";
+import { updateUser } from "../../querys/userQuery";
 import {
   createAddress,
   deleteAddress,
@@ -17,10 +17,11 @@ import { FaLocationArrow } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import cl from "classnames";
+import { setUser } from "../../services/store/user/userSlice";
 const profileSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   email: z.string().email("Invalid email address"),
-  image: z.instanceof(File).optional(), // Optional image upload
+  image: z.instanceof(FileList).optional(),
 });
 const addressSchema = z.object({
   landMark: z.string().min(1, "land mark is required"),
@@ -47,6 +48,7 @@ const imageUrl =
   "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
 
 const ProfilePage = () => {
+  const dispatch = useDispatch();
   const { userDetails } = useSelector((store) => store.user);
   const userId = userDetails?._id;
   const { data, error } = useQuery({
@@ -58,23 +60,12 @@ const ProfilePage = () => {
   const queryClient = useQueryClient();
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const modalRef = useRef(null);
-  // Update user details mutation
-  const updateProfileMutation = useMutation();
-  // async (formData: FormData) => {
-  //   const response = await PrivateAxios.put("/user/profile", formData, {
-  //     headers: { "Content-Type": "multipart/form-data" },
-  //   });
-  //   return response.data;
-  // },
-  // {
-  //   onSuccess: () => {
-  //     queryClient.invalidateQueries("userDetails"); // Refresh user details after update
-  //   },
-  // }
+
+  // user validation wiht hook form
   const {
     register,
     handleSubmit,
-    setValue,
+    watch,
     formState: { errors },
   } = useForm<ProfileFormInputs>({
     resolver: zodResolver(profileSchema),
@@ -83,6 +74,29 @@ const ProfilePage = () => {
       email: userDetails?.email,
     },
   });
+  let profileImage = watch("image");
+  // Update user details mutation
+  const { mutate: updateMutation, isPending: updatePending } = useMutation({
+    mutationKey: ["updateProfile", userId],
+    mutationFn: ({ id, data }) => updateUser({ id, data }),
+    onSuccess: (data) => {
+      toast.success(data?.data?.message);
+      dispatch(setUser(data?.data?.data));
+      //setuser details
+    },
+  });
+  // Handle form submission
+  const updateSubmit = async (data: ProfileFormInputs) => {
+    const formData = new FormData();
+    formData.append("name", data.name);
+    formData.append("email", data.email);
+    if (profileImage && profileImage[0]) {
+      formData.append("image", profileImage[0]);
+    }
+    updateMutation({ id: userId, data: formData });
+  };
+
+  // address valdiation
   const {
     register: addressReg,
     handleSubmit: addressSubmit,
@@ -91,17 +105,6 @@ const ProfilePage = () => {
   } = useForm<AddressFormInputs>({
     resolver: zodResolver(addressSchema),
   });
-
-  // Handle form submission
-  const onSubmit = async (data: ProfileFormInputs) => {
-    const formData = new FormData();
-    formData.append("name", data.name);
-    formData.append("email", data.email);
-    if (data.image && data.image[0]) {
-      formData.append("image", data.image[0]);
-    }
-    updateProfileMutation.mutate(formData);
-  };
   const { mutate: addressAddMutation, isPending: addresAddPending } =
     useMutation({
       mutationKey: ["addAddress", { useId }],
@@ -137,9 +140,9 @@ const ProfilePage = () => {
     const file = event.target.files?.[0];
     if (file) {
       setPreviewImage(URL.createObjectURL(file));
-      setValue("image", file);
     }
   };
+
   return (
     <>
       <section>
@@ -163,7 +166,7 @@ const ProfilePage = () => {
                 Your Profile
               </h2>
 
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+              <form onSubmit={handleSubmit(updateSubmit)} className="space-y-6">
                 {/* Profile Image */}
                 <div className="flex items-center space-x-6">
                   <div className="w-20 h-20 rounded-full overflow-hidden border">
@@ -183,11 +186,15 @@ const ProfilePage = () => {
                     <input
                       type="file"
                       id="image"
-                      accept="image/*"
                       className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-100 file:text-blue-700 hover:file:bg-blue-200"
                       onInput={handleImageChange}
                       {...register("image")}
                     />
+                    {errors.image && (
+                      <p className="mt-1 text-sm text-red-500">
+                        {errors.image.message}
+                      </p>
+                    )}
                   </div>
                 </div>
 
@@ -247,11 +254,9 @@ const ProfilePage = () => {
                 <button
                   type="submit"
                   className="w-full px-4 py-2 btn btn-neutral transition duration-200"
-                  disabled={updateProfileMutation.isLoading}
+                  disabled={updatePending}
                 >
-                  {updateProfileMutation.isLoading
-                    ? "Updating..."
-                    : "Update Profile"}
+                  {updatePending ? "Updating..." : "Update Profile"}
                 </button>
               </form>
             </div>
@@ -327,8 +332,6 @@ const ProfilePage = () => {
       </section>
 
       {/* modal */}
-      {/* Open the modal using document.getElementById('ID').showModal() method */}
-      {/* <button className="btn" onClick={()=>document.getElementById('my_modal_2').showModal()}>open modal</button> */}
       <dialog id="my_modal_2" className="modal" ref={modalRef}>
         <div className="modal-box bg-white w-lg">
           <div className="wrapper">

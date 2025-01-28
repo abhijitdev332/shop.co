@@ -47,7 +47,7 @@ const ProductCard = ({ product = {}, style = "", size = "", imgStyle }) => {
               size={15}
             />
           </span>
-          <span>{product?.averageRating}/5</span>
+          <span>{Math.round(product?.averageRating)}/5</span>
         </div>
 
         {/* <p className="text-gray-800">{product.description?.slice(0, 70)}</p> */}

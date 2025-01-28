@@ -5,7 +5,7 @@ import { IoEye } from "react-icons/io5";
 import { MdModeEdit } from "react-icons/md";
 import { Link, useLocation } from "react-router-dom";
 import { adminCategories } from "../../../querys/admin/adminQuery";
-import { getSubsCategory } from "../../../querys/orderQuery";
+import { getSubsCategory } from "../../../querys/categoryQuery";
 import {
   deleteCategory,
   deleteSubsCategory,
@@ -127,7 +127,7 @@ function CategoryTable() {
 
   return (
     <>
-      <div className="wrapper  flex flex-col gap-5">
+      <div className="wrapper  flex flex-col gap-5 h-full overflow-hidden">
         {/* add button */}
         <div className="ms-auto flex ">
           <Link to={"add"}>
@@ -136,7 +136,7 @@ function CategoryTable() {
         </div>
 
         {/* Table */}
-        <div className="overflow-x-auto">
+        <div className="overflow-clip">
           <table className="w-full rounded">
             <thead className="bg-gray-100 text-black">
               <tr>

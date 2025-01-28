@@ -10,6 +10,7 @@ import CategoryProduct from "./productByCategory/CategoryProduct";
 import Category from "./category/Category";
 import Logout from "./logout/Logout";
 import { LoaderBtn } from "./button/btn";
+import ProductsBySlug from "./productByCategory/ProductBySlug";
 // import NewProductDetails from "./Product/NewCodeProduct";
 export {
   Hero,
@@ -24,4 +25,5 @@ export {
   Category,
   Logout,
   LoaderBtn,
+  ProductsBySlug,
 };

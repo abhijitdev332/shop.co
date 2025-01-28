@@ -21,7 +21,11 @@ import {
   CartAddress,
 } from "./pages/page";
 import { HomePage } from "./pages/page";
-import { Product, CategoryProduct } from "./components/component";
+import {
+  Product,
+  CategoryProduct,
+  ProductsBySlug,
+} from "./components/component";
 import {
   AddCategory,
   AddProduct,
@@ -74,6 +78,7 @@ const router = createBrowserRouter(
       <Route path="/product" element={<ProductLayout />}>
         <Route path=":id" element={<Product />} />
         <Route path="category/:id" element={<CategoryProduct />} />
+        <Route path="slug" element={<ProductsBySlug />} />
       </Route>
       <Route path="/admin" element={<AdminLayout />}>
         <Route index element={<Dashbroad />} />

@@ -2,31 +2,27 @@ import { Link, ScrollRestoration, useParams } from "react-router-dom";
 import { Pagintaion, ProductCard } from "../component";
 import { MdKeyboardArrowRight, MdKeyboardArrowUp } from "react-icons/md";
 import { RiFilter3Line } from "react-icons/ri";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import cl from "classnames";
 import { useQuery } from "@tanstack/react-query";
 import { getProductByCategory } from "../../querys/productQuery";
 const CategoryProduct = () => {
   const { id } = useParams();
-  const { data, isPending, isError, error } = useQuery({
+  const { data: categoryProducts, error } = useQuery({
     queryKey: ["category", id],
     queryFn: () => getProductByCategory(id),
   });
+  let allProducts = categoryProducts?.data?.data;
   const [fillterShow, setFillterShow] = useState<boolean>(false);
   const [products, setProducts] = useState([]);
 
-  useEffect(() => {
-    if (data) {
-      setProducts(data?.data?.data);
-    }
-  }, [data]);
-  console.log(products);
   return (
     <main>
       <ScrollRestoration />
       <div className="wrapper px-5 md:px-20">
         <div className="outline outline-1 outline-slate-300"></div>
         <div className="py-3">
+          {/* breadcrumbs */}
           <div className="breadcrumbs text-sm">
             <ul>
               <li>
@@ -68,7 +64,7 @@ const CategoryProduct = () => {
                 </div>
               </div>
               <div className="flex flex-wrap gap-6">
-                {products.map((ele) => (
+                {allProducts?.map((ele) => (
                   <ProductCard
                     product={ele}
                     style="md:w-50"
@@ -90,6 +86,16 @@ function FillterCard({ show, setShow }) {
   const variant = ["red", "green", "black"];
   const sizes = ["small", "medium", "large", "x-large"];
   const category = ["casual", "formal", "gym", "party"];
+  const [fillters, setFillters] = useState([]);
+  const handleFillterAdd = (ev) => {
+    if (fillters.includes(ev)) {
+      setFillters((prev) => {
+        return prev.filter((ele) => ele !== ev);
+      });
+    } else {
+      setFillters((prev) => [...prev, ev]);
+    }
+  };
   return (
     <section
       className={cl(
@@ -99,6 +105,31 @@ function FillterCard({ show, setShow }) {
     >
       <div className="wrapper">
         <div className="card border border-gray-400 p-5 rounded-xl">
+          <div className="flex flex-wrap gap-3">
+            {fillters.map((ele) => (
+              <>
+                <div
+                  className="badge badge-neutral p-2  gap-2 cursor-pointer"
+                  onClick={() => handleFillterAdd(ele)}
+                >
+                  <span className="text-white capitalize">{ele}</span>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    className="inline-block h-4 w-4 stroke-current"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M6 18L18 6M6 6l12 12"
+                    ></path>
+                  </svg>
+                </div>
+              </>
+            ))}
+          </div>
           <div className="flex flex-col gap-3">
             {/* heading */}
             <div className="flex justify-between items-center">
@@ -115,7 +146,10 @@ function FillterCard({ show, setShow }) {
             {/*sub category  */}
             <div className="flex flex-col gap-2">
               {subCate.map((ele) => (
-                <div className="flex justify-between items-center">
+                <div
+                  className="flex justify-between items-center cursor-pointer"
+                  onClick={() => handleFillterAdd(ele)}
+                >
                   <span className="capitalize">{ele}</span>
                   <span>{<MdKeyboardArrowRight fontSize={20} />}</span>
                 </div>
@@ -185,7 +219,10 @@ function FillterCard({ show, setShow }) {
 
               <div className="flex flex-col gap-2">
                 {category.map((ele) => (
-                  <div className="flex justify-between items-center">
+                  <div
+                    className="flex justify-between items-center"
+                    onClick={() => handleFillterAdd(ele)}
+                  >
                     <span className="capitalize">{ele}</span>
                     <span>{<MdKeyboardArrowRight fontSize={20} />}</span>
                   </div>

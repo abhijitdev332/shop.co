@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { newArivals } from "../querys/productQuery";
+import { newArivals, topSelling } from "../querys/productQuery";
 import { getAllCategory, getSubsCategory } from "../querys/categoryQuery";
 import { useDispatch } from "react-redux";
 import {
@@ -19,7 +19,7 @@ const InitialData = () => {
     isLoading: arivalLoading,
     isError: arivalErr,
   } = useQuery({
-    queryKey: ["products"],
+    queryKey: ["products", "arrivals"],
     queryFn: newArivals,
   });
   const {
@@ -27,8 +27,8 @@ const InitialData = () => {
     isLoading: topLoading,
     isError: topErr,
   } = useQuery({
-    queryKey: ["products"],
-    queryFn: newArivals,
+    queryKey: ["products", "top"],
+    queryFn: topSelling,
   });
   const {
     data: category,

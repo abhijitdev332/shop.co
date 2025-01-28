@@ -1,10 +1,13 @@
 import { PrivateAxios } from "../services/api/api";
 
-const newArivals = async () => {
-  return await PrivateAxios.get("/product/arival");
+const newArivals = async ({ limit = 4, skip = 0 }) => {
+  return await PrivateAxios.get(`/product/arival?limit=${limit}&skip=${skip}`);
 };
-const topSelling = async () => {
-  return await PrivateAxios.get("/product/top");
+const newReview = async ({ id, data }) => {
+  return await PrivateAxios.post(`/product/review/add/${id}`, data);
+};
+const topSelling = async ({ limit = 4, skip = 0 }) => {
+  return await PrivateAxios.get(`/product/top?limit=${limit}&skip=${skip}`);
 };
 const getProduct = async (id: string) => {
   return await PrivateAxios.get(`/product/${id}`);
@@ -12,7 +15,7 @@ const getProduct = async (id: string) => {
 const getAllproducts = async () => {
   return await PrivateAxios.get("/admin/products");
 };
-let getProductByCategory = async (query) => {
+let getProductByCategory = async (query = "") => {
   switch (query) {
     case "male":
       return await PrivateAxios.get(`/product?gender=${query}`);
@@ -27,7 +30,9 @@ let getProductByCategory = async (query) => {
       return await PrivateAxios.get(`/product/arival`);
 
     default:
-      return await PrivateAxios.get(`/category/${query}`);
+      return await PrivateAxios.get(
+        `/product/category?query=${query.toLowerCase()}`
+      );
   }
 };
 
@@ -38,6 +43,15 @@ let deleteProduct = async (id) => {
   return await PrivateAxios.delete(`/product/remove/${id}`);
 };
 
+let getProductsByslug = async ({ query = "", limit, skip }) => {
+  switch (query.toLowerCase()) {
+    case "top":
+      return topSelling({ limit, skip });
+    case "arrival":
+      return newArivals({ limit, skip });
+  }
+};
+
 export {
   newArivals,
   topSelling,
@@ -46,4 +60,6 @@ export {
   getProductByCategory,
   newProduct,
   deleteProduct,
+  getProductsByslug,
+  newReview,
 };

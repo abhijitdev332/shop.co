@@ -6,13 +6,13 @@ import { product } from "../../types/product";
 const ProductList = ({
   heading = "Top Products",
   products = [],
-  viewLink = "link",
+  viewLink = false,
 }) => {
   return (
     <section className="bg-white">
       <div className="wrapper py-10 px-5">
         <div className="flex flex-col">
-          <h2 className="font-extrabold py-10 text-center text-4xl">
+          <h2 className="font-extrabold capitalize py-10 text-center text-4xl">
             {heading}
           </h2>
           {/* map the products */}
@@ -22,9 +22,14 @@ const ProductList = ({
             ))}
           </div>
           <div className="flex justify-center py-7">
-            <Link to={viewLink} className=" px-7 btn btn-active rounded-badge">
-              View All
-            </Link>
+            {viewLink && (
+              <Link
+                to={viewLink}
+                className=" px-7 btn btn-active rounded-badge"
+              >
+                View All
+              </Link>
+            )}
           </div>
         </div>
       </div>

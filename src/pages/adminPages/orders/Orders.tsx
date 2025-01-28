@@ -106,7 +106,7 @@ const Orders = () => {
                     <div className="avatar">
                       <div className="w-12 rounded">
                         <img
-                          src={order?.firstProduct?.variantImages[0]?.url}
+                          src={order?.firstProduct?.variantImages?.[0]?.url}
                           alt="variant image"
                         />
                       </div>

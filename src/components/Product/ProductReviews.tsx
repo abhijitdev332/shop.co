@@ -1,10 +1,58 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { GrSort } from "react-icons/gr";
 import { IoIosArrowDown } from "react-icons/io";
-import { ReviewCard } from "../component";
+import { LoaderBtn, ReviewCard } from "../component";
+import { FaRegStar, FaStar } from "react-icons/fa";
+import { useSelector } from "react-redux";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "react-toastify";
+import { newReview } from "../../querys/productQuery";
 
-export function ProductReviews({ reviews = [], totalReviews = 0 }) {
+export function ProductReviews({
+  reviews = [],
+  totalReviews = 0,
+  productId = "",
+}) {
+  const queryclient = useQueryClient();
+  const { userDetails } = useSelector((store) => store.user);
+  let userId = userDetails?._id;
   const modalRef = useRef(null);
+  const [rating, setRating] = useState<number>(0);
+  const [hoverRating, setHoverRating] = useState<number>(0);
+  const [comment, setComment] = useState<string>("");
+
+  const handleStarClick = (index: number) => {
+    setRating(index);
+  };
+
+  const handleStarHover = (index: number) => {
+    setHoverRating(index);
+  };
+
+  const handleStarLeave = () => {
+    setHoverRating(0);
+  };
+  const { mutate: reviewMutaion, isPending } = useMutation({
+    mutationKey: ["addreview", productId],
+    mutationFn: ({ id, data }) => newReview({ id, data }),
+    onSuccess: (data) => {
+      modalRef.current.close();
+      toast.success(data?.data?.message);
+      setRating(0);
+      setComment("");
+      queryclient.invalidateQueries(["product", productId]);
+    },
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (comment == "") {
+      return toast.info("Please enter a valid comment!!");
+    }
+    // Perform the form submission logic here
+    reviewMutaion({ id: productId, data: { userId, rating, comment } });
+  };
+
   return (
     <>
       <section>
@@ -36,10 +84,10 @@ export function ProductReviews({ reviews = [], totalReviews = 0 }) {
                 </button>
               </div>
             </div>
-            <div className="flex flex-wrap gap-3">
+            <div className="flex flex-wrap justify-center gap-3">
               {reviews.map((ele) => (
                 <ReviewCard
-                  customerName={ele?.name}
+                  customerName={ele?.user?.username}
                   stats={ele?.rating}
                   reviewText={ele?.comment}
                 />
@@ -59,11 +107,51 @@ export function ProductReviews({ reviews = [], totalReviews = 0 }) {
         ref={modalRef}
         className="modal modal-bottom  sm:modal-middle"
       >
-        <div className="modal-box bg-primary">
-          <h3 className="font-bold text-lg">Hello!</h3>
-          <p className="py-4">
-            Press ESC key or click the button below to close
-          </p>
+        <div className="modal-box bg-white">
+          <div className="wrapper">
+            <form
+              onSubmit={handleSubmit}
+              className="flex flex-col items-center p-3"
+            >
+              {/* Star Rating */}
+              <div className="flex items-center space-x-2 mb-4">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <span>
+                    <FaStar
+                      size={24}
+                      className={`cursor-pointer transition-all ${
+                        (hoverRating || rating) >= star
+                          ? "text-yellow-500"
+                          : "text-gray-400"
+                      }`}
+                      onClick={() => handleStarClick(star)}
+                      onMouseEnter={() => handleStarHover(star)}
+                      onMouseLeave={handleStarLeave}
+                    />
+                  </span>
+                ))}
+                {/* Text Review */}
+              </div>
+              <textarea
+                className="w-full p-2 border rounded-lg resize-none bg-transparent"
+                rows={4}
+                placeholder="Write your review here..."
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+              ></textarea>
+
+              {/* Submit Button */}
+              <div className="mt-4">
+                <LoaderBtn
+                  type="submit"
+                  pending={isPending}
+                  className="w-full !btn btn-neutral"
+                >
+                  Submit Review
+                </LoaderBtn>
+              </div>
+            </form>
+          </div>
           <div className="modal-action">
             <form method="dialog">
               {/* if there is a button in form, it will close the modal */}
