@@ -36,3 +36,6 @@ input {
   font-family: "Roboto", serif;
   font-optical-sizing: auto;
 }
+*::-webkit-scrollbar {
+  display: none !important;
+}

@@ -9,11 +9,14 @@ const adminProductVariant = async () => {
 const adminAllUser = async () => {
   return await AdminAxios.get("/users");
 };
-const adminOrders = async () => {
-  return await AdminAxios.get("/orders");
+const adminOrders = async ({ limit = 5, skip = 0 }) => {
+  return await AdminAxios.get(`/orders?limit=${limit}&skip=${skip}`);
 };
 const adminCategories = async () => {
   return await AdminAxios.get("/categories");
+};
+const adminTopCategories = async ({ limit = 5, skip = 0 }) => {
+  return await AdminAxios.get(`/categories/top?limit=${limit}&skip=${skip}`);
 };
 
 export {
@@ -22,4 +25,5 @@ export {
   adminAllUser,
   adminOrders,
   adminCategories,
+  adminTopCategories,
 };

@@ -69,7 +69,9 @@ const AddSubCategory = () => {
                 <Link to={"/Admin"}>Admin</Link>
               </li>
               <li>
-                <Link to={-1}>Sub-Categories</Link>
+                <Link to={-1} state={true}>
+                  Sub-Categories
+                </Link>
               </li>
               <li>New</li>
             </ul>
@@ -78,7 +80,6 @@ const AddSubCategory = () => {
       </div>
 
       {/* add ccata */}
-
       <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
         {/* Left Card - Image Upload */}
         <div className="bg-white p-6  rounded-lg shadow-md flex flex-col items-center">

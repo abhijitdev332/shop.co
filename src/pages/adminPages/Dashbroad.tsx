@@ -19,6 +19,10 @@ import {
 import { FaMoneyBill, FaRegTrashAlt } from "react-icons/fa";
 import { AdminPagination } from "./adminPages";
 import { MdCurrencyExchange } from "react-icons/md";
+import { useQuery } from "@tanstack/react-query";
+import { topSelling } from "../../querys/productQuery";
+import { adminOrders, adminTopCategories } from "../../querys/admin/adminQuery";
+import { Link } from "react-router-dom";
 const Dashbroad = () => {
   return (
     <section>
@@ -59,7 +63,7 @@ const Dashbroad = () => {
             <SalesChart />
           </Card>
         </div>
-        <div className="flex gap-5 h-[50vh]">
+        <div className="flex  gap-5 h-[50vh]">
           <Card>
             <ExpenseChart />
           </Card>
@@ -70,7 +74,7 @@ const Dashbroad = () => {
             <TopCategory />
           </Card>
         </div>
-        <div className="flex gap-4">
+        <div className="flex gap-4 py-5">
           <Card style="p-0 basis-2/3">
             <RecentOrders />
           </Card>
@@ -118,7 +122,7 @@ function Card({ style = "", children }) {
   return (
     <div
       className={cl(
-        "card rounded-xl my-3 bg-gray-50 shadow outline outline-1 p-3 ",
+        "card w-full h-full overflow-y-auto  rounded-xl my-3 bg-gray-50 shadow outline outline-1 p-3 ",
         style
       )}
     >
@@ -217,6 +221,10 @@ function SalesChart() {
               <stop offset="5%" stopColor="#82ca9d" stopOpacity={0.8} />
               <stop offset="95%" stopColor="#82ca9d" stopOpacity={0} />
             </linearGradient>
+            <linearGradient id="colorAmt" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor="#52ca9a" stopOpacity={0.8} />
+              <stop offset="95%" stopColor="#32ca9e" stopOpacity={0} />
+            </linearGradient>
           </defs>
           <XAxis dataKey="name" />
           <YAxis />
@@ -236,46 +244,66 @@ function SalesChart() {
             fillOpacity={1}
             fill="url(#colorPv)"
           />
+          <Area
+            type="monotone"
+            dataKey="amt"
+            stroke="#52ca2a"
+            fillOpacity={1}
+            fill="url(#colorAmt)"
+          />
         </AreaChart>
       </ResponsiveContainer>
     </div>
   );
 }
 function TopProduct() {
-  let products = [
-    {
-      img: "",
-      productName: "product 1",
-      subCategory: "sub 1",
-      SaleAmount: 23507,
-    },
-    {
-      img: "",
-      productName: "product 2",
-      subCategory: "sub 2",
-      SaleAmount: 23507,
-    },
-  ];
+  const { data, error } = useQuery({
+    queryKey: ["products", "top"],
+    queryFn: topSelling,
+  });
+  let products = data?.data?.data || [];
+  // let products = [
+  //   {
+  //     img: "",
+  //     productName: "product 1",
+  //     subCategory: "sub 1",
+  //     SaleAmount: 23507,
+  //   },
+  //   {
+  //     img: "",
+  //     productName: "product 2",
+  //     subCategory: "sub 2",
+  //     SaleAmount: 23507,
+  //   },
+  // ];
+
   return (
     <div className="p-3">
       <div className="flex flex-col">
-        <h2>Top Product</h2>
-        <p>Lorem ipsum dolor sit amet consectetur.</p>
+        <h2 className="text-xl font-bold ">Top Product</h2>
+        {/* <p>Lorem ipsum dolor sit amet consectetur.</p> */}
       </div>
-      <div className="flex flex-col">
+      <div className="flex flex-col gap-3 overflow-y-auto overflow-x-hidden py-2">
         {products.map((ele) => (
           <>
             <div className="flex">
               <img
-                src={ele.img}
+                src={ele?.firstVariantImages?.[0]?.url}
                 alt="product image"
-                className="w-5 h-10 rounded-lg"
+                className="w-8 h-8 rounded-full"
               />
-              <p className="inline-flex flex-col">
-                <span>{ele.productName}</span>
-                <span className="text-sm">{ele.subCategory}</span>
+              <p className="inline-flex flex-col px-2">
+                <span
+                  className="text-sm text-ellipsis font-medium capitalize "
+                  title={ele?.name}
+                >
+                  {ele?.name}
+                </span>
+                <span className="text-sm font-medium capitalize">
+                  Sold:{ele?.totalProductSales}
+                </span>
               </p>
-              <p className="ms-auto">${ele.SaleAmount}</p>
+              <p className="ms-auto">${ele?.firstVariantSellPrice}</p>
             </div>
           </>
         ))}
@@ -284,67 +312,80 @@ function TopProduct() {
   );
 }
 function TopCategory() {
-  let categoryData = [
-    {
-      img: "",
-      categoryName: "T-shirts",
-      totalSales: 234,
-      SaleAmount: 23507,
-      status: "grow",
-      stat: "+12",
-      bg: "green",
-    },
-    {
-      img: "",
-      categoryName: "Shirts",
-      totalSales: 134,
-      SaleAmount: 2507,
-      status: "loss",
-      stat: "-10",
-      bg: "red",
-    },
-    {
-      img: "",
-      categoryName: "Shorts",
-      totalSales: 234,
-      SaleAmount: 23507,
-      status: "netural",
-      stat: "15",
-      bg: "gray",
-    },
-  ];
+  const { data, error } = useQuery({
+    queryKey: ["topcategories", "topsaleCategory"],
+    queryFn: adminTopCategories,
+  });
+  let categoryData = data?.data?.data;
+  // let categoryData = [
+  //   {
+  //     img: "",
+  //     categoryName: "T-shirts",
+  //     totalSales: 234,
+  //     SaleAmount: 23507,
+  //     status: "grow",
+  //     stat: "+12",
+  //     bg: "green",
+  //   },
+  //   {
+  //     img: "",
+  //     categoryName: "Shirts",
+  //     totalSales: 134,
+  //     SaleAmount: 2507,
+  //     status: "loss",
+  //     stat: "-10",
+  //     bg: "red",
+  //   },
+  //   {
+  //     img: "",
+  //     categoryName: "Shorts",
+  //     totalSales: 234,
+  //     SaleAmount: 23507,
+  //     status: "netural",
+  //     stat: "15",
+  //     bg: "gray",
+  //   },
+  // ];
+  console.log(categoryData);
   return (
     <div className="p-3">
-      <div className="flex flex-col">
-        <h2>Top Category</h2>
-        <p>Lorem ipsum dolor sit amet consectetur.</p>
+      <div className="flex flex-col sticky top-0">
+        <h2 className="font-bold text-xl">Top Category</h2>
+        {/* <p>Lorem ipsum dolor sit amet consectetur.</p> */}
       </div>
-      <div className="flex flex-col">
-        {categoryData.map((ele) => (
+      <div className="flex flex-col gap-3 py-3 overflow-y-auto overflow-x-hidden">
+        {categoryData?.map((ele) => (
           <>
             <div className="flex">
-              <div className="p3 rounded-full bg-orange-200">
+              <div className="rounded-full">
                 <img
-                  src={ele.img}
+                  src={ele?.categoryImage}
                   alt="product image"
-                  className="w-5 h-10 rounded-lg"
+                  className="w-8 h-8 rounded-full"
                 />
               </div>
 
-              <p className="inline-flex flex-col items-center">
-                <span>{ele.productName}</span>
-                <span className="text-sm">{ele.subCategory}</span>
+              <p className="inline-flex px-2 flex-col  gap-1">
+                {/* <span>{ele.productName}</span> */}
+                <span className="font-medium capitalize text-start">
+                  {ele?.categoryName}
+                </span>
+
+                <span className="text-xs">
+                  Date: {new Date(ele?.createdAt).toLocaleDateString("en-GB")}
+                </span>
               </p>
               <div className="ms-auto flex items-center gap-2">
-                <p>${ele.SaleAmount}</p>
-                <p
+                <p>{ele?.totalSold}</p>
+                {/* <p
                   className={cl(
-                    "badge badge-sm outline-none border-none",
-                    `bg-${ele.bg}-200 text-${ele.bg}-700`
+                    "badge badge-sm",
+                    ele?.totalSold>30?
+
                   )}
                 >
                   {ele.stat}
-                </p>
+                </p> */}
               </div>
             </div>
           </>
@@ -405,38 +446,32 @@ function ExpenseChart() {
   );
 }
 
-const RecentOrders: React.FC = () => {
-  const [orders, setOrders] = useState([
-    {
-      id: "1",
-      product: "Product A",
-      customerName: "John Doe",
-      email: "john.doe@example.com",
-      totalAmount: 1200,
-      status: "Pending",
-    },
-    {
-      id: "2",
-      product: "Product B",
-      customerName: "Jane Smith",
-      email: "jane.smith@example.com",
-      totalAmount: 800,
-      status: "Delivered",
-    },
-  ]);
+const RecentOrders = () => {
+  const itemsPerPage = 5;
+  const [currentPage, setCurrentPage] = useState(1);
+  const { data } = useQuery({
+    queryKey: ["adminOrders", currentPage],
+    queryFn: () =>
+      adminOrders({
+        limit: currentPage * itemsPerPage,
+        skip: (currentPage - 1) * itemsPerPage,
+      }),
+    staleTime: 2000,
+  });
+  let orders = data?.data?.data || [];
 
   const [selectedDate, setSelectedDate] = useState<string>("");
 
   const handleDelete = (id: string) => {
-    setOrders((prev) => prev.filter((order) => order.id !== id));
+    // setOrders((prev) => prev.filter((order) => order.id !== id));
   };
 
   const handleStatusChange = (id: string, newStatus: string) => {
-    setOrders((prev) =>
-      prev.map((order) =>
-        order.id === id ? { ...order, status: newStatus } : order
-      )
-    );
+    // setOrders((prev) =>
+    //   prev.map((order) =>
+    //     order.id === id ? { ...order, status: newStatus } : order
+    //   )
+    // );
   };
 
   return (
@@ -472,9 +507,9 @@ const RecentOrders: React.FC = () => {
             </a>
           </div>
           {/* See More Button */}
-          <button className="btn btn-primary btn-md  transition">
+          <Link to={"orders"} className="btn btn-primary btn-md  transition">
             See More
-          </button>
+          </Link>
         </div>
       </div>
 
@@ -509,25 +544,29 @@ const RecentOrders: React.FC = () => {
                     <div className="avatar">
                       <div className="mask mask-squircle h-10 w-10">
                         <img
-                          src="https://img.daisyui.com/images/profile/demo/2@94.webp"
+                          src={ele?.firstProduct?.variantImages?.[0].url}
                           alt="Avatar Tailwind CSS Component"
                         />
                       </div>
                     </div>
                     <p className="inline-flex flex-col gap-1">
-                      <span>{ele.product}</span>
-                      <span>+3 products</span>
+                      <span className="text-sm capitalize font-medium">
+                        {ele?.firstProduct?.productName}
+                      </span>
+                      <span className="text-xs">
+                        +{ele?.products?.length}Products
+                      </span>
                     </p>
                   </div>
                 </td>
                 <td>
                   <div className="inline-flex flex-col gap-1">
-                    <p className="font-medium">{ele.customerName}</p>
-                    <span className="text-sm">Cus@gmail.com</span>
+                    <p className="font-medium">{ele?.userDetails?.username}</p>
+                    <span className="text-sm">{ele?.userDetails?.email}</span>
                   </div>
                 </td>
-                <td>{ele.totalAmount}</td>
-                <td>{ele.status}</td>
+                <td>{ele?.totalAmount}</td>
+                <td>{ele?.status}</td>
                 <td>
                   <div className="flex gap-1">
                     <button className="btn btn-sm btn-ghost rounded-full">
@@ -544,7 +583,11 @@ const RecentOrders: React.FC = () => {
           </tbody>
         </table>
       </div>
-      <AdminPagination />
+      <AdminPagination
+        currentPage={currentPage}
+        setPage={setCurrentPage}
+        totalPage={10}
+      />
     </>
   );
 };

@@ -9,8 +9,10 @@ const OrderDetailsPage: React.FC = () => {
     queryKey: ["orders", { id }],
     queryFn: () => getOrderDeatils(id),
   });
-  const [order, setOrder] = useState({ ...data?.data?.data } || {});
-  const [orderAddress, setOrderAddress] = useState({ ...order?.address } || {});
+  // const [order, setOrder] = useState({ ...data?.data?.data } || {});
+  const order = { ...data?.data?.data } || {};
+  const orderAddress = { ...order?.address } || {};
+  // const [orderAddress, setOrderAddress] = useState({ ...order?.address } || {});
   const handleStatusChange = (newStatus: string) => {
     setOrder({ ...order, status: newStatus });
   };

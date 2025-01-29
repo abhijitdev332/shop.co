@@ -59,13 +59,14 @@ const UsersTable = () => {
       </>
     );
   };
-
+  console.log(users);
   return (
     <>
       <div className="p-6 bg-white rounded-lg shadow-md">
         <div className="flex">
           <div className=" mb-6">
-            <p className="text-gray-800 text-2xl font-bold">All Products</p>
+            <p className="text-gray-800 text-2xl font-bold">All Users</p>
+            {/* breadcrumbs */}
             <div className="breadcrumbs text-sm">
               <ul>
                 <li>
@@ -156,22 +157,37 @@ const UsersTable = () => {
                   </td>
 
                   {/* Category */}
-                  <td className=" px-4 py-2">{eachUser?.status}</td>
+                  <td className=" px-4 py-2">
+                    {eachUser?.isActive ? (
+                      <span className="badge badge-success badge-outline">
+                        Active
+                      </span>
+                    ) : (
+                      <span className="badge badge-neutral">Active</span>
+                    )}
+                  </td>
 
                   {/* Stock */}
-                  <td className=" px-4 py-2">{eachUser?.added}</td>
+                  <td className=" px-4 py-2">
+                    {new Date(eachUser?.createdAt).toLocaleDateString("en-GB")}
+                  </td>
 
                   {/* Price */}
 
                   {/* Actions */}
                   <td className=" px-4 py-2">
                     <div className="flex gap-1 ">
-                      <button className="btn btn-sm btn-primary rounded-full">
+                      {/* view user btn */}
+                      <Link
+                        to={`${eachUser?._id}`}
+                        className="btn btn-sm btn-primary rounded-full"
+                      >
                         <IoEye />
-                      </button>
+                      </Link>
                       {/* <button className="btn btn-sm btn-ghost rounded-full">
                       <MdModeEdit />
                     </button> */}
+                      {/* delete button */}
                       <button
                         className="btn btn-sm btn-error rounded-full"
                         onClick={() => {
@@ -191,6 +207,7 @@ const UsersTable = () => {
           </table>
         </div>
       </div>
+      {/* modal for confirm delete */}
       <dialog id="my_modal_2" className="modal" ref={modalRef}>
         <div className="modal-box bg-white">
           <div className="wrapper">

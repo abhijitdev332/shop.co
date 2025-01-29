@@ -11,6 +11,7 @@ import AllCategory from "./categories/Categories.tsx";
 import AddCategory from "./categories/AddCategory.tsx";
 import AddSubCategory from "./categories/AddSubCategory.tsx";
 import CategoryProducts from "./categories/CategoryProducts.tsx";
+import SubCategoryProducts from "./categories/SubCategoryProducts.tsx";
 import AdminPagination from "./pagination/Pagination.tsx";
 export {
   Dashbroad,
@@ -27,4 +28,5 @@ export {
   CategoryProducts,
   AdminPagination,
   AddSubCategory,
+  SubCategoryProducts,
 };

@@ -20,6 +20,7 @@ import { FaRegTrashCan } from "react-icons/fa6";
 
 const Categories = () => {
   const { state } = useLocation();
+
   return (
     <div className="p-6 bg-white rounded-lg shadow-md">
       <div className="flex flex-col">
@@ -46,7 +47,7 @@ const Categories = () => {
             role="tab"
             className="tab text-lg font-medium text-black"
             aria-label="Category"
-            defaultChecked
+            defaultChecked={!state}
           />
           <div role="tabpanel" className="tab-content mt-8">
             <div className="wrapper">
@@ -60,6 +61,7 @@ const Categories = () => {
             role="tab"
             className="tab text-lg font-medium text-black"
             aria-label="Sub Category"
+            defaultChecked={state}
           />
           <div role="tabpanel" className="tab-content mt-8">
             <div className="wrapper">
@@ -89,6 +91,7 @@ function CategoryTable() {
   const { data } = useQuery({
     queryKey: ["AdminCategory"],
     queryFn: adminCategories,
+    refetchOnWindowFocus: true,
   });
   let catagories = data?.data?.data;
   const queryClient = useQueryClient();
@@ -201,7 +204,7 @@ function CategoryTable() {
                   <td className=" px-4 py-2">
                     <div className="flex gap-2 ">
                       <Link
-                        to={`${cata?._id}`}
+                        to={`${cata?._id}?query=${cata?.categoryName}`}
                         className="btn btn-sm btn-primary rounded-full"
                       >
                         <IoEye />
@@ -278,6 +281,7 @@ function SubCategoryTable() {
   const { data } = useQuery({
     queryKey: ["AdminSubCategory"],
     queryFn: getSubsCategory,
+    refetchOnWindowFocus: true,
   });
   let catagories = data?.data?.data;
   const queryClient = useQueryClient();
@@ -377,7 +381,7 @@ function SubCategoryTable() {
                   <td className=" px-4 py-2">
                     <div className="flex gap-3 ">
                       <Link
-                        to={`/admin/subcategory/${cata?._id}`}
+                        to={`/admin/subcategory/${cata?._id}?query=${cata?.SubCategoryName}`}
                         className="btn btn-sm btn-primary rounded-full"
                       >
                         <IoEye />

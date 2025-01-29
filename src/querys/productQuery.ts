@@ -6,6 +6,12 @@ const newArivals = async ({ limit = 4, skip = 0 }) => {
 const newReview = async ({ id, data }) => {
   return await PrivateAxios.post(`/product/review/add/${id}`, data);
 };
+const deleteReview = async (id, reviewId) => {
+  console.log(id, reviewId);
+  return await PrivateAxios.delete(
+    `/product/review/remove/${id}?reviewId=${reviewId}`
+  );
+};
 const topSelling = async ({ limit = 4, skip = 0 }) => {
   return await PrivateAxios.get(`/product/top?limit=${limit}&skip=${skip}`);
 };
@@ -51,6 +57,11 @@ let getProductsByslug = async ({ query = "", limit, skip }) => {
       return newArivals({ limit, skip });
   }
 };
+let getProductOrderDetails = async ({ productId, color }) => {
+  return await PrivateAxios.get(
+    `/product/orders?productId=${productId}&color=${color}`
+  );
+};
 
 export {
   newArivals,
@@ -59,7 +70,9 @@ export {
   getAllproducts,
   getProductByCategory,
   newProduct,
+  deleteReview,
   deleteProduct,
   getProductsByslug,
   newReview,
+  getProductOrderDetails,
 };

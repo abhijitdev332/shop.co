@@ -1,20 +1,20 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import React, { useRef, useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
-import { getProductsByCategory } from "../../../querys/categoryQuery";
+import { getProductsBySubCategory } from "../../../querys/categoryQuery";
 import { FaRegTrashCan } from "react-icons/fa6";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { IoEye } from "react-icons/io5";
 import { MdModeEdit } from "react-icons/md";
 import { toast } from "react-toastify";
 
-const CategoryProducts = () => {
+const SubCategoryProducts = () => {
   const [params] = useSearchParams();
   const { id } = useParams();
   let param = params.get("query");
   const { data } = useQuery({
-    queryKey: ["adminCategoryProducts", id],
-    queryFn: () => getProductsByCategory(param),
+    queryKey: ["adminSubCategoryProducts", id],
+    queryFn: () => getProductsBySubCategory(param),
   });
   const products = data?.data?.data;
   const queryClient = useQueryClient();
@@ -70,7 +70,9 @@ const CategoryProducts = () => {
                   <Link to={"/admin"}>Dashbroad</Link>
                 </li>
                 <li>
-                  <Link to={-1}>Categories</Link>
+                  <Link to={-1} state={true}>
+                    Categories
+                  </Link>
                 </li>
                 <li>{param}</li>
               </ul>
@@ -262,4 +264,4 @@ const CategoryProducts = () => {
   );
 };
 
-export default CategoryProducts;
+export default SubCategoryProducts;

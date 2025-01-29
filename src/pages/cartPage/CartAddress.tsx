@@ -71,6 +71,9 @@ const CartAddress = () => {
   }
   //   chekcout func
   const handleCheckout = async () => {
+    if (selectedAddress == "") {
+      return toast.info("Please select an address");
+    }
     let productData = products?.map((ele) => ({
       name: ele?.name,
       image: ele?.imgurl,

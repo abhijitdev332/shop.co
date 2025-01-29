@@ -39,6 +39,7 @@ const ProductCard = ({ product = {}, style = "", size = "", imgStyle }) => {
           {product?.name}
           {/* <div className="badge badge-seconday">{product.category.name}</div> */}
         </h2>
+        <p className="text-xs text-slate-900">{product?.description}</p>
         <div className="flex items-center gap-1">
           <span>
             <Star

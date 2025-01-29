@@ -22,7 +22,7 @@ const OrderDetails: React.FC = () => {
   });
 
   let orderDetails = data?.data?.data;
-  console.log(orderDetails);
+
   return (
     <section>
       <ScrollRestoration />

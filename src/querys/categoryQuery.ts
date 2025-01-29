@@ -6,6 +6,18 @@ const getAllCategory = async () => {
 const getSubsCategory = async () => {
   return await PrivateAxios.get("/subcategory");
 };
+
+const getProductsByCategory = async (query = "") => {
+  return await PrivateAxios.get(
+    `/product/category?query=${query.toLowerCase()}`
+  );
+};
+const getProductsBySubCategory = async (query = "") => {
+  return await PrivateAxios.get(
+    `/product/subCategory?query=${query.toLowerCase()}`
+  );
+};
+
 const createCategory = async (data) => {
   return await PrivateAxios.post("/category/create", data, {
     headers: {
@@ -35,4 +47,6 @@ export {
   createSubCategory,
   deleteCategory,
   deleteSubsCategory,
+  getProductsByCategory,
+  getProductsBySubCategory,
 };

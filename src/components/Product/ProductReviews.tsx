@@ -6,7 +6,7 @@ import { FaRegStar, FaStar } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
-import { newReview } from "../../querys/productQuery";
+import { deleteReview, newReview } from "../../querys/productQuery";
 
 export function ProductReviews({
   reviews = [],
@@ -53,6 +53,20 @@ export function ProductReviews({
     reviewMutaion({ id: productId, data: { userId, rating, comment } });
   };
 
+  const { mutate: reviewDeleteMutation } = useMutation({
+    mutationKey: ["deleteReview", productId],
+    mutationFn: (reviewId) => deleteReview(productId, reviewId),
+    onSuccess: (data) => {
+      toast.success(data?.data?.message);
+      queryclient.invalidateQueries(["product", productId]);
+    },
+  });
+  const handleReviewDelete = async (reviewId) => {
+    if (reviewId !== "") {
+      return reviewDeleteMutation(reviewId);
+    }
+  };
+
   return (
     <>
       <section>
@@ -87,9 +101,11 @@ export function ProductReviews({
             <div className="flex flex-wrap justify-center gap-3">
               {reviews.map((ele) => (
                 <ReviewCard
+                  id={ele?._id}
                   customerName={ele?.user?.username}
                   stats={ele?.rating}
                   reviewText={ele?.comment}
+                  handleDelete={handleReviewDelete}
                 />
               ))}
             </div>
@@ -101,7 +117,7 @@ export function ProductReviews({
           </div>
         </div>
       </section>
-
+      {/* modal */}
       <dialog
         id="my_modal_5"
         ref={modalRef}

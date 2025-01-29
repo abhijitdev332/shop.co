@@ -17,7 +17,7 @@ const Sidebar: React.FC = () => {
 
   return (
     <div
-      className={`flex flex-col h-screen bg-gray-200 text-white ${
+      className={`flex flex-col h-screen bg-gray-200 text-black ${
         isOpen ? "w-64" : "w-20"
       } transition-all duration-300`}
     >
@@ -30,8 +30,10 @@ const Sidebar: React.FC = () => {
       >
         <div className="flex items-center">
           {isOpen && (
-            <span className="ml-4 text-xl font-bold">
-              <Link to={"/"}>SHOP.CO</Link>
+            <span className="ml-4 text-2xl font-extrabold">
+              <Link to={"/"} className="text-inherit">
+                SHOP.CO
+              </Link>
             </span>
           )}
         </div>
@@ -58,7 +60,7 @@ const Sidebar: React.FC = () => {
           className={({ isActive }) =>
             `flex items-center px-4 py-3 mb-2 rounded-lg transition ${
               isActive
-                ? "bg-neutral text-white"
+                ? "bg-gray-400"
                 : "text-gray-400 hover:bg-gray-700 hover:text-white"
             }`
           }
@@ -73,7 +75,7 @@ const Sidebar: React.FC = () => {
           className={({ isActive }) =>
             `flex items-center px-4 py-3 mb-2 rounded-lg transition ${
               isActive
-                ? "bg-neutral text-white"
+                ? "bg-gray-400"
                 : "text-gray-400 hover:bg-gray-700 hover:text-white"
             }`
           }
@@ -88,7 +90,7 @@ const Sidebar: React.FC = () => {
           className={({ isActive }) =>
             `flex items-center px-4 py-3 mb-2 rounded-lg transition ${
               isActive
-                ? "bg-neutral text-white"
+                ? "bg-gray-400"
                 : "text-gray-400 hover:bg-gray-700 hover:text-white"
             }`
           }
@@ -101,10 +103,10 @@ const Sidebar: React.FC = () => {
         <NavLink
           to="users"
           className={({ isActive }) =>
-            `flex items-center px-4 py-3 mb-2 rounded-lg transition ${
+            `flex items-center px-4 py-3 mb-2  text-black rounded-lg transition ${
               isActive
-                ? "bg-neutral text-white"
-                : "text-gray-400 hover:bg-gray-700 hover:text-white"
+                ? "bg-gray-700  text-white "
+                : "text-gray-400 hover:bg-gray-500 hover:text-white"
             }`
           }
         >
@@ -113,13 +115,13 @@ const Sidebar: React.FC = () => {
           </span>
           {isOpen && <span className="ml-4">Users</span>}
         </NavLink>
-        <NavLink
+        {/* <NavLink
           to="/stocks"
           className={({ isActive }) =>
             `flex items-center px-4 py-3 mb-2 rounded-lg transition ${
               isActive
-                ? "bg-neutral text-white"
-                : "text-gray-400 hover:bg-gray-700 hover:text-white"
+                ? "bg-gray-400"
+                : "text-gray-400 hover:bg-gray-500 hover:text-white"
             }`
           }
         >
@@ -127,7 +129,7 @@ const Sidebar: React.FC = () => {
             <FaHouseCircleCheck />
           </span>
           {isOpen && <span className="ml-4">In Stock</span>}
-        </NavLink>
+        </NavLink> */}
       </div>
 
       {/* Logout Section */}

@@ -2,21 +2,34 @@ import React, { FC, useState } from "react";
 import { IoStarSharp, IoStarOutline, IoHandLeftSharp } from "react-icons/io5";
 import { FaCheckCircle, FaRegCheckCircle } from "react-icons/fa";
 import { Star } from "../component";
-interface ReviewProps {
-  stats: number;
-  customerName: string;
-  verified: boolean;
-  reviewText: string;
-}
-const Review: FC<ReviewProps> = ({
+import { FiTrash } from "react-icons/fi";
+import { useSelector } from "react-redux";
+
+const Review = ({
+  id = "",
   stats = 4,
-  customerName,
+  customerName = "",
   verified = true,
   reviewText = false,
+  handleDelete,
 }) => {
+  const { userDetails } = useSelector((store) => store.user);
+  const [isAdmin, setIsadmin] = useState(userDetails?.roles?.includes("ADMIN"));
+  const handleDeleteClick = async () => {
+    handleDelete(id);
+  };
   return (
     <div className="outline outline-1 rounded-2xl p-3 w-fit sm:w-[20rem]">
-      <div className="wrapper text-black">
+      <div className="wrapper text-black relative">
+        {isAdmin && (
+          <span
+            className="p-2 border absolute right-5 top-3 bg-red-500 cursor-pointer hover:scale-110 duration-300 rounded-full"
+            onClick={handleDeleteClick}
+          >
+            <FiTrash color="white" />
+          </span>
+        )}
+
         <div className="flex flex-col gap-1">
           <p className="flex gap-2">
             {/* {stars?.map(() => (

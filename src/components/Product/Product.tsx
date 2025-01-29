@@ -72,10 +72,18 @@ const Product = () => {
   };
   // quantity add
   const addClick = () => {
+    if (!selectedProductSize) {
+      return toast.info("Please Select an size!!");
+    }
+
     setQuantity((prev) => prev + 1);
   };
   // quantity minus
   const minusClick = () => {
+    if (!selectedProductSize) {
+      return toast.info("Please Select an size!!");
+    }
+
     setQuantity((prev) => prev - 1);
   };
   // effect on data changes
