@@ -8,7 +8,7 @@ const Category = () => {
   return (
     <section>
       <div className="wrapper">
-        <div className="card w-[90%] mx-auto p-7 rounded-2xl bg-gray-300">
+        <div className="card w-[90%] mx-auto p-7 rounded-2xl">
           <h2 className="uppercase text-3xl font-bold  text-center text-black py-6">
             browse by dress style
           </h2>
@@ -21,9 +21,9 @@ const Category = () => {
                     className="col-span-2 h-60 rounded-lg"
                     style={{
                       background: `url(${ele.categoryImage})`,
-                      backgroundSize: "100%",
+                      backgroundSize: "cover",
                       backgroundRepeat: "no-repeat",
-                      backgroundPosition: "center top",
+                      backgroundPosition: "top center",
                     }}
                   >
                     <Link to={`/product/category/${ele.categoryName}`}>

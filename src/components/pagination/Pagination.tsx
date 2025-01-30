@@ -38,7 +38,7 @@ const Pagination = ({ setPage = "", currentPage = "", totalPage = "" }) => {
                   <button
                     className={cl(
                       "join-item bg-transparent btn",
-                      +currentPage == index + 1 ? "!btn-secondary" : ""
+                      +currentPage == index + 1 ? "!btn-primary" : ""
                     )}
                     onClick={handleBtnClick}
                   >

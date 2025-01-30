@@ -8,17 +8,23 @@ import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { ImageLetter } from "../../utils/utils";
 import cl from "classnames";
+import { useTheme } from "../../services/providers/ThemeProvider";
 const imageUrl =
   "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
 const AdminDashboardHeader = () => {
+  const [theme, toggleTheme] = useTheme();
   const { userDetails } = useSelector((store) => store.user);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [inputFull, setInputFull] = useState(false);
 
   const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
   const toggleInput = () => setInputFull(!inputFull);
+  const handleTheme = () => {
+    console.log(theme);
+    toggleTheme();
+  };
   return (
-    <header className="flex items-center justify-between bg-white shadow-md px-6 py-4 sticky top-0 z-10">
+    <header className="flex items-center justify-between bg-white dark:bg-slate-900  shadow-md px-6 py-4 sticky top-0 z-10">
       {/* Left Section - Search Bar */}
       <div className="flex items-center w-full px-5">
         <input
@@ -35,7 +41,7 @@ const AdminDashboardHeader = () => {
       <div className="flex items-center space-x-6">
         {/* theme change  */}
         <div className="flex">
-          <span className="cursor-pointer">
+          <span className="cursor-pointer" onClick={handleTheme}>
             <FaSun size={25} />
           </span>
         </div>

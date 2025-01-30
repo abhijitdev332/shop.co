@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRef, useState } from "react";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { IoEye } from "react-icons/io5";
@@ -8,6 +8,8 @@ import { useAdminProduct } from "../../../querys/admin/adminQuery";
 import { deleteProduct } from "../../../querys/productQuery";
 import { toast } from "react-toastify";
 import { FaRegTrashCan } from "react-icons/fa6";
+import { getadminProductskey } from "../../../querys/admin/adminApi";
+import { DropDown, Modal } from "../../../components/component";
 
 const AllProductsTable = () => {
   let { data: products } = useAdminProduct();
@@ -21,7 +23,6 @@ const AllProductsTable = () => {
       prev.includes(id) ? prev.filter((pid) => pid !== id) : [...prev, id]
     );
   };
-
   // Select or deselect all products
   const toggleSelectAll = () => {
     if (selectedProducts.length === products.length) {
@@ -38,12 +39,11 @@ const AllProductsTable = () => {
       if (modalRef?.current) {
         modalRef.current?.close();
       }
-      queryClient.invalidateQueries("adminproducts");
+      queryClient.invalidateQueries(getadminProductskey);
     },
   });
   const handleDelete = () => {
     deleteMutation(deleteSelect);
-    // setProducts((prev) => prev.filter((product) => product.id !== id));
   };
 
   return (
@@ -67,7 +67,7 @@ const AllProductsTable = () => {
           </div>
           <div className=" ms-auto flex">
             <Link to={"add"}>
-              <button className="btn btn-primary">Add Product</button>
+              <button className="btn btn-neutral">Add Product</button>
             </Link>
           </div>
         </div>
@@ -75,7 +75,7 @@ const AllProductsTable = () => {
         {/* Table */}
         <div className="overflow-x-auto">
           <table className="w-full rounded">
-            <thead className="bg-gray-100 text-black">
+            <thead className="sticky top-0 bg-gray-200 p-2 z-10">
               <tr>
                 <th className=" px-4 py-2 text-left">
                   <div className="flex gap-2">
@@ -124,7 +124,7 @@ const AllProductsTable = () => {
                           </div>
                         </div>
                         <p className="inline-flex flex-col">
-                          <span className="capitalize font-medium text-lg">
+                          <span className="capitalize font-medium">
                             {product?.name}
                           </span>
                           <span className="text-sm text-gray-400">
@@ -175,28 +175,37 @@ const AllProductsTable = () => {
 
                   {/* Actions */}
                   <td className=" px-4 py-2">
-                    <div className="flex gap-1 ">
-                      <Link
-                        to={`${product?._id}`}
-                        className="btn btn-sm btn-primary rounded-full"
-                      >
-                        <IoEye />
-                      </Link>
-                      <button className="btn btn-sm btn-accent rounded-full">
-                        <MdModeEdit />
-                      </button>
-                      <button
-                        className="btn btn-sm btn-error rounded-full"
-                        onClick={() => {
-                          if (modalRef?.current) {
-                            setDeleteSelect(product?._id);
-                            modalRef.current?.showModal();
-                          }
-                        }}
-                      >
-                        <FaRegTrashAlt />
-                      </button>
-                    </div>
+                    <DropDown>
+                      <li>
+                        <Link
+                          to={`${product?._id}`}
+                          className="hover:bg-gray-500 text-start font-medium"
+                        >
+                          <IoEye />
+                          View
+                        </Link>
+                      </li>
+                      <li>
+                        <button className="hover:bg-gray-500 text-start font-medium">
+                          <MdModeEdit />
+                          Edit
+                        </button>
+                      </li>
+                      <li>
+                        <button
+                          className="hover:bg-gray-500 text-start font-medium"
+                          onClick={() => {
+                            if (modalRef?.current) {
+                              setDeleteSelect(product?._id);
+                              modalRef.current?.showModal();
+                            }
+                          }}
+                        >
+                          <FaRegTrashAlt />
+                          Delete
+                        </button>
+                      </li>
+                    </DropDown>
                   </td>
                 </tr>
               ))}
@@ -204,49 +213,40 @@ const AllProductsTable = () => {
           </table>
         </div>
       </div>
+      {/* modal */}
+      <Modal modalRef={modalRef}>
+        <div className="card flex justify-center flex-col gap-3 items-center">
+          <div className="flex justify-center border-spacing-1 bg-red-400 w-20 rounded-full p-5">
+            <span>
+              <FaRegTrashCan size={30} color="white" />
+            </span>
+          </div>
 
-      <dialog id="my_modal_2" className="modal" ref={modalRef}>
-        <div className="modal-box bg-white">
-          <div className="wrapper">
-            <div className="card flex justify-center flex-col gap-3 items-center">
-              <div className="flex justify-center border-spacing-1 bg-red-400 w-20 rounded-full p-5">
-                <span>
-                  <FaRegTrashCan size={30} color="white" />
-                </span>
-              </div>
+          <div className="flex flex-col items-center">
+            <h3 className="font-bold text-xl">Delete Product and Variants!!</h3>
+            <p className="py-4">Press Delete or Cancel !!</p>
+          </div>
 
-              <div className="flex flex-col items-center">
-                <h3 className="font-bold text-xl">
-                  Delete Product and Variants!!
-                </h3>
-                <p className="py-4">Press Delete or Cancel !!</p>
-              </div>
-
-              <div className="btn-group w-full px-5 flex justify-between">
-                <button
-                  className="btn btn-outline text-lg font-medium"
-                  onClick={() => {
-                    if (modalRef?.current) {
-                      modalRef.current?.close();
-                    }
-                  }}
-                >
-                  Cancel
-                </button>
-                <button
-                  className="btn btn-error text-lg font-medium"
-                  onClick={handleDelete}
-                >
-                  Delete
-                </button>
-              </div>
-            </div>
+          <div className="btn-group w-full px-5 flex justify-between">
+            <button
+              className="btn btn-outline text-lg font-medium"
+              onClick={() => {
+                if (modalRef?.current) {
+                  modalRef.current?.close();
+                }
+              }}
+            >
+              Cancel
+            </button>
+            <button
+              className="btn btn-error text-lg font-medium"
+              onClick={handleDelete}
+            >
+              Delete
+            </button>
           </div>
         </div>
-        <form method="dialog" className="modal-backdrop">
-          <button>close</button>
-        </form>
-      </dialog>
+      </Modal>
     </>
   );
 };

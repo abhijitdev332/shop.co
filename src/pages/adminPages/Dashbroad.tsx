@@ -21,7 +21,10 @@ import { AdminPagination } from "./adminPages";
 import { MdCurrencyExchange } from "react-icons/md";
 import { useQuery } from "@tanstack/react-query";
 import { topSelling } from "../../querys/productQuery";
-import { adminOrders, adminTopCategories } from "../../querys/admin/adminQuery";
+import {
+  adminTopCategories,
+  useAdminOrders,
+} from "../../querys/admin/adminQuery";
 import { Link } from "react-router-dom";
 const Dashbroad = () => {
   return (
@@ -299,7 +302,7 @@ function TopProduct() {
                 >
                   {ele?.name}
                 </span>
-                <span className="text-sm font-medium capitalize">
+                <span className="text-xs font-medium text-gray-500 capitalize">
                   Sold:{ele?.totalProductSales}
                 </span>
               </p>
@@ -371,7 +374,7 @@ function TopCategory() {
                   {ele?.categoryName}
                 </span>
 
-                <span className="text-xs">
+                <span className="text-xs text-gray-500 font-bold">
                   Date: {new Date(ele?.createdAt).toLocaleDateString("en-GB")}
                 </span>
               </p>
@@ -449,17 +452,7 @@ function ExpenseChart() {
 const RecentOrders = () => {
   const itemsPerPage = 5;
   const [currentPage, setCurrentPage] = useState(1);
-  const { data } = useQuery({
-    queryKey: ["adminOrders", currentPage],
-    queryFn: () =>
-      adminOrders({
-        limit: currentPage * itemsPerPage,
-        skip: (currentPage - 1) * itemsPerPage,
-      }),
-    staleTime: 2000,
-  });
-  let orders = data?.data?.data || [];
-
+  const { data: orders } = useAdminOrders(currentPage, itemsPerPage);
   const [selectedDate, setSelectedDate] = useState<string>("");
 
   const handleDelete = (id: string) => {
@@ -477,62 +470,55 @@ const RecentOrders = () => {
   return (
     <>
       {/* Header */}
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl space-x-2 font-bold text-gray-800">
+      <div className="flex  justify-between items-center mb-6">
+        <h2 className="text-xl space-x-2 font-bold text-gray-800">
           <span>Recent Orders</span>
-          <span className="rounded-btn text-sm bg-green-200 px-2 py-1">
+          <span className="rounded-btn text-xs bg-green-200 px-2 py-1">
             20 Orders
           </span>
         </h2>
         <div className="flex items-center space-x-4">
           {/* Date Filter */}
-          <div
+          {/* <div
             role="tablist"
-            className="tabs tabs-boxed bg-slate-200 font-medium"
+            className="tabs tabs-boxed tabs-md bg-slate-200 font-medium"
           >
-            <a role="tab" className="tab">
+            <a role="tab" className="tab text-xs">
               5 Hours
             </a>
-            <a role="tab" className="tab tab-active bg-white">
+            <a role="tab" className="tab text-xs tab-active bg-white">
               3 Hours
             </a>
-            <a role="tab" className="tab">
+            <a role="tab" className="tab text-xs">
               2 Hours
             </a>
-            <a role="tab" className="tab">
+            <a role="tab" className="tab text-xs">
               1 Hour
             </a>
-            <a role="tab" className="tab">
+            <a role="tab" className="tab text-xs">
               3 Minute
             </a>
-          </div>
+          </div> */}
           {/* See More Button */}
-          <Link to={"orders"} className="btn btn-primary btn-md  transition">
+          <Link to={"orders"} className="btn btn-neutral btn-md  transition">
             See More
           </Link>
         </div>
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto text-black">
+      <div className="overflow-x-auto dark:bg-slate-900 dark:text-white text-black">
         <table className="table">
           {/* head */}
-          <thead className="bg-slate-200 text-black text-md space-y-6">
-            <tr>
-              {/* <th>
-                <label>
-                  <input type="checkbox" className="checkbox" />
-                </label>
-              </th> */}
-              <th>Product</th>
-              <th>Customer</th>
-              <th>Total</th>
-              <th>Status</th>
-              <th>Action</th>
-            </tr>
+          <thead className=" text-black font-medium space-y-6 sticky top-0 z-10 p-2 border-b-2">
+            <th className="font-medium text-inherit">Product</th>
+            <th className="font-medium text-inherit">Customer</th>
+            <th className="font-medium text-inherit">Total</th>
+            <th className="font-medium text-inherit">Status</th>
+            <th className="font-medium text-inherit">Action</th>
           </thead>
           <tbody>
-            {orders.map((ele) => (
+            {orders?.map((ele) => (
               <tr>
                 {/* <th>
                   <label>
@@ -572,9 +558,9 @@ const RecentOrders = () => {
                     <button className="btn btn-sm btn-ghost rounded-full">
                       <BsFillEyeFill />
                     </button>
-                    <button className="btn btn-sm btn-ghost hover:bg-red-500 rounded-full">
+                    {/* <button className="btn btn-sm btn-ghost hover:bg-red-500 rounded-full">
                       <FaRegTrashAlt />
-                    </button>
+                    </button> */}
                   </div>
                 </td>
               </tr>

@@ -1,7 +1,7 @@
-import React from "react";
 import { AdminDashboardHeader, Sidebar } from "../includes/includes";
 import { Outlet } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
+import { LoadingScreen } from "../components/component";
 
 const Admin = () => {
   return (
@@ -15,6 +15,7 @@ const Admin = () => {
           </div>
         </div>
       </div>
+      <LoadingScreen />
       <ToastContainer style={{ zIndex: 100 }} />
     </>
   );

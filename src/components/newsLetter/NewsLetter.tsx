@@ -16,7 +16,11 @@ function NewsLetter() {
               <span>
                 <FiMail />
               </span>
-              <input type="text" className="bg-transparent outline-none px-2" />
+              <input
+                type="text"
+                className="bg-transparent outline-none px-2"
+                placeholder="Enter Your Mail"
+              />
             </label>
 
             <button className="capitalize w-[18rem] bg-white  btn hover:text-white rounded-badge px-7">

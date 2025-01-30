@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { newArivals, topSelling } from "../querys/productQuery";
 import { getAllCategory, getSubsCategory } from "../querys/categoryQuery";
@@ -18,7 +18,7 @@ const InitialData = () => {
     data: arivalProduct,
     isLoading: arivalLoading,
     isError: arivalErr,
-  } = useQuery({
+  } = useSuspenseQuery({
     queryKey: ["products", "arrivals"],
     queryFn: newArivals,
   });
@@ -26,7 +26,7 @@ const InitialData = () => {
     data: topProduct,
     isLoading: topLoading,
     isError: topErr,
-  } = useQuery({
+  } = useSuspenseQuery({
     queryKey: ["products", "top"],
     queryFn: topSelling,
   });
@@ -34,7 +34,7 @@ const InitialData = () => {
     data: category,
     isLoading: categoryLoading,
     isError: categoryErr,
-  } = useQuery({
+  } = useSuspenseQuery({
     queryKey: ["category"],
     queryFn: getAllCategory,
   });
@@ -43,7 +43,7 @@ const InitialData = () => {
     data: subCategory,
     isLoading: subLoading,
     isError: subErr,
-  } = useQuery({
+  } = useSuspenseQuery({
     queryKey: ["subCategory"],
     queryFn: getSubsCategory,
   });

@@ -510,9 +510,10 @@ const ProductAddPage = () => {
                 </div>
               </div>
             ))}
+            {/* add variant */}
             <button
               onClick={handleAddVariant}
-              className="mt-4 btn btn-accent transition"
+              className="mt-4 btn btn-neutral transition"
             >
               Add Variant
             </button>
@@ -627,7 +628,7 @@ function DetailsModal({ detailsModalRef, productMoreData }) {
           </div>
           <div className="flex justify-center">
             <button
-              className="btn btn-primary w-52 text-lg"
+              className="btn btn-neutral w-52 text-lg"
               onClick={handleAddClick}
             >
               Add

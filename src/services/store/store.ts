@@ -3,13 +3,14 @@ import cartReducer from "./cart/cartSlice";
 import productReducer from "./products/productSlice";
 import userReducer from "./user/userSlice";
 import categoryReducer from "./category/categorySlice";
+import loaderReducer from "./loader/loader";
 import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 // config for persistance
 const persisteConfig = {
   key: "root",
   storage,
-  // blacklist: ["user"],
+  blacklist: ["loader"],
 };
 // combine all reducers to one
 const combinedReducers = combineReducers({
@@ -17,6 +18,7 @@ const combinedReducers = combineReducers({
   product: productReducer,
   user: userReducer,
   category: categoryReducer,
+  loader: loaderReducer,
 });
 // persist the reducers
 const persistReducers = persistReducer(persisteConfig, combinedReducers);

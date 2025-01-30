@@ -200,18 +200,20 @@ const Product = () => {
                 </div>
                 {/* price */}
                 <div className="price flex py-4 font-bold text-2xl  items-center gap-3">
-                  <span>{currentProductVariant?.sellPrice}</span>
-                  <span className="text-gray-500 line-through">
-                    {currentProductVariant?.basePrice}
+                  <span>${currentProductVariant?.sellPrice}</span>
+                  <span className="text-gray-500  text-sm line-through">
+                    ${currentProductVariant?.basePrice}
                   </span>
                   {currentProductVariant?.discount && (
                     <span className="badge p-3 border-none text-red-700 bg-red-200">
-                      {currentProductVariant?.discount}
+                      -{currentProductVariant?.discount}
                     </span>
                   )}
                 </div>
                 <div className="dsc py-2">
-                  <p className="text-gray-500">{productData?.description}</p>
+                  <p className="text-gray-500 font-medium">
+                    {productData?.description}
+                  </p>
                 </div>
                 <div className="outline outline-1 outline-slate-300"></div>
                 {/* color */}
@@ -221,7 +223,7 @@ const Product = () => {
                     {productColors?.map((ele) => (
                       <button
                         className={cl(
-                          "flex gap-1 items-center outline  p-1 rounded-btn brightness-50	transition-all",
+                          "flex gap-1 items-center outline  p-1 rounded-btn contrast-75	transition-all",
                           ele == currentProductColor ? "outline-1" : "outline-0"
                         )}
                         onClick={() => {

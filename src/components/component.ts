@@ -11,6 +11,9 @@ import Category from "./category/Category";
 import Logout from "./logout/Logout";
 import { LoaderBtn } from "./button/btn";
 import ProductsBySlug from "./productByCategory/ProductBySlug";
+import Modal from "./modal/Modal";
+import DropDown from "./dropdown/Dropdown";
+import LoadingScreen from "./loader/Loader";
 // import NewProductDetails from "./Product/NewCodeProduct";
 export {
   Hero,
@@ -26,4 +29,7 @@ export {
   Logout,
   LoaderBtn,
   ProductsBySlug,
+  Modal,
+  LoadingScreen,
+  DropDown,
 };

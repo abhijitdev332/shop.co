@@ -35,20 +35,24 @@ const ProductCard = ({ product = {}, style = "", size = "", imgStyle }) => {
         </Link>
       </figure>
       <div className="card-body p-2 gap-0">
-        <h2 className="card-title text-lg md:text-xl font-medium capitalize text-ellipsis overflow-hidden">
+        <h2 className="card-title text-gray-900 text-lg md:text-xl font-medium capitalize text-ellipsis overflow-hidden">
           {product?.name}
           {/* <div className="badge badge-seconday">{product.category.name}</div> */}
         </h2>
-        <p className="text-xs text-slate-900">{product?.description}</p>
-        <div className="flex items-center gap-1">
-          <span>
-            <Star
-              count={product?.averageRating || 1}
-              color="orange"
-              size={15}
-            />
-          </span>
-          <span>{Math.round(product?.averageRating)}/5</span>
+        <div className="flex gap-1">
+          <p className="text-sm text-gray-500 capitalize font-medium">
+            {product?.description}
+          </p>
+          <div className="flex items-center gap-1">
+            <span>
+              <Star
+                count={product?.averageRating || 1}
+                color="orange"
+                size={15}
+              />
+            </span>
+            <span>{Math.round(product?.averageRating)}/5</span>
+          </div>
         </div>
 
         {/* <p className="text-gray-800">{product.description?.slice(0, 70)}</p> */}

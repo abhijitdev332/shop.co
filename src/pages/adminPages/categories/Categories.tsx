@@ -17,6 +17,8 @@ import {
   setSubCategory,
 } from "../../../services/store/category/categorySlice";
 import { FaRegTrashCan } from "react-icons/fa6";
+import { DropDown, Modal } from "../../../components/component";
+import Dropdown from "../../../components/dropdown/Dropdown";
 
 const Categories = () => {
   const { state } = useLocation();
@@ -49,7 +51,7 @@ const Categories = () => {
             aria-label="Category"
             defaultChecked={!state}
           />
-          <div role="tabpanel" className="tab-content mt-8">
+          <div role="tabpanel" className="tab-content ">
             <div className="wrapper">
               <CategoryTable />
             </div>
@@ -63,7 +65,7 @@ const Categories = () => {
             aria-label="Sub Category"
             defaultChecked={state}
           />
-          <div role="tabpanel" className="tab-content mt-8">
+          <div role="tabpanel" className="tab-content">
             <div className="wrapper">
               <SubCategoryTable />
             </div>
@@ -80,7 +82,6 @@ const Categories = () => {
             Tab content 3
           </div> */}
         </div>
-
         {/* end tab list */}
       </div>
     </div>
@@ -123,25 +124,25 @@ function CategoryTable() {
       queryClient.invalidateQueries("AdminCategory");
     },
   });
+  // delete click
   const handleDelete = () => {
     delCategory(deleteSelect);
-    // catagories((prev) => prev.filter((product) => product.id !== id));
   };
 
   return (
     <>
-      <div className="wrapper  flex flex-col gap-5 h-full overflow-hidden">
+      <div className="wrapper  py-3 flex flex-col gap-5 h-full overflow-hidden">
         {/* add button */}
         <div className="ms-auto flex ">
           <Link to={"add"}>
-            <button className="btn btn-primary">Add Category</button>
+            <button className="btn btn-neutral">Add Category</button>
           </Link>
         </div>
 
         {/* Table */}
-        <div className="overflow-clip">
+        <div className="overflow-x-auto">
           <table className="w-full rounded">
-            <thead className="bg-gray-100 text-black">
+            <thead className="sticky top-0 z-10 bg-gray-100 p-2">
               <tr>
                 <th className=" px-4 py-2 text-left">
                   <div className="flex gap-2">
@@ -202,28 +203,37 @@ function CategoryTable() {
 
                   {/* Actions */}
                   <td className=" px-4 py-2">
-                    <div className="flex gap-2 ">
-                      <Link
-                        to={`${cata?._id}?query=${cata?.categoryName}`}
-                        className="btn btn-sm btn-primary rounded-full"
-                      >
-                        <IoEye />
-                      </Link>
-                      <button className="btn btn-sm btn-accent rounded-full">
-                        <MdModeEdit />
-                      </button>
-                      <button
-                        className="btn btn-sm btn-error rounded-full"
-                        onClick={() => {
-                          if (modalRef?.current) {
-                            setDeleteSelect(cata?._id);
-                            modalRef?.current?.showModal();
-                          }
-                        }}
-                      >
-                        <FaRegTrashAlt />
-                      </button>
-                    </div>
+                    <DropDown>
+                      <li>
+                        <Link
+                          to={`${cata?._id}?query=${cata?.categoryName}`}
+                          className="font-medium hover:bg-gray-300"
+                        >
+                          <IoEye />
+                          View
+                        </Link>
+                      </li>
+                      <li>
+                        <button className="font-medium hover:bg-gray-300">
+                          <MdModeEdit />
+                          Edit
+                        </button>
+                      </li>
+                      <li>
+                        <button
+                          className="font-medium hover:bg-gray-300"
+                          onClick={() => {
+                            if (modalRef?.current) {
+                              setDeleteSelect(cata?._id);
+                              modalRef?.current?.showModal();
+                            }
+                          }}
+                        >
+                          <FaRegTrashAlt />
+                          Delete
+                        </button>
+                      </li>
+                    </DropDown>
                   </td>
                 </tr>
               ))}
@@ -231,48 +241,42 @@ function CategoryTable() {
           </table>
         </div>
       </div>
-      <dialog id="my_modal_2" className="modal" ref={modalRef}>
-        <div className="modal-box bg-white">
-          <div className="wrapper">
-            <div className="card flex justify-center flex-col gap-3 items-center">
-              <div className="flex justify-center border-spacing-1 bg-red-400 w-20 rounded-full p-5">
-                <span>
-                  <FaRegTrashCan size={30} color="white" />
-                </span>
-              </div>
+      {/* modal */}
+      <Modal modalRef={modalRef}>
+        <div className="card flex justify-center flex-col gap-3 items-center">
+          <div className="flex justify-center border-spacing-1 bg-red-400 w-20 rounded-full p-5">
+            <span>
+              <FaRegTrashCan size={30} color="white" />
+            </span>
+          </div>
 
-              <div className="flex flex-col items-center">
-                <h3 className="font-bold text-xl">
-                  Delete Category and Its AllProducts
-                </h3>
-                <p className="py-4">Press Delete or Cancel !!</p>
-              </div>
+          <div className="flex flex-col items-center">
+            <h3 className="font-bold text-xl">
+              Delete Category and Its AllProducts
+            </h3>
+            <p className="py-4">Press Delete or Cancel !!</p>
+          </div>
 
-              <div className="btn-group w-full px-5 flex justify-between">
-                <button
-                  className="btn btn-outline text-lg font-medium"
-                  onClick={() => {
-                    if (modalRef?.current) {
-                      modalRef.current?.close();
-                    }
-                  }}
-                >
-                  Cancel
-                </button>
-                <button
-                  className="btn btn-error text-lg font-medium"
-                  onClick={handleDelete}
-                >
-                  Delete
-                </button>
-              </div>
-            </div>
+          <div className="btn-group w-full px-5 flex justify-between">
+            <button
+              className="btn btn-outline text-lg font-medium"
+              onClick={() => {
+                if (modalRef?.current) {
+                  modalRef.current?.close();
+                }
+              }}
+            >
+              Cancel
+            </button>
+            <button
+              className="btn btn-error text-lg font-medium"
+              onClick={handleDelete}
+            >
+              Delete
+            </button>
           </div>
         </div>
-        <form method="dialog" className="modal-backdrop">
-          <button>close</button>
-        </form>
-      </dialog>
+      </Modal>
     </>
   );
 }
@@ -295,7 +299,6 @@ function SubCategoryTable() {
       prev.includes(id) ? prev.filter((pid) => pid !== id) : [...prev, id]
     );
   };
-
   // Select or deselect all products
   const toggleSelectAll = () => {
     if (selectedProducts.length === catagories.length) {
@@ -315,23 +318,22 @@ function SubCategoryTable() {
   });
   const handleDelete = () => {
     mutate(deleteSelect);
-    // catagories((prev) => prev.filter((product) => product._id !== id));
   };
 
   return (
     <>
-      <div className="wrapper  flex flex-col gap-5">
+      <div className="wrapper py-3 flex flex-col gap-5">
         {/* add button */}
         <div className="ms-auto flex ">
           <Link to={"/admin/subcategory/add"}>
-            <button className="btn btn-primary">Add Sub-Category</button>
+            <button className="btn btn-neutral">Add Sub-Category</button>
           </Link>
         </div>
 
         {/* Table */}
         <div className="overflow-x-auto">
           <table className="w-full rounded">
-            <thead className="bg-gray-100 text-black">
+            <thead className="bg-gray-100 sticky top-0 p-2 z-10">
               <tr>
                 <th className=" px-4 py-2">
                   <div className="flex gap-2">
@@ -379,28 +381,37 @@ function SubCategoryTable() {
                   </td>
                   {/* Actions */}
                   <td className=" px-4 py-2">
-                    <div className="flex gap-3 ">
-                      <Link
-                        to={`/admin/subcategory/${cata?._id}?query=${cata?.SubCategoryName}`}
-                        className="btn btn-sm btn-primary rounded-full"
-                      >
-                        <IoEye />
-                      </Link>
-                      <button className="btn btn-sm btn-accent rounded-full">
-                        <MdModeEdit />
-                      </button>
-                      <button
-                        className="btn btn-sm btn-error rounded-full text-white"
-                        onClick={() => {
-                          if (modalRef?.current) {
-                            setDeleteSelect(cata?._id);
-                            modalRef?.current?.showModal();
-                          }
-                        }}
-                      >
-                        <FaRegTrashAlt />
-                      </button>
-                    </div>
+                    <Dropdown>
+                      <li>
+                        <Link
+                          to={`/admin/subcategory/${cata?._id}?query=${cata?.SubCategoryName}`}
+                          className="hover:bg-gray-300 font-medium"
+                        >
+                          <IoEye />
+                          View
+                        </Link>
+                      </li>
+                      <li>
+                        <button className="hover:bg-gray-300 font-medium">
+                          <MdModeEdit />
+                          Edit
+                        </button>
+                      </li>
+                      <li>
+                        <button
+                          className="hover:bg-gray-300 font-medium"
+                          onClick={() => {
+                            if (modalRef?.current) {
+                              setDeleteSelect(cata?._id);
+                              modalRef?.current?.showModal();
+                            }
+                          }}
+                        >
+                          <FaRegTrashAlt />
+                          Delete
+                        </button>
+                      </li>
+                    </Dropdown>
                   </td>
                 </tr>
               ))}
@@ -408,49 +419,42 @@ function SubCategoryTable() {
           </table>
         </div>
       </div>
+      {/* modal */}
+      <Modal modalRef={modalRef}>
+        <div className="card flex justify-center flex-col gap-3 items-center">
+          <div className="flex justify-center border-spacing-1 bg-red-400 w-20 rounded-full p-5">
+            <span>
+              <FaRegTrashCan size={30} color="white" />
+            </span>
+          </div>
 
-      <dialog id="my_modal_2" className="modal" ref={modalRef}>
-        <div className="modal-box bg-white">
-          <div className="wrapper">
-            <div className="card flex justify-center flex-col gap-3 items-center">
-              <div className="flex justify-center border-spacing-1 bg-red-400 w-20 rounded-full p-5">
-                <span>
-                  <FaRegTrashCan size={30} color="white" />
-                </span>
-              </div>
+          <div className="flex flex-col items-center">
+            <h3 className="font-bold text-xl">
+              Delete Category and Its AllProducts
+            </h3>
+            <p className="py-4">Press Delete or Cancel !!</p>
+          </div>
 
-              <div className="flex flex-col items-center">
-                <h3 className="font-bold text-xl">
-                  Delete Category and Its AllProducts
-                </h3>
-                <p className="py-4">Press Delete or Cancel !!</p>
-              </div>
-
-              <div className="btn-group w-full px-5 flex justify-between">
-                <button
-                  className="btn btn-outline text-lg font-medium"
-                  onClick={() => {
-                    if (modalRef?.current) {
-                      modalRef.current?.close();
-                    }
-                  }}
-                >
-                  Cancel
-                </button>
-                <button
-                  className="btn btn-error text-lg font-medium"
-                  onClick={handleDelete}
-                >
-                  Delete
-                </button>
-              </div>
-            </div>
+          <div className="btn-group w-full px-5 flex justify-between">
+            <button
+              className="btn btn-outline text-lg font-medium"
+              onClick={() => {
+                if (modalRef?.current) {
+                  modalRef.current?.close();
+                }
+              }}
+            >
+              Cancel
+            </button>
+            <button
+              className="btn btn-error text-lg font-medium"
+              onClick={handleDelete}
+            >
+              Delete
+            </button>
           </div>
         </div>
-        <form method="dialog" className="modal-backdrop">
-          <button>close</button>
-        </form>
-      </dialog>
+      </Modal>
     </>
   );
 }

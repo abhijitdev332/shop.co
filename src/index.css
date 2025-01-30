@@ -22,7 +22,7 @@ h6,
 div,
 span,
 button {
-  color: #000;
+  color: black;
   font-family: "Roboto", serif;
   font-optical-sizing: auto;
 }
@@ -30,6 +30,7 @@ label,
 input {
   font-family: "Roboto", serif;
   font-optical-sizing: auto;
+  color: inherit;
 }
 
 .robo {

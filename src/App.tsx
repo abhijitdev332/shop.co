@@ -1,5 +1,4 @@
 import { lazy, Suspense } from "react";
-
 import {
   createBrowserRouter,
   createRoutesFromElements,
@@ -54,7 +53,9 @@ const ErrorLayout = lazy(() => import("./layouts/Error"));
 function SuspenseLayout() {
   return (
     <>
-      <Outlet />
+      <Suspense fallback={<Loader />}>
+        <Outlet />
+      </Suspense>
     </>
   );
 }

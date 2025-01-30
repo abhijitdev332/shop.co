@@ -169,7 +169,7 @@ function FillterCard({ show, setShow }) {
                 min={0}
                 max="100"
                 // value="40"
-                className="range"
+                className="range range-xs"
               />
             </div>
             <div className="outline outline-1 outline-slate-300"></div>
@@ -230,7 +230,7 @@ function FillterCard({ show, setShow }) {
               </div>
             </div>
             {/* button apply */}
-            <button className=" btn btn-active rounded-badge">
+            <button className=" btn btn-active dark:btn-ghost dark:text-black text-white rounded-badge">
               Apply Fillter
             </button>
           </div>

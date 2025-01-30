@@ -1,6 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
 import { AdminAxios } from "../../services/api/api";
-import { getadminProducts, getadminProductskey } from "./adminApi";
+import {
+  getAdminOrders,
+  getadminOrdersKey,
+  getadminProducts,
+  getadminProductskey,
+} from "./adminApi";
 
 const useAdminProduct = (limit = 5, skip = 0) => {
   return useQuery({
@@ -14,8 +19,16 @@ const adminProductVariant = async () => {
 const adminAllUser = async () => {
   return await AdminAxios.get("/users");
 };
-const adminOrders = async ({ limit = 5, skip = 0 }) => {
-  return await AdminAxios.get(`/orders?limit=${limit}&skip=${skip}`);
+const useAdminOrders = (currentPage = 1, itemsPerPage = 5) => {
+  return useQuery({
+    queryKey: [getadminOrdersKey, currentPage],
+    queryFn: () =>
+      getAdminOrders(
+        currentPage * itemsPerPage,
+        (currentPage - 1) * itemsPerPage
+      ),
+    staleTime: 2000,
+  });
 };
 const adminCategories = async () => {
   return await AdminAxios.get("/categories");
@@ -28,7 +41,7 @@ export {
   useAdminProduct,
   adminProductVariant,
   adminAllUser,
-  adminOrders,
+  useAdminOrders,
   adminCategories,
   adminTopCategories,
 };

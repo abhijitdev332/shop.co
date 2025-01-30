@@ -41,7 +41,7 @@ const Pagination = ({ setPage = "", currentPage = "", totalPage = "" }) => {
                       className={cl(
                         "join-item  btn",
                         +currentPage == index + 1
-                          ? "!btn-accent"
+                          ? "!btn-neutral"
                           : " bg-transparent"
                       )}
                       onClick={handleBtnClick}

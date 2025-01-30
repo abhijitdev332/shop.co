@@ -17,7 +17,7 @@ const Sidebar: React.FC = () => {
 
   return (
     <div
-      className={`flex flex-col h-screen bg-gray-200 text-black ${
+      className={`flex flex-col h-screen dark:bg-gray-900 dark:text-white bg-gray-200 text-black ${
         isOpen ? "w-64" : "w-20"
       } transition-all duration-300`}
     >
@@ -31,9 +31,7 @@ const Sidebar: React.FC = () => {
         <div className="flex items-center">
           {isOpen && (
             <span className="ml-4 text-2xl font-extrabold">
-              <Link to={"/"} className="text-inherit">
-                SHOP.CO
-              </Link>
+              <Link to={"/"}>SHOP.CO</Link>
             </span>
           )}
         </div>

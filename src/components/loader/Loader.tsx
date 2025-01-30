@@ -1,15 +1,24 @@
-import { useIsFetching } from "@tanstack/react-query";
+import { createPortal } from "react-dom";
+import { useSelector } from "react-redux";
 
 const Loader = () => {
   // react query global fetching
-  const isFetching = useIsFetching();
+  const loadingStatus = useSelector((store) => store.loader);
 
   return (
-    <div className="h-full w-full">
-      <div className="flex justify-center items-center h-full w-full ">
-        <span className="loading loading-spinner loading-lg"></span>
-      </div>
-    </div>
+    <>
+      {loadingStatus &&
+        createPortal(
+          <>
+            <div className="h-screen w-screen">
+              <div className="flex justify-center items-center h-full w-full">
+                <span className="loading loading-spinner loading-lg"></span>
+              </div>
+            </div>
+          </>,
+          document.getElementById("loader")
+        )}
+    </>
   );
 };
 

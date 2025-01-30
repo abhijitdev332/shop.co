@@ -1,19 +1,12 @@
-import { useQuery } from "@tanstack/react-query";
 import React, { useState } from "react";
 import { IoEye } from "react-icons/io5";
 import { MdModeEdit } from "react-icons/md";
 import { Link } from "react-router-dom";
-import { adminOrders } from "../../../querys/admin/adminQuery";
+import { useAdminOrders } from "../../../querys/admin/adminQuery";
+import { DropDown } from "../../../components/component";
 
 const Orders = () => {
-  const { data, isPending, isError, error } = useQuery({
-    queryKey: ["orders"],
-    queryFn: adminOrders,
-  });
-
-  // const [orders, setOrders] = useState(data?.data?.data || []);
-  let orders = data?.data?.data || [];
-
+  const { data: orders } = useAdminOrders();
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
 
   // Toggle product selection
@@ -22,7 +15,6 @@ const Orders = () => {
       prev.includes(id) ? prev.filter((pid) => pid !== id) : [...prev, id]
     );
   };
-
   // Select or deselect all products
   const toggleSelectAll = () => {
     if (selectedProducts.length === orders.length) {
@@ -63,7 +55,7 @@ const Orders = () => {
       {/* Table */}
       <div className="overflow-x-auto">
         <table className="w-full rounded">
-          <thead className="bg-gray-100 text-black">
+          <thead className="bg-gray-100 sticky top-0 z-10 p-2">
             <tr>
               <th className=" px-4 py-2">
                 <input
@@ -143,20 +135,28 @@ const Orders = () => {
 
                 {/* Actions */}
                 <td className=" px-4 py-2">
-                  <div className="flex gap-1 ">
-                    <Link
-                      to={`${order?._id}`}
-                      className="btn btn-sm btn-neutral rounded-full"
-                    >
-                      <IoEye />
-                    </Link>
-                    <button className="btn btn-sm btn-primary  rounded-full">
-                      <MdModeEdit />
-                    </button>
-                    {/* <button className="btn btn-sm btn-ghost rounded-full">
+                  <DropDown>
+                    <li>
+                      <Link
+                        to={`${order?._id}`}
+                        className="hover:bg-gray-300 font-medium"
+                      >
+                        <IoEye />
+                        View
+                      </Link>
+                    </li>
+                    <li>
+                      <button className="hover:bg-gray-300 font-medium">
+                        <MdModeEdit />
+                        Edit
+                      </button>
+                    </li>
+                    <li>
+                      {/* <button className="btn btn-sm btn-ghost rounded-full">
                       <FaRegTrashAlt />
                     </button> */}
-                  </div>
+                    </li>
+                  </DropDown>
                 </td>
               </tr>
             ))}

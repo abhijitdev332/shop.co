@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { GrSort } from "react-icons/gr";
 import { IoIosArrowDown } from "react-icons/io";
-import { LoaderBtn, ReviewCard } from "../component";
+import { LoaderBtn, Modal, ReviewCard } from "../component";
 import { FaRegStar, FaStar } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -118,64 +118,50 @@ export function ProductReviews({
         </div>
       </section>
       {/* modal */}
-      <dialog
-        id="my_modal_5"
-        ref={modalRef}
-        className="modal modal-bottom  sm:modal-middle"
-      >
-        <div className="modal-box bg-white">
-          <div className="wrapper">
-            <form
-              onSubmit={handleSubmit}
-              className="flex flex-col items-center p-3"
-            >
-              {/* Star Rating */}
-              <div className="flex items-center space-x-2 mb-4">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <span>
-                    <FaStar
-                      size={24}
-                      className={`cursor-pointer transition-all ${
-                        (hoverRating || rating) >= star
-                          ? "text-yellow-500"
-                          : "text-gray-400"
-                      }`}
-                      onClick={() => handleStarClick(star)}
-                      onMouseEnter={() => handleStarHover(star)}
-                      onMouseLeave={handleStarLeave}
-                    />
-                  </span>
-                ))}
-                {/* Text Review */}
-              </div>
-              <textarea
-                className="w-full p-2 border rounded-lg resize-none bg-transparent"
-                rows={4}
-                placeholder="Write your review here..."
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-              ></textarea>
+      <Modal modalRef={modalRef}>
+        <form
+          onSubmit={handleSubmit}
+          className="flex flex-col items-center p-3"
+        >
+          {/* Star Rating */}
+          <div className="flex items-center space-x-2 mb-4">
+            {[1, 2, 3, 4, 5].map((star) => (
+              <span>
+                <FaStar
+                  size={24}
+                  className={`cursor-pointer transition-all ${
+                    (hoverRating || rating) >= star
+                      ? "text-yellow-500"
+                      : "text-gray-400"
+                  }`}
+                  onClick={() => handleStarClick(star)}
+                  onMouseEnter={() => handleStarHover(star)}
+                  onMouseLeave={handleStarLeave}
+                />
+              </span>
+            ))}
+            {/* Text Review */}
+          </div>
+          <textarea
+            className="w-full p-2 border rounded-lg resize-none bg-transparent"
+            rows={4}
+            placeholder="Write your review here..."
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+          ></textarea>
 
-              {/* Submit Button */}
-              <div className="mt-4">
-                <LoaderBtn
-                  type="submit"
-                  pending={isPending}
-                  className="w-full !btn btn-neutral"
-                >
-                  Submit Review
-                </LoaderBtn>
-              </div>
-            </form>
+          {/* Submit Button */}
+          <div className="mt-4">
+            <LoaderBtn
+              type="submit"
+              pending={isPending}
+              className="w-full !text-white !btn btn-neutral"
+            >
+              Submit Review
+            </LoaderBtn>
           </div>
-          <div className="modal-action">
-            <form method="dialog">
-              {/* if there is a button in form, it will close the modal */}
-              <button className="btn">Close</button>
-            </form>
-          </div>
-        </div>
-      </dialog>
+        </form>
+      </Modal>
     </>
   );
 }
