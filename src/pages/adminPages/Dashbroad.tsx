@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import cl from "classnames";
 import {
   Area,
@@ -63,7 +63,7 @@ const Dashbroad = () => {
             <SalesChart />
           </Card>
         </div>
-        <div className="flex  gap-5 h-[50vh]">
+        <div className="grid gap-3 grid-cols-1 md:grid-cols-2 lg:grid-cols-3  h-80">
           <Card>
             <ExpenseChart />
           </Card>
@@ -74,7 +74,7 @@ const Dashbroad = () => {
             <TopCategory />
           </Card>
         </div>
-        <div className="flex gap-4 py-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-5">
           <Card style="p-0 basis-2/3">
             <RecentOrders />
           </Card>
@@ -122,7 +122,7 @@ function Card({ style = "", children }) {
   return (
     <div
       className={cl(
-        "card w-full h-full overflow-y-auto  rounded-xl my-3 bg-gray-50 shadow outline outline-1 p-3 ",
+        "w-full overflow-y-auto overflow-x-hidden  rounded-xl  bg-gray-50 shadow outline outline-1 p-3 ",
         style
       )}
     >
@@ -346,10 +346,10 @@ function TopCategory() {
   //     bg: "gray",
   //   },
   // ];
-  console.log(categoryData);
+
   return (
     <div className="p-3">
-      <div className="flex flex-col sticky top-0">
+      <div className="flex flex-col">
         <h2 className="font-bold text-xl">Top Category</h2>
         {/* <p>Lorem ipsum dolor sit amet consectetur.</p> */}
       </div>
@@ -477,7 +477,7 @@ const RecentOrders = () => {
   return (
     <>
       {/* Header */}
-      <div className="flex p-3 justify-between items-center mb-6">
+      <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl space-x-2 font-bold text-gray-800">
           <span>Recent Orders</span>
           <span className="rounded-btn text-sm bg-green-200 px-2 py-1">

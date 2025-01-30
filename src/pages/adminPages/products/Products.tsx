@@ -4,21 +4,14 @@ import { FaRegTrashAlt } from "react-icons/fa";
 import { IoEye } from "react-icons/io5";
 import { MdModeEdit } from "react-icons/md";
 import { Link } from "react-router-dom";
-import { adminProduct } from "../../../querys/admin/adminQuery";
+import { useAdminProduct } from "../../../querys/admin/adminQuery";
 import { deleteProduct } from "../../../querys/productQuery";
 import { toast } from "react-toastify";
 import { FaRegTrashCan } from "react-icons/fa6";
 
 const AllProductsTable = () => {
-  const { data, isError, error, isSuccess } = useQuery({
-    queryKey: ["adminproducts"],
-    queryFn: adminProduct,
-  });
-  const products = data?.data?.data;
-  const firstVariant = data?.data?.data?.firstVariant;
+  let { data: products } = useAdminProduct();
   const queryClient = useQueryClient();
-  // const [products, setProducts] = useState(data?.data?.data || []);
-
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
   const [deleteSelect, setDeleteSelect] = useState("");
   const modalRef = useRef(null);

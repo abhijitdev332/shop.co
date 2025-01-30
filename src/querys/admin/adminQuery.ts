@@ -1,7 +1,12 @@
+import { useQuery } from "@tanstack/react-query";
 import { AdminAxios } from "../../services/api/api";
+import { getadminProducts, getadminProductskey } from "./adminApi";
 
-const adminProduct = async () => {
-  return await AdminAxios.get("/products");
+const useAdminProduct = (limit = 5, skip = 0) => {
+  return useQuery({
+    queryKey: [getadminProductskey],
+    queryFn: () => getadminProducts({ limit: limit, skip: skip }),
+  });
 };
 const adminProductVariant = async () => {
   return await AdminAxios.get("/products/variant");
@@ -20,7 +25,7 @@ const adminTopCategories = async ({ limit = 5, skip = 0 }) => {
 };
 
 export {
-  adminProduct,
+  useAdminProduct,
   adminProductVariant,
   adminAllUser,
   adminOrders,
