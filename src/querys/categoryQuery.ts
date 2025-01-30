@@ -1,10 +1,10 @@
 import { PrivateAxios } from "../services/api/api";
 
-const getAllCategory = async () => {
-  return await PrivateAxios.get("/category");
+const getAllCategory = async (limit = 5, skip = 0) => {
+  return await PrivateAxios.get(`/category?limit=${limit}&skip=${skip}`);
 };
-const getSubsCategory = async () => {
-  return await PrivateAxios.get("/subcategory");
+const getSubsCategory = async (limit = 5, skip = 0) => {
+  return await PrivateAxios.get(`/subcategory?limit=${limit}&skip=${skip}`);
 };
 
 const getProductsByCategory = async (query = "") => {
@@ -39,6 +39,20 @@ const deleteCategory = async (id) => {
 const deleteSubsCategory = async (id) => {
   return await PrivateAxios.delete(`/subcategory/remove/${id}`);
 };
+const updateCategory = async (id, data) => {
+  return await PrivateAxios.put(`/category/update/${id}`, data, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+};
+const updateSubCategory = async (id, data) => {
+  return await PrivateAxios.put(`/subcategory/update/${id}`, data, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+};
 
 export {
   getAllCategory,
@@ -49,4 +63,6 @@ export {
   deleteSubsCategory,
   getProductsByCategory,
   getProductsBySubCategory,
+  updateCategory,
+  updateSubCategory,
 };

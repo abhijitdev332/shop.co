@@ -110,10 +110,6 @@ const ProductDetails = ({ setVariant, setReview }) => {
   const { data, isLoading, isError } = useFetch({
     url: `/product/${id}`,
     queryKey: ["product", id],
-    options: {
-      staleTime: 1000 * 60 * 5, // Cache the result for 5 minutes
-      refetchOnWindowFocus: false, // Prevent refetching on window focus
-    },
   });
   const [productData, setProductData] = useState(null);
   const [allVariants, setAllVariants] = useState([]);

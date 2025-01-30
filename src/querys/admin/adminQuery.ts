@@ -5,6 +5,7 @@ import {
   getadminOrdersKey,
   getadminProducts,
   getadminProductskey,
+  getAdminStats,
 } from "./adminApi";
 
 const useAdminProduct = (limit = 5, skip = 0) => {
@@ -27,7 +28,6 @@ const useAdminOrders = (currentPage = 1, itemsPerPage = 5) => {
         currentPage * itemsPerPage,
         (currentPage - 1) * itemsPerPage
       ),
-    staleTime: 2000,
   });
 };
 const adminCategories = async () => {
@@ -37,6 +37,13 @@ const adminTopCategories = async ({ limit = 5, skip = 0 }) => {
   return await AdminAxios.get(`/categories/top?limit=${limit}&skip=${skip}`);
 };
 
+const useAdminStats = async () => {
+  return useQuery({
+    queryKey: ["adminstats"],
+    queryFn: getAdminStats,
+  });
+};
+
 export {
   useAdminProduct,
   adminProductVariant,
@@ -44,4 +51,5 @@ export {
   useAdminOrders,
   adminCategories,
   adminTopCategories,
+  useAdminStats,
 };

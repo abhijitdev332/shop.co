@@ -9,6 +9,7 @@ import { FaRegTrashCan } from "react-icons/fa6";
 import { deleteUser } from "../../../querys/userQuery";
 import { toast } from "react-toastify";
 import { DropDown, Modal } from "../../../components/component";
+import { AdminPagination } from "../adminPages";
 
 const UsersTable = () => {
   const { data } = useQuery({
@@ -211,6 +212,7 @@ const UsersTable = () => {
             </tbody>
           </table>
         </div>
+        <AdminPagination totalPage={5} />
       </div>
       {/* modal for confirm delete */}
       <Modal modalRef={modalRef}>

@@ -1,11 +1,15 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useRef, useState } from "react";
-import { FaRegTrashAlt } from "react-icons/fa";
+import { Children, useEffect, useRef, useState } from "react";
+import { FaEdit, FaRegTrashAlt } from "react-icons/fa";
 import { IoEye } from "react-icons/io5";
 import { MdModeEdit } from "react-icons/md";
 import { Link, useLocation } from "react-router-dom";
 import { adminCategories } from "../../../querys/admin/adminQuery";
-import { getSubsCategory } from "../../../querys/categoryQuery";
+import {
+  getSubsCategory,
+  updateCategory,
+  updateSubCategory,
+} from "../../../querys/categoryQuery";
 import {
   deleteCategory,
   deleteSubsCategory,
@@ -17,8 +21,9 @@ import {
   setSubCategory,
 } from "../../../services/store/category/categorySlice";
 import { FaRegTrashCan } from "react-icons/fa6";
-import { DropDown, Modal } from "../../../components/component";
+import { DropDown, LoaderBtn, Modal } from "../../../components/component";
 import Dropdown from "../../../components/dropdown/Dropdown";
+import { AdminPagination } from "../adminPages";
 
 const Categories = () => {
   const { state } = useLocation();
@@ -92,14 +97,15 @@ function CategoryTable() {
   const { data } = useQuery({
     queryKey: ["AdminCategory"],
     queryFn: adminCategories,
-    refetchOnWindowFocus: true,
   });
   let catagories = data?.data?.data;
   const queryClient = useQueryClient();
   const dispatch = useDispatch();
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
   const [deleteSelect, setDeleteSelect] = useState("");
+  const [selectUpdateCata, setSelectedUpdateCata] = useState({});
   const modalRef = useRef(null);
+  const updateModal = useRef(null);
   // Toggle product selection
   const toggleSelectProduct = (id: string) => {
     setSelectedProducts((prev) =>
@@ -115,6 +121,17 @@ function CategoryTable() {
       setSelectedProducts(catagories.map((product) => product?._id));
     }
   };
+  // update mutaion
+  const updateMutaion = useMutation({
+    mutationKey: ["updateCategory", selectUpdateCata?.id],
+    mutationFn: (data) => updateCategory(selectUpdateCata?.id, data),
+    onSuccess: (data) => {
+      toast.success(data.data?.message);
+      updateModal.current?.close();
+      queryClient.invalidateQueries(["AdminCategory"]);
+    },
+  });
+
   const { mutate: delCategory } = useMutation({
     mutationKey: ["deletecategory"],
     mutationFn: (id) => deleteCategory(id),
@@ -175,12 +192,14 @@ function CategoryTable() {
                       />
                       <div className="avatar">
                         <div className="w-12 rounded-full">
-                          <img
-                            src={
-                              cata?.categoryImage ||
-                              "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
-                            }
-                          />
+                          <Link to={`${cata?._id}?query=${cata?.categoryName}`}>
+                            <img
+                              src={
+                                cata?.categoryImage ||
+                                "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
+                              }
+                            />
+                          </Link>
                         </div>
                       </div>
 
@@ -214,7 +233,19 @@ function CategoryTable() {
                         </Link>
                       </li>
                       <li>
-                        <button className="font-medium hover:bg-gray-300">
+                        <button
+                          className="font-medium hover:bg-gray-300"
+                          onClick={() => {
+                            if (updateModal?.current) {
+                              setSelectedUpdateCata({
+                                name: cata?.categoryName,
+                                image: cata?.categoryImage,
+                                id: cata?._id,
+                              });
+                              updateModal?.current?.showModal();
+                            }
+                          }}
+                        >
                           <MdModeEdit />
                           Edit
                         </button>
@@ -240,6 +271,7 @@ function CategoryTable() {
             </tbody>
           </table>
         </div>
+        <AdminPagination totalPage={5} />
       </div>
       {/* modal */}
       <Modal modalRef={modalRef}>
@@ -277,6 +309,15 @@ function CategoryTable() {
           </div>
         </div>
       </Modal>
+
+      {/* updatemodal */}
+      <Modal modalRef={updateModal}>
+        <UpdateCategoryModal
+          modalRef={updateModal}
+          category={selectUpdateCata}
+          func={updateMutaion}
+        />
+      </Modal>
     </>
   );
 }
@@ -284,15 +325,16 @@ function CategoryTable() {
 function SubCategoryTable() {
   const { data } = useQuery({
     queryKey: ["AdminSubCategory"],
-    queryFn: getSubsCategory,
-    refetchOnWindowFocus: true,
+    queryFn: () => getSubsCategory(),
   });
   let catagories = data?.data?.data;
   const queryClient = useQueryClient();
   const dispatch = useDispatch();
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
+  const [selectUpdateCata, setSelectedUpdateCata] = useState({});
   const [deleteSelect, setDeleteSelect] = useState("");
   const modalRef = useRef(null);
+  const updateModal = useRef(null);
   // Toggle product selection
   const toggleSelectProduct = (id: string) => {
     setSelectedProducts((prev) =>
@@ -307,7 +349,18 @@ function SubCategoryTable() {
       setSelectedProducts(catagories.map((product) => product?._id));
     }
   };
-  const { mutate } = useMutation({
+
+  // update mutaion
+  const updateMutaion = useMutation({
+    mutationKey: ["updateSubcategory"],
+    mutationFn: (data) => updateSubCategory(selectUpdateCata?.id, data),
+    onSuccess: (data) => {
+      toast.success(data?.data?.message);
+      updateModal.current?.close();
+      queryClient.invalidateQueries(["AdminSubCategory"]);
+    },
+  });
+  const { mutate: deleteMutaion } = useMutation({
     mutationKey: ["subcategory"],
     mutationFn: (id) => deleteSubsCategory(id),
     onSuccess: (data) => {
@@ -317,12 +370,12 @@ function SubCategoryTable() {
     },
   });
   const handleDelete = () => {
-    mutate(deleteSelect);
+    deleteMutaion(deleteSelect);
   };
 
   return (
     <>
-      <div className="wrapper py-3 flex flex-col gap-5">
+      <div className="py-3 h-full flex flex-col gap-5">
         {/* add button */}
         <div className="ms-auto flex ">
           <Link to={"/admin/subcategory/add"}>
@@ -367,7 +420,11 @@ function SubCategoryTable() {
                       <div className="flex  items-center"></div>
                       <div className="avatar space-x-2">
                         <div className="w-10 rounded-xl">
-                          <img src={cata?.subCategoryImage} />
+                          <Link
+                            to={`/admin/subcategory/${cata?._id}?query=${cata?.SubCategoryName}`}
+                          >
+                            <img src={cata?.subCategoryImage} />
+                          </Link>
                         </div>
                         <p className="font-medium text-lg capitalize">
                           {cata?.SubCategoryName}
@@ -392,7 +449,19 @@ function SubCategoryTable() {
                         </Link>
                       </li>
                       <li>
-                        <button className="hover:bg-gray-300 font-medium">
+                        <button
+                          className="hover:bg-gray-300 font-medium"
+                          onClick={() => {
+                            if (updateModal?.current) {
+                              setSelectedUpdateCata({
+                                name: cata?.SubCategoryName,
+                                image: cata?.subCategoryImage,
+                                id: cata?._id,
+                              });
+                              updateModal?.current?.showModal();
+                            }
+                          }}
+                        >
                           <MdModeEdit />
                           Edit
                         </button>
@@ -418,6 +487,7 @@ function SubCategoryTable() {
             </tbody>
           </table>
         </div>
+        <AdminPagination totalPage={5} />
       </div>
       {/* modal */}
       <Modal modalRef={modalRef}>
@@ -455,6 +525,116 @@ function SubCategoryTable() {
           </div>
         </div>
       </Modal>
+      <Modal modalRef={updateModal}>
+        <UpdateCategoryModal
+          modalRef={updateModal}
+          category={selectUpdateCata}
+          func={updateMutaion}
+        />
+      </Modal>
+    </>
+  );
+}
+
+function UpdateCategoryModal({
+  func,
+  category,
+  modalRef,
+  children,
+  ...others
+}) {
+  const [categoryState, setCategoryState] = useState({
+    name: category?.name,
+    image: category?.image,
+  });
+  const [imagePreview, setImagePreview] = useState(null);
+  const handleImageChange = (ev) => {
+    setImagePreview(URL.createObjectURL(ev.target.files[0]));
+    setCategoryState((prev) => ({ ...prev, image: ev.target.files }));
+  };
+  const handleClick = () => {
+    if (categoryState.name == "") {
+      return toast.info("Please  name Fleids");
+    }
+    let formdata = new FormData();
+    if (categoryState.image instanceof FileList) {
+      formdata.append("image", categoryState.image[0]);
+      formdata.append("name", categoryState.name);
+      return func?.mutate(formdata);
+    }
+    formdata.append("name", categoryState.name);
+    return func?.mutate(formdata);
+  };
+
+  useEffect(() => {
+    setCategoryState({
+      name: category?.name,
+      image: category?.image,
+    });
+    setImagePreview(null);
+  }, [category]);
+
+  return (
+    <>
+      <div className="card flex justify-center flex-col gap-3 items-center p-6">
+        <div className="flex justify-center border-spacing-1 bg-blue-400 w-20 rounded-full p-5">
+          <span>
+            <FaEdit size={30} color="white" />
+          </span>
+        </div>
+
+        <div className="flex flex-col items-center">
+          <h3 className="font-bold text-xl">Update Category</h3>
+          <p className="py-4">Modify the category name and press Update!</p>
+          <div className="flex flex-col gap-4 w-full items-center">
+            <img
+              src={imagePreview || categoryState.image}
+              alt="categoryimage"
+              className="w-32 h-32 rounded-lg"
+            />
+            <input
+              type="file"
+              name="image"
+              className="file-input bg-transparent file-input-bordered w-full max-w-xs"
+              onInput={handleImageChange}
+            />
+            <input
+              type="text"
+              name="name"
+              onChange={(e) =>
+                setCategoryState((prev) => ({
+                  ...prev,
+                  [e.target.name]: e.target.value,
+                }))
+              }
+              className="input input-bordered bg-transparent w-full max-w-xs"
+              placeholder="Category Name"
+              value={categoryState.name}
+            />
+          </div>
+        </div>
+        {children}
+
+        <div className="btn-group w-full px-5 flex justify-between">
+          <button
+            className="btn btn-outline text-lg font-medium"
+            onClick={() => {
+              if (modalRef?.current) {
+                modalRef.current?.close();
+              }
+            }}
+          >
+            Cancel
+          </button>
+          <LoaderBtn
+            pending={func?.isPending}
+            className="btn btn-neutral text-white text-lg font-medium"
+            handleClick={handleClick}
+          >
+            Update
+          </LoaderBtn>
+        </div>
+      </div>
     </>
   );
 }

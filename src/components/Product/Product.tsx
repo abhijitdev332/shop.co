@@ -20,10 +20,6 @@ const Product = () => {
   const { data, isLoading, isError } = useFetch({
     url: `/product/${id}`,
     queryKey: ["product", id],
-    options: {
-      staleTime: 1000 * 60 * 5, // Cache the result for 5 minutes
-      refetchOnWindowFocus: false, // Prevent refetching on window focus
-    },
   });
   const dispatch = useDispatch();
   const cart = useSelector((store) => store.cart);

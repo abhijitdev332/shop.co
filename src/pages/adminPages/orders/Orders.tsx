@@ -4,11 +4,18 @@ import { MdModeEdit } from "react-icons/md";
 import { Link } from "react-router-dom";
 import { useAdminOrders } from "../../../querys/admin/adminQuery";
 import { DropDown } from "../../../components/component";
-
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { updateOrderStatus } from "../../../querys/orderQuery";
+import { toast } from "react-toastify";
+import { getadminOrdersKey } from "../../../querys/admin/adminApi";
+import { AdminPagination } from "../adminPages";
+const ordersStatus = ["pending", "shipped", "delivered"];
 const Orders = () => {
   const { data: orders } = useAdminOrders();
+  const queryClient = useQueryClient();
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
-
+  const [selectedOrder, setSelectedOrder] = useState({});
+  const [orderStatusstate, setOrdersStatus] = useState("");
   // Toggle product selection
   const toggleSelectProduct = (id: string) => {
     setSelectedProducts((prev) =>
@@ -23,7 +30,24 @@ const Orders = () => {
       setSelectedProducts(orders.map((product) => product._id));
     }
   };
-
+  // update order status
+  const updateOrderMutaion = useMutation({
+    mutationKey: ["updateOrderStaus"],
+    mutationFn: (data) => updateOrderStatus(selectedOrder, data),
+    onSuccess: (data) => {
+      toast.success(data?.data?.message);
+      queryClient.invalidateQueries([
+        getadminOrdersKey,
+        "orders",
+        selectedOrder,
+      ]);
+    },
+  });
+  const handleUpdateOrderStatus = () => {
+    if (orderStatusstate !== "") {
+      updateOrderMutaion.mutate({ status: orderStatusstate });
+    }
+  };
   const handleDelete = (id: string) => {
     // setProducts((prev) => prev.filter((product) => product.id !== id));
   };
@@ -54,7 +78,7 @@ const Orders = () => {
 
       {/* Table */}
       <div className="overflow-x-auto">
-        <table className="w-full rounded">
+        <table className="w-full rounded overflow-y-hidden">
           <thead className="bg-gray-100 sticky top-0 z-10 p-2">
             <tr>
               <th className=" px-4 py-2">
@@ -131,7 +155,17 @@ const Orders = () => {
                 <td className=" px-4 py-2">{order?.paymentGateway}</td>
 
                 {/* Status */}
-                <td className=" px-4 py-2">{order?.status}</td>
+                <td className=" px-4 py-2">
+                  {order?.status == "pending" ? (
+                    <span className="badge rounded-btn badge-lg capitalize">
+                      {order?.status}
+                    </span>
+                  ) : (
+                    <span className="badge badge-success capitalize rounded-btn badge-lg">
+                      {order?.status}
+                    </span>
+                  )}
+                </td>
 
                 {/* Actions */}
                 <td className=" px-4 py-2">
@@ -146,15 +180,35 @@ const Orders = () => {
                       </Link>
                     </li>
                     <li>
-                      <button className="hover:bg-gray-300 font-medium">
-                        <MdModeEdit />
-                        Edit
+                      <select
+                        className="select  w-full bg-white !text-black"
+                        onChange={(ev) => {
+                          setSelectedOrder(order?._id);
+                          setOrdersStatus(ev.target.value);
+                        }}
+                      >
+                        {/* <option disabled selected className="text-black">
+                          Update Status
+                        </option> */}
+                        {ordersStatus.map((ele) => (
+                          <option
+                            className="capitalize text-black"
+                            value={ele}
+                            selected={order?.status == ele}
+                          >
+                            {ele}
+                          </option>
+                        ))}
+                      </select>
+                      <button
+                        className="hover:bg-gray-300 btn btn-neutral my-3 font-medium"
+                        onClick={handleUpdateOrderStatus}
+                      >
+                        <div className="flex gap-1">
+                          <MdModeEdit />
+                          <span className="text-white">Update</span>
+                        </div>
                       </button>
-                    </li>
-                    <li>
-                      {/* <button className="btn btn-sm btn-ghost rounded-full">
-                      <FaRegTrashAlt />
-                    </button> */}
                     </li>
                   </DropDown>
                 </td>
@@ -163,6 +217,7 @@ const Orders = () => {
           </tbody>
         </table>
       </div>
+      <AdminPagination totalPage={3} />
     </div>
   );
 };

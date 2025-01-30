@@ -9,5 +9,9 @@ const getAdminOrders = async (limit = 5, skip = 0) => {
   let { data } = await AdminAxios.get(`/orders?limit=${limit}&skip=${skip}`);
   return data?.data;
 };
+const getAdminStats = async () => {
+  let { data } = await AdminAxios.get(`/stats`);
+  return data?.data;
+};
 
-export { getadminProducts, getAdminOrders };
+export { getadminProducts, getAdminOrders, getAdminStats };

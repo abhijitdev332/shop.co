@@ -7,6 +7,7 @@ import { FaRegTrashAlt } from "react-icons/fa";
 import { IoEye } from "react-icons/io5";
 import { MdModeEdit } from "react-icons/md";
 import { toast } from "react-toastify";
+import { DropDown, Modal } from "../../../components/component";
 
 const SubCategoryProducts = () => {
   const [params] = useSearchParams();
@@ -188,28 +189,37 @@ const SubCategoryProducts = () => {
 
                   {/* Actions */}
                   <td className=" px-4 py-2">
-                    <div className="flex gap-1 ">
-                      <Link
-                        to={`/admin/products/${product?._id}`}
-                        className="btn btn-sm btn-primary rounded-full"
-                      >
-                        <IoEye />
-                      </Link>
-                      <button className="btn btn-sm btn-accent rounded-full">
-                        <MdModeEdit />
-                      </button>
-                      <button
-                        className="btn btn-sm btn-error rounded-full"
-                        onClick={() => {
-                          if (modalRef?.current) {
-                            setDeleteSelect(product?._id);
-                            modalRef.current?.showModal();
-                          }
-                        }}
-                      >
-                        <FaRegTrashAlt />
-                      </button>
-                    </div>
+                    <DropDown>
+                      <li>
+                        <Link
+                          to={`/admin/products/${product?._id}`}
+                          className="hover:bg-gray-500 text-start font-medium"
+                        >
+                          <IoEye />
+                          View
+                        </Link>
+                      </li>
+                      <li>
+                        <button className="hover:bg-gray-500 text-start font-medium">
+                          <MdModeEdit />
+                          Edit
+                        </button>
+                      </li>
+                      <li>
+                        <button
+                          className="hover:bg-gray-500 text-start font-medium"
+                          onClick={() => {
+                            if (modalRef?.current) {
+                              setDeleteSelect(product?._id);
+                              modalRef.current?.showModal();
+                            }
+                          }}
+                        >
+                          <FaRegTrashAlt />
+                          Delete
+                        </button>
+                      </li>
+                    </DropDown>
                   </td>
                 </tr>
               ))}
@@ -218,48 +228,39 @@ const SubCategoryProducts = () => {
         </div>
       </div>
       {/* modal for delete product */}
-      <dialog id="my_modal_2" className="modal" ref={modalRef}>
-        <div className="modal-box bg-white">
-          <div className="wrapper">
-            <div className="card flex justify-center flex-col gap-3 items-center">
-              <div className="flex justify-center border-spacing-1 bg-red-400 w-20 rounded-full p-5">
-                <span>
-                  <FaRegTrashCan size={30} color="white" />
-                </span>
-              </div>
+      <Modal modalRef={modalRef}>
+        <div className="card flex justify-center flex-col gap-3 items-center">
+          <div className="flex justify-center border-spacing-1 bg-red-400 w-20 rounded-full p-5">
+            <span>
+              <FaRegTrashCan size={30} color="white" />
+            </span>
+          </div>
 
-              <div className="flex flex-col items-center">
-                <h3 className="font-bold text-xl">
-                  Delete Product and Variants!!
-                </h3>
-                <p className="py-4">Press Delete or Cancel !!</p>
-              </div>
+          <div className="flex flex-col items-center">
+            <h3 className="font-bold text-xl">Delete Product and Variants!!</h3>
+            <p className="py-4">Press Delete or Cancel !!</p>
+          </div>
 
-              <div className="btn-group w-full px-5 flex justify-between">
-                <button
-                  className="btn btn-outline text-lg font-medium"
-                  onClick={() => {
-                    if (modalRef?.current) {
-                      modalRef.current?.close();
-                    }
-                  }}
-                >
-                  Cancel
-                </button>
-                <button
-                  className="btn btn-error text-lg font-medium"
-                  onClick={handleDelete}
-                >
-                  Delete
-                </button>
-              </div>
-            </div>
+          <div className="btn-group w-full px-5 flex justify-between">
+            <button
+              className="btn btn-outline text-lg font-medium"
+              onClick={() => {
+                if (modalRef?.current) {
+                  modalRef.current?.close();
+                }
+              }}
+            >
+              Cancel
+            </button>
+            <button
+              className="btn btn-error text-lg font-medium"
+              onClick={handleDelete}
+            >
+              Delete
+            </button>
           </div>
         </div>
-        <form method="dialog" className="modal-backdrop">
-          <button>close</button>
-        </form>
-      </dialog>
+      </Modal>
     </>
   );
 };

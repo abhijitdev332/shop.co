@@ -10,6 +10,7 @@ import { toast } from "react-toastify";
 import { FaRegTrashCan } from "react-icons/fa6";
 import { getadminProductskey } from "../../../querys/admin/adminApi";
 import { DropDown, Modal } from "../../../components/component";
+import { AdminPagination } from "../adminPages";
 
 const AllProductsTable = () => {
   let { data: products } = useAdminProduct();
@@ -212,6 +213,7 @@ const AllProductsTable = () => {
             </tbody>
           </table>
         </div>
+        <AdminPagination totalPage={5} />
       </div>
       {/* modal */}
       <Modal modalRef={modalRef}>

@@ -62,6 +62,9 @@ let getProductOrderDetails = async ({ productId, color }) => {
     `/product/orders?productId=${productId}&color=${color}`
   );
 };
+let getShopAllProducts = async (limit, skip) => {
+  return await PrivateAxios.get(`/product/shop?limit=${limit}&skip=${skip}`);
+};
 
 export {
   newArivals,
@@ -75,4 +78,5 @@ export {
   getProductsByslug,
   newReview,
   getProductOrderDetails,
+  getShopAllProducts,
 };

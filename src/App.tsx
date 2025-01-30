@@ -79,7 +79,7 @@ const router = createBrowserRouter(
       </Route>
       <Route path="/product" element={<ProductLayout />}>
         <Route path=":id" element={<Product />} />
-        <Route path="category/:id" element={<CategoryProduct />} />
+        <Route path="category/:id?" element={<CategoryProduct />} />
         <Route path="slug" element={<ProductsBySlug />} />
       </Route>
       <Route path="/admin" element={<AdminLayout />}>

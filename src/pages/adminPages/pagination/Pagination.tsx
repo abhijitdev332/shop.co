@@ -51,9 +51,6 @@ const Pagination = ({ setPage = "", currentPage = "", totalPage = "" }) => {
                   );
                 }
               })}
-              <button className="join-item bg-transparent btn btn-sm">
-                ...
-              </button>
             </div>
             <button className="btn btn-sm btn-ghost" onClick={handleNext}>
               <span>

@@ -12,7 +12,7 @@ import {
   getUserAddress,
 } from "../../querys/addressQuery";
 import { IoMdAdd } from "react-icons/io";
-import { LoaderBtn } from "../../components/component";
+import { LoaderBtn, Modal } from "../../components/component";
 import { FaLocationArrow } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { RiDeleteBin6Line } from "react-icons/ri";
@@ -332,48 +332,41 @@ const ProfilePage = () => {
       </section>
 
       {/* modal */}
-      <dialog id="my_modal_2" className="modal" ref={modalRef}>
-        <div className="modal-box bg-white w-lg">
-          <div className="wrapper">
-            <div className="flex flex-col gap-2 p-2">
-              <form onSubmit={addressSubmit(handleAddressSubmit)}>
-                {Object.keys(addressObject).map((obj) => (
-                  <label htmlFor="" className="flex flex-col gap-1">
-                    <span className="py-2 font-medium text-lg capitalize">
-                      {obj}
-                    </span>
+      <Modal modalRef={modalRef}>
+        <div className="flex flex-col gap-2 p-2">
+          <form onSubmit={addressSubmit(handleAddressSubmit)}>
+            {Object.keys(addressObject).map((obj) => (
+              <label htmlFor="" className="flex flex-col gap-1">
+                <span className="py-2 font-medium text-lg capitalize">
+                  {obj}
+                </span>
 
-                    <input
-                      type="text"
-                      name={obj}
-                      className="input input-bordered bg-transparent"
-                      {...addressReg(obj)}
-                    />
-                    {addressErr[obj] && (
-                      <p className="mt-1 text-sm text-red-500">
-                        {addressErr[obj].message}
-                      </p>
-                    )}
-                  </label>
-                ))}
-                <div className="flex justify-center py-2">
-                  <LoaderBtn
-                    pending={addresAddPending}
-                    type="submit"
-                    style="!flex gap-1 !btn-primary"
-                  >
-                    <FaLocationArrow />
-                    <span>Save Address</span>
-                  </LoaderBtn>
-                </div>
-              </form>
+                <input
+                  type="text"
+                  name={obj}
+                  className="input input-bordered bg-transparent"
+                  {...addressReg(obj)}
+                />
+                {addressErr[obj] && (
+                  <p className="mt-1 text-sm text-red-500">
+                    {addressErr[obj].message}
+                  </p>
+                )}
+              </label>
+            ))}
+            <div className="flex justify-center py-2">
+              <LoaderBtn
+                pending={addresAddPending}
+                type="submit"
+                style="!flex gap-1 !text-white"
+              >
+                <FaLocationArrow />
+                <span className="text-inherit">Save Address</span>
+              </LoaderBtn>
             </div>
-          </div>
+          </form>
         </div>
-        <form method="dialog" className="modal-backdrop">
-          <button>close</button>
-        </form>
-      </dialog>
+      </Modal>
     </>
   );
 };

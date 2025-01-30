@@ -24,9 +24,12 @@ import { topSelling } from "../../querys/productQuery";
 import {
   adminTopCategories,
   useAdminOrders,
+  useAdminStats,
 } from "../../querys/admin/adminQuery";
 import { Link } from "react-router-dom";
 const Dashbroad = () => {
+  const stats = useAdminStats();
+  console.log(stats);
   return (
     <section>
       <div className="wrapper px-5 py-7 text-black">
@@ -474,7 +477,7 @@ const RecentOrders = () => {
         <h2 className="text-xl space-x-2 font-bold text-gray-800">
           <span>Recent Orders</span>
           <span className="rounded-btn text-xs bg-green-200 px-2 py-1">
-            20 Orders
+            +20 Orders
           </span>
         </h2>
         <div className="flex items-center space-x-4">
@@ -500,7 +503,10 @@ const RecentOrders = () => {
             </a>
           </div> */}
           {/* See More Button */}
-          <Link to={"orders"} className="btn btn-neutral btn-md  transition">
+          <Link
+            to={"orders"}
+            className="btn btn-neutral text-white btn-md  transition"
+          >
             See More
           </Link>
         </div>
@@ -552,7 +558,17 @@ const RecentOrders = () => {
                   </div>
                 </td>
                 <td>{ele?.totalAmount}</td>
-                <td>{ele?.status}</td>
+                <td>
+                  {ele?.status == "pending" ? (
+                    <span className="badge rounded-btn badge-lg capitalize">
+                      {ele?.status}
+                    </span>
+                  ) : (
+                    <span className="badge badge-success capitalize rounded-btn badge-lg">
+                      {ele?.status}
+                    </span>
+                  )}
+                </td>
                 <td>
                   <div className="flex gap-1">
                     <button className="btn btn-sm btn-ghost rounded-full">

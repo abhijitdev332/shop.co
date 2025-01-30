@@ -1,20 +1,34 @@
-import { useQuery } from "@tanstack/react-query";
-import React, { useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { getOrderDeatils } from "../../../querys/orderQuery";
-
-const OrderDetailsPage: React.FC = () => {
+import { getOrderDeatils, updateOrderStatus } from "../../../querys/orderQuery";
+import { toast } from "react-toastify";
+import { LoaderBtn } from "../../../components/component";
+import { getadminOrdersKey } from "../../../querys/admin/adminApi";
+const ordersStatus = ["pending", "shipped", "delivered"];
+const OrderDetailsPage = () => {
   const { id } = useParams();
   const { data, isPending, isError, error } = useQuery({
     queryKey: ["orders", { id }],
     queryFn: () => getOrderDeatils(id),
   });
+  const queryClient = useQueryClient();
   // const [order, setOrder] = useState({ ...data?.data?.data } || {});
   const order = { ...data?.data?.data } || {};
   const orderAddress = { ...order?.address } || {};
-  // const [orderAddress, setOrderAddress] = useState({ ...order?.address } || {});
-  const handleStatusChange = (newStatus: string) => {
-    setOrder({ ...order, status: newStatus });
+  const [currentOrderStatus, setorderStatus] = useState(order?.status || "");
+
+  // update order status
+  const updateOrderMutaion = useMutation({
+    mutationKey: ["updateOrderStaus"],
+    mutationFn: (data) => updateOrderStatus(id, data),
+    onSuccess: (data) => {
+      toast.success(data?.data?.message);
+      queryClient.invalidateQueries(["orders", id, getadminOrdersKey]);
+    },
+  });
+  const handleStatusChange = () => {
+    updateOrderMutaion.mutate({ status: currentOrderStatus });
   };
 
   return (
@@ -34,11 +48,6 @@ const OrderDetailsPage: React.FC = () => {
             </ul>
           </div>
         </div>
-        {/* <div className=" ms-auto flex">
-          <Link to={"add"}>
-            <button className="btn btn-primary">Add Product</button>
-          </Link>
-        </div> */}
       </div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Left Section - Main Card */}
@@ -112,12 +121,19 @@ const OrderDetailsPage: React.FC = () => {
           {/* Order Status Card */}
           <div className="bg-white p-6 rounded-lg shadow-md">
             <h3 className="text-lg font-semibold mb-4">Order Status</h3>
-            <select className="select select-bordered w-full max-w-xs bg-transparent">
-              <option value="Pending">Pending</option>
-              <option value="Processing">Processing</option>
-              <option value="Shipped">Shipped</option>
-              <option value="Delivered">Delivered</option>
-              <option value="Cancelled">Cancelled</option>
+            <select
+              className="select select-bordered w-full max-w-xs bg-transparent capitalize"
+              onChange={(ev) => setorderStatus(ev.target.value)}
+            >
+              {ordersStatus.map((ele) => (
+                <option
+                  value={ele}
+                  defaultChecked={ele == currentOrderStatus}
+                  className="capitalize"
+                >
+                  <span className="capitalize font-medium">{ele}</span>
+                </option>
+              ))}
             </select>
             <div className="mt-4">
               <h4 className="text-sm font-medium">Customer Details</h4>
@@ -132,9 +148,13 @@ const OrderDetailsPage: React.FC = () => {
               </p>
             </div>
 
-            <button className="btn btn-primary btn-md w-fit mx-auto">
+            <LoaderBtn
+              pending={updateOrderMutaion.isPending}
+              className="btn btn-neutral btn-md w-fit mx-auto"
+              handleClick={handleStatusChange}
+            >
               Update
-            </button>
+            </LoaderBtn>
           </div>
 
           {/* Payment Details Card */}

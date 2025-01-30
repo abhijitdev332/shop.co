@@ -7,7 +7,9 @@ import prada from "../../assets/svgs/brands/prada.svg";
 import zara from "../../assets/svgs/brands/zara.svg";
 import cl from "classnames";
 import style from "./hero.module.scss";
+import { useNavigate } from "react-router-dom";
 const Hero = () => {
+  const navigate = useNavigate();
   return (
     <main className="overflow-hidden">
       <div className="">
@@ -22,7 +24,12 @@ const Hero = () => {
                 garments, designed to bring out your individuality and cater to
                 your sense of style.
               </p>
-              <button className="btn btn-active w-40  rounded-badge text-lg">
+              <button
+                className="btn btn-active w-40  rounded-badge text-lg"
+                onClick={() => {
+                  navigate("/product/category");
+                }}
+              >
                 Shop Now
               </button>
               <div className="flex gap-2 flex-wrap">

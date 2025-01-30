@@ -5,14 +5,30 @@ import { RiFilter3Line } from "react-icons/ri";
 import { useState } from "react";
 import cl from "classnames";
 import { useQuery } from "@tanstack/react-query";
-import { getProductByCategory } from "../../querys/productQuery";
+import {
+  getProductByCategory,
+  getShopAllProducts,
+} from "../../querys/productQuery";
 const CategoryProduct = () => {
   const { id } = useParams();
+  let itemsperpage = 10;
+  const [currentPage, setCurrenPage] = useState(1);
   const { data: categoryProducts, error } = useQuery({
-    queryKey: ["category", id],
-    queryFn: () => getProductByCategory(id),
+    queryKey: ["category", id, currentPage],
+    queryFn: () => {
+      if (id) {
+        return getProductByCategory(id);
+      }
+      return getShopAllProducts(
+        currentPage * itemsperpage,
+        (currentPage - 1) * itemsperpage
+      );
+    },
   });
-  let allProducts = categoryProducts?.data?.data;
+  let allProducts =
+    categoryProducts?.data?.data?.products || categoryProducts?.data?.data;
+  let productsLength = categoryProducts?.data?.data?.totalLength;
+
   const [fillterShow, setFillterShow] = useState<boolean>(false);
   const [products, setProducts] = useState([]);
 
@@ -37,11 +53,13 @@ const CategoryProduct = () => {
               <FillterCard show={fillterShow} setShow={setFillterShow} />
             </div>
 
-            <div className="flex w-full flex-col py-3 gap-2">
+            <div className="flex w-full h-[90%] flex-col py-3 gap-2">
               <div className="flex justify-between">
                 <h2 className="font-bold text-2xl capitalize">{id}</h2>
                 <div className="flex gap-4 items-center">
-                  <p>Showing 1-10 of 100 Products</p>
+                  <p>
+                    Showing {itemsperpage} of {productsLength}
+                  </p>
                   <div className="flex items-center">
                     <span
                       onClick={() => {
@@ -63,16 +81,20 @@ const CategoryProduct = () => {
                   </div>
                 </div>
               </div>
-              <div className="flex flex-wrap gap-6">
+              <div className="grid  columns-1 sm:grid-cols-2 md:grid-cols-3 gap-6 overflow-y-auto">
                 {allProducts?.map((ele) => (
                   <ProductCard
                     product={ele}
-                    style="md:w-50"
+                    style="!w-full"
                     imgStyle={"h-48"}
                   />
                 ))}
               </div>
-              <Pagintaion />
+              <Pagintaion
+                currentPage={currentPage}
+                setPage={setCurrenPage}
+                totalPage={Math.ceil(productsLength / itemsperpage)}
+              />
             </div>
           </div>
         </div>

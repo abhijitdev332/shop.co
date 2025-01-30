@@ -22,7 +22,7 @@ const ProductBySlug = () => {
       }),
   });
   let products = data?.data?.data;
-  console.log(currentpage);
+
   return (
     <>
       <main>
