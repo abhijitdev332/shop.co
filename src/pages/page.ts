@@ -1,4 +1,4 @@
-import Loader from "./loading/Loader";
+import LoaderScreen from "./loading/Loader";
 import Login from "./authpages/Login";
 import Register from "./authpages/Register";
 import HomePage from "./homePage/HomePage";
@@ -11,7 +11,7 @@ import OrdersItemPage from "./orderItems/OrdersITemsPage";
 import CartAddress from "./cartPage/CartAddress";
 
 export {
-  Loader,
+  LoaderScreen,
   Login,
   Register,
   HomePage,

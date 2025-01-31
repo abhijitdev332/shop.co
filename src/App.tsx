@@ -9,7 +9,6 @@ import {
 import {
   CartPage,
   DeclinedPage,
-  Loader,
   Login,
   OrdersPage,
   ProfilePage,
@@ -17,12 +16,14 @@ import {
   SuccessPage,
   OrdersItemPage,
   CartAddress,
+  LoaderScreen,
 } from "./pages/page";
 import { HomePage } from "./pages/page";
 import {
   Product,
   CategoryProduct,
   ProductsBySlug,
+  Loader,
 } from "./components/component";
 import {
   AddCategory,
@@ -52,8 +53,9 @@ const ErrorLayout = lazy(() => import("./layouts/Error"));
 function SuspenseLayout() {
   return (
     <>
-      <Suspense fallback={<Loader />}>
+      <Suspense fallback={<LoaderScreen />}>
         <Outlet />
+        <Loader />
       </Suspense>
     </>
   );
@@ -106,7 +108,7 @@ const router = createBrowserRouter(
 
 function App() {
   return (
-    <Suspense fallback={<Loader />}>
+    <Suspense fallback={<LoaderScreen />}>
       <RouterProvider router={router} />
     </Suspense>
   );

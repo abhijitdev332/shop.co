@@ -4,7 +4,7 @@ import { Outlet } from "react-router-dom";
 import { NewsLetter } from "../components/component";
 import { ToastContainer } from "react-toastify";
 import { Suspense } from "react";
-import { Loader } from "../pages/page";
+import { LoaderScreen } from "../pages/page";
 
 const Home = () => {
   return (
@@ -19,7 +19,7 @@ const Home = () => {
           <Footer />
         </div>
       </section>
-      <Suspense fallback={<Loader />}>
+      <Suspense fallback={<LoaderScreen />}>
         <InitialData />
       </Suspense>
       <ToastContainer />

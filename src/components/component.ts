@@ -14,7 +14,7 @@ import ProductsBySlug from "./productByCategory/ProductBySlug";
 import Modal from "./modal/Modal";
 import CheckOutModal from "./modal/CheckoutModal";
 import DropDown from "./dropdown/Dropdown";
-import LoadingScreen from "./loader/Loader";
+import Loader from "./loader/Loader";
 // import NewProductDetails from "./Product/NewCodeProduct";
 export {
   Hero,
@@ -31,7 +31,7 @@ export {
   LoaderBtn,
   ProductsBySlug,
   Modal,
-  LoadingScreen,
+  Loader,
   DropDown,
   CheckOutModal,
 };

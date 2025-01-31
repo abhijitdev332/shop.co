@@ -11,6 +11,7 @@ import {
   setCategory,
   setSubCategory,
 } from "../services/store/category/categorySlice";
+import { removeLoading, setLoading } from "../services/store/loader/loader";
 
 const InitialData = () => {
   const dispatch = useDispatch();
@@ -49,16 +50,24 @@ const InitialData = () => {
   });
   //   product effect
   useEffect(() => {
+    if (arivalLoading || topLoading) {
+      dispatch(setLoading());
+    }
     if (arivalProduct?.data || topProduct?.data) {
       dispatch(setArivalProducts(arivalProduct?.data));
       dispatch(setTopProducts(topProduct?.data));
+      dispatch(removeLoading());
     }
   }, [arivalProduct, topProduct]);
   // categoryEffect
   useEffect(() => {
+    if (categoryLoading || subLoading) {
+      dispatch(setLoading());
+    }
     if (category?.data || subCategory?.data) {
       dispatch(setCategory(category?.data));
       dispatch(setSubCategory(subCategory?.data));
+      dispatch(removeLoading());
     }
   }, [category, subCategory]);
   return null;

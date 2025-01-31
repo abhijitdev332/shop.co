@@ -1,4 +1,4 @@
-import React from "react";
+import { useMemo } from "react";
 import {
   Category,
   Hero,
@@ -19,6 +19,7 @@ const HomePage = () => {
             products={products?.arivalsProducts}
             viewLink="/product/slug?query=arrival"
           />
+
           <div className="divider w-full"></div>
           <ProductList
             heading="TOP SELLING"
@@ -28,37 +29,14 @@ const HomePage = () => {
           {/* browse by category */}
           <Category />
           {/* customers review */}
-          <ReviewSection />
+          {/* <ReviewSection products={products?.topProducts} /> */}
           {/* newsletter section */}
         </div>
       </div>
     </section>
   );
 };
-function ReviewSection() {
-  let reviews = [
-    {
-      id: 1,
-      star: 4,
-      customer: "sarah M.",
-      verified: true,
-      text: " Lorem ipsum dolor sit amet consectetur, adipisicing elit. Quis, veritatis qui obcaecati vero corrupti alias. Ipsum itaque quaerat autem quidem fuga natus provident similique tempora, dolor ducimus minima sapiente ipsam!",
-    },
-    {
-      id: 2,
-      star: 3.5,
-      customer: "alex M.",
-      verified: true,
-      text: " Lorem ipsum dolor sit amet consectetur, adipisicing elit. Quis, veritatis qui obcaecati vero corrupti alias. Ipsum itaque quaerat autem quidem fuga natus provident similique tempora, dolor ducimus minima sapiente ipsam!",
-    },
-    {
-      id: 3,
-      star: 4.5,
-      customer: "john d.",
-      verified: false,
-      text: " Lorem ipsum dolor sit amet consectetur, adipisicing elit. Quis, veritatis qui obcaecati vero corrupti alias. Ipsum itaque quaerat autem quidem fuga natus provident similique tempora, dolor ducimus minima sapiente ipsam!",
-    },
-  ];
+function ReviewSection({ products = [] }) {
   return (
     <section>
       <div className="wrapper px-5 md:px-20 py-10">
@@ -70,14 +48,14 @@ function ReviewSection() {
             {/* scroller */}
           </div>
           <div className="flex flex-col md:flex-row gap-5">
-            {reviews.map((rev) => (
+            {/* {reviews.map((rev) => (
               <ReviewCard
                 stats={rev.star}
                 customerName={rev.customer}
                 verified={rev.verified}
                 reviewText={rev.text}
               />
-            ))}
+            ))} */}
           </div>
         </div>
       </div>

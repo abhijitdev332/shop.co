@@ -1,4 +1,4 @@
-const Loader = () => {
+const LoaderScreen = () => {
   return (
     <div className="h-screen w-full bg-gray-800">
       <div className="flex justify-center items-center h-full w-full ">
@@ -8,4 +8,4 @@ const Loader = () => {
   );
 };
 
-export default Loader;
+export default LoaderScreen;

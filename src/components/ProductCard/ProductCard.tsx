@@ -20,12 +20,12 @@ const ProductCard = ({ product = {}, style = "", size = "", imgStyle }) => {
   };
 
   return (
-    <div className={cl("card rounded-box w-32 sm:w-52 md:w-60", style)}>
+    <div className={cl(style, "card rounded-box w-32 sm:w-52 md:w-60")}>
       <figure>
         <Link to={`/product/${product._id}`} className="w-full">
           <img
             src={product?.imgurl || product?.firstVariantImages?.[0]?.url || ""}
-            className={cl("rounded-xl h-32 md:h-64 w-full", imgStyle)}
+            className={cl(imgStyle, "rounded-xl h-32 md:h-64 w-auto")}
             alt="cloth"
             onError={(e: SyntheticEvent<HTMLImageElement, ErrorEvent>) => {
               e.target.parentElement.parentElement.parentElement.style.display =
@@ -35,15 +35,10 @@ const ProductCard = ({ product = {}, style = "", size = "", imgStyle }) => {
         </Link>
       </figure>
       <div className="card-body p-2 gap-0">
-        <h2 className="card-title text-gray-900 text-lg md:text-xl font-medium capitalize text-ellipsis overflow-hidden">
+        <h2 className="card-title w-fit text-gray-900  md:text-lg font-medium capitalize text-ellipsis overflow-hidden">
           {product?.name}
           {/* <div className="badge badge-seconday">{product.category.name}</div> */}
-        </h2>
-        <div className="flex gap-1">
-          <p className="text-sm text-gray-500 capitalize font-medium">
-            {product?.description}
-          </p>
-          <div className="flex items-center gap-1">
+          <div className="flex w-full justify-end gap-1">
             <span>
               <Star
                 count={product?.averageRating || 1}
@@ -51,8 +46,13 @@ const ProductCard = ({ product = {}, style = "", size = "", imgStyle }) => {
                 size={15}
               />
             </span>
-            <span>{Math.round(product?.averageRating)}/5</span>
+            {/* <span>{Math.round(product?.averageRating)}/5</span> */}
           </div>
+        </h2>
+        <div className="flex gap-1">
+          {/* <p className="text-sm text-gray-500 capitalize font-medium">
+            {product?.description}
+          </p> */}
         </div>
 
         {/* <p className="text-gray-800">{product.description?.slice(0, 70)}</p> */}
