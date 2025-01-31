@@ -24,7 +24,13 @@ const Pagination = ({ setPage = "", currentPage = "", totalPage = "" }) => {
       <div className="wrapper px-3 py-2">
         <div className="flex w-full justify-between">
           <p>Showing 1-5 0f 100 Items</p>
-
+          {/* {(currentPage - 1) * itemsPerPage}-
+                {currentPage * itemsPerPage > posts?.length
+                  ? posts?.length
+                  : currentPage * itemsPerPage}
+              </span>
+              OF
+              <span>{posts?.length}</span> */}
           <div className="flex items-center gap-3">
             <button className="btn btn-sm btn-ghost" onClick={handlePrevious}>
               <span>

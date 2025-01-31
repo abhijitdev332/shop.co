@@ -12,7 +12,6 @@ import {
   Loader,
   Login,
   OrdersPage,
-  PaymentPage,
   ProfilePage,
   Register,
   SuccessPage,
@@ -98,7 +97,6 @@ const router = createBrowserRouter(
         <Route path="subcategory/add" element={<AddSubCategory />} />
         <Route path="subcategory/:id" element={<SubCategoryProducts />} />
       </Route>
-      <Route path="/payment" element={<PaymentPage />} />
       <Route path="/success" element={<SuccessPage />} />
       <Route path="/declined" element={<DeclinedPage />} />
       <Route path="/*" element={<ErrorLayout />} />

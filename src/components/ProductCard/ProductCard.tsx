@@ -20,12 +20,12 @@ const ProductCard = ({ product = {}, style = "", size = "", imgStyle }) => {
   };
 
   return (
-    <div className={cl("card rounded-box w-40 sm:w-52 md:w-60", style)}>
+    <div className={cl("card rounded-box w-32 sm:w-52 md:w-60", style)}>
       <figure>
-        <Link to={`/product/${product._id}`} className="w-full h-full">
+        <Link to={`/product/${product._id}`} className="w-full">
           <img
             src={product?.imgurl || product?.firstVariantImages?.[0]?.url || ""}
-            className={cl("rounded-xl h-64 w-full", imgStyle)}
+            className={cl("rounded-xl h-32 md:h-64 w-full", imgStyle)}
             alt="cloth"
             onError={(e: SyntheticEvent<HTMLImageElement, ErrorEvent>) => {
               e.target.parentElement.parentElement.parentElement.style.display =

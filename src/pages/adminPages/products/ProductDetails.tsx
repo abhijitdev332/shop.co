@@ -6,12 +6,14 @@ import {
   getProductOrderDetails,
 } from "../../../querys/productQuery";
 import cl from "classnames";
-import { ReviewCard, Star } from "../../../components/component";
+import { DropDown, ReviewCard, Star } from "../../../components/component";
 import style from "./style.module.scss";
 import useFetch from "../../../hooks/useFetch";
 import { IoEye } from "react-icons/io5";
 import { MdModeEdit } from "react-icons/md";
 import { toast } from "react-toastify";
+import { updateOrderStatus } from "../../../querys/orderQuery";
+import { getadminOrdersKey } from "../../../querys/admin/adminApi";
 // default img url
 const imgUrl =
   "https://images.pexels.com/photos/769733/pexels-photo-769733.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1";
@@ -282,8 +284,10 @@ const ProductDetails = ({ setVariant, setReview }) => {
     </>
   );
 };
+const ordersStatus = ["pending", "shipped", "delivered"];
 // product orders
 function ProductOrders({ id = "", color = "" }) {
+  const queryClient = useQueryClient();
   const { data, error } = useQuery({
     queryKey: ["adminProductsOrders", id, color],
     queryFn: () => getProductOrderDetails({ productId: id, color: color }),
@@ -292,6 +296,8 @@ function ProductOrders({ id = "", color = "" }) {
   let orders = data?.data?.data || [];
 
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
+  const [selectedOrder, setSelectedOrder] = useState({});
+  const [orderStatusstate, setOrdersStatus] = useState("");
 
   // Toggle product selection
   const toggleSelectProduct = (id: string) => {
@@ -312,94 +318,164 @@ function ProductOrders({ id = "", color = "" }) {
   const handleDelete = (id: string) => {
     // setProducts((prev) => prev.filter((product) => product.id !== id));
   };
+  const updateOrderMutaion = useMutation({
+    mutationKey: ["updateOrderStaus"],
+    mutationFn: (data) => updateOrderStatus(selectedOrder, data),
+    onSuccess: (data) => {
+      toast.success(data?.data?.message);
+      queryClient.invalidateQueries([
+        getadminOrdersKey,
+        "orders",
+        selectedOrder,
+      ]);
+    },
+  });
+  const handleUpdateOrderStatus = () => {
+    if (orderStatusstate !== "") {
+      updateOrderMutaion.mutate({ status: orderStatusstate });
+    }
+  };
 
   return (
-    <div className="p-3 bg-white rounded-lg shadow-md">
-      {/* Table */}
-      <div className="overflow-x-auto">
-        <table className="w-full rounded">
-          <thead className="bg-gray-100 text-black">
-            <tr>
-              <th className=" px-4 py-2">
-                <input
-                  type="checkbox"
-                  checked={selectedProducts.length === orders?.length}
-                  onChange={toggleSelectAll}
-                  className="checkbox"
-                />
-              </th>
-              <th className=" px-4 py-2 text-left">Order Id</th>
-              <th className=" px-4 py-2 text-left">Products</th>
-              <th className=" px-4 py-2 text-left">Date</th>
-              <th className=" px-4 py-2 text-left">Cutstomer</th>
-              <th className=" px-4 py-2 text-left">Total</th>
-              <th className=" px-4 py-2 text-left">Payment</th>
-              <th className=" px-4 py-2 text-left">Status</th>
-              <th className=" px-4 py-2 text-left">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {orders?.map((order: any) => (
-              <tr key={order._id} className="text-black text-lg">
-                {/* Checkbox */}
-                <td className=" px-4 py-2 text-center">
+    <>
+      <div className="p-3 bg-white rounded-lg shadow-md">
+        {/* Table */}
+        <div className="overflow-x-auto h-fit">
+          <table className="w-full rounded">
+            <thead className="bg-gray-100 text-black">
+              <tr>
+                <th className=" px-4 py-2">
                   <input
                     type="checkbox"
-                    checked={selectedProducts.includes(order._id)}
-                    onChange={() => toggleSelectProduct(order._id)}
+                    checked={selectedProducts.length === orders?.length}
+                    onChange={toggleSelectAll}
                     className="checkbox"
                   />
-                </td>
-                <td>
-                  <Link to={order._id} title={order?._id}>
-                    {order._id.slice(0, 8)}
-                  </Link>
-                </td>
-                {/* Products Name */}
-                <td className=" px-4 py-2">
-                  <div className="flex gap-1">
-                    <div className="avatar">
-                      <div className="w-12 rounded">
-                        <img
-                          src={order?.firstProduct?.variantImages?.[0]?.url}
-                          alt="variant image"
-                        />
+                </th>
+                <th className=" px-4 py-2 text-left">Order Id</th>
+                <th className=" px-4 py-2 text-left">Products</th>
+                <th className=" px-4 py-2 text-left">Date</th>
+                <th className=" px-4 py-2 text-left">Cutstomer</th>
+                <th className=" px-4 py-2 text-left">Total</th>
+                <th className=" px-4 py-2 text-left">Payment</th>
+                <th className=" px-4 py-2 text-left">Status</th>
+                <th className=" px-4 py-2 text-left">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {orders?.map((order: any) => (
+                <tr key={order._id} className="text-black text-lg h-fit">
+                  {/* Checkbox */}
+                  <td className=" px-4 py-2 text-center">
+                    <input
+                      type="checkbox"
+                      checked={selectedProducts.includes(order._id)}
+                      onChange={() => toggleSelectProduct(order._id)}
+                      className="checkbox"
+                    />
+                  </td>
+                  <td>
+                    <Link to={order._id} title={order?._id}>
+                      {order._id.slice(0, 8)}
+                    </Link>
+                  </td>
+                  {/* Products Name */}
+                  <td className=" px-4 py-2">
+                    <div className="flex gap-1">
+                      <div className="avatar">
+                        <div className="w-12 rounded">
+                          <img
+                            src={order?.firstProduct?.variantImages?.[0]?.url}
+                            alt="variant image"
+                          />
+                        </div>
+                      </div>
+                      <div className="inline-flex flex-col capitalize">
+                        <span className="text-wrap font-medium text-gray-800">
+                          {order?.firstProduct?.productDetails?.name ||
+                            "product name"}
+                        </span>
+                        {order?.products?.length - 1 > 0 && (
+                          <span className="text-sm text-gray-600">
+                            +{order?.products?.length - 1} More Products
+                          </span>
+                        )}
                       </div>
                     </div>
-                    <div className="inline-flex flex-col capitalize">
-                      <span className="text-wrap font-medium text-gray-800">
-                        {order?.firstProduct?.productDetails?.name ||
-                          "product name"}
+                  </td>
+
+                  {/* date */}
+                  <td className=" px-4 py-2">
+                    {new Date(order?.createdAt).toLocaleDateString("en-GB")}
+                  </td>
+
+                  {/* Category */}
+                  <td className=" px-4 py-2">{order?.userDetails?.username}</td>
+
+                  {/* Stock */}
+                  <td className=" px-4 py-2">{order?.totalAmount}</td>
+
+                  {/* Price */}
+                  <td className=" px-4 py-2">{order?.paymentGateway}</td>
+
+                  {/* Status */}
+                  <td className=" px-4 py-2">
+                    {order?.status == "pending" ? (
+                      <span className="badge rounded-btn badge-lg capitalize">
+                        {order?.status}
                       </span>
-                      {order?.products?.length - 1 > 0 && (
-                        <span className="text-sm text-gray-600">
-                          +{order?.products?.length - 1} More Products
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </td>
+                    ) : (
+                      <span className="badge badge-success capitalize rounded-btn badge-lg">
+                        {order?.status}
+                      </span>
+                    )}
+                  </td>
 
-                {/* date */}
-                <td className=" px-4 py-2">
-                  {new Date(order?.createdAt).toLocaleDateString("en-GB")}
-                </td>
-
-                {/* Category */}
-                <td className=" px-4 py-2">{order?.userDetails?.username}</td>
-
-                {/* Stock */}
-                <td className=" px-4 py-2">{order?.totalAmount}</td>
-
-                {/* Price */}
-                <td className=" px-4 py-2">{order?.paymentGateway}</td>
-
-                {/* Status */}
-                <td className=" px-4 py-2">{order?.status}</td>
-
-                {/* Actions */}
-                <td className=" px-4 py-2">
-                  <div className="flex gap-1 ">
+                  {/* Actions */}
+                  <td className=" px-4 py-2">
+                    <DropDown>
+                      <li>
+                        <Link
+                          to={`/admin/orders/${order?._id}`}
+                          className="hover:bg-gray-300 font-medium"
+                        >
+                          <IoEye />
+                          View
+                        </Link>
+                      </li>
+                      <li>
+                        <select
+                          className="select  w-full bg-white !text-black"
+                          onChange={(ev) => {
+                            setSelectedOrder(order?._id);
+                            setOrdersStatus(ev.target.value);
+                          }}
+                        >
+                          {/* <option disabled selected className="text-black">
+                          Update Status
+                        </option> */}
+                          {ordersStatus.map((ele) => (
+                            <option
+                              className="capitalize text-black"
+                              value={ele}
+                              selected={order?.status == ele}
+                            >
+                              {ele}
+                            </option>
+                          ))}
+                        </select>
+                        <button
+                          className="hover:bg-gray-300 btn btn-neutral my-3 font-medium"
+                          onClick={handleUpdateOrderStatus}
+                        >
+                          <div className="flex gap-1">
+                            <MdModeEdit />
+                            <span className="text-white">Update</span>
+                          </div>
+                        </button>
+                      </li>
+                    </DropDown>
+                    {/* <div className="flex gap-1 ">
                     <Link
                       to={`${order?._id}`}
                       className="btn btn-sm btn-neutral rounded-full"
@@ -409,17 +485,15 @@ function ProductOrders({ id = "", color = "" }) {
                     <button className="btn btn-sm btn-primary  rounded-full">
                       <MdModeEdit />
                     </button>
-                    {/* <button className="btn btn-sm btn-ghost rounded-full">
-                      <FaRegTrashAlt />
-                    </button> */}
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                  </div> */}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 // product reviews

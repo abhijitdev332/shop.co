@@ -1,9 +1,12 @@
+import { useRelativeProducts } from "../../querys/productQuery";
 import { ProductCard } from "../component";
 
 export function RealativeProducts({
-  products = [],
-  title = "You might also like",
+  productId = "",
+  title = "Relative Products",
 }) {
+  const { data: products } = useRelativeProducts(productId);
+
   return (
     <section>
       <div className="wrapper py-10 px-5">

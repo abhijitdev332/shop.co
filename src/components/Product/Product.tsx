@@ -290,13 +290,15 @@ const Product = () => {
           <div className="tab-wrapper py-10">
             <div
               role="tablist"
-              className="tabs tabs-bordered w-full grid-cols-2"
+              className="tabs tabs-bordered w-full grid-cols-2 text-black"
             >
               <input
                 type="radio"
                 name="my_tabs_1"
                 role="tab"
-                className={cl("tab font-medium capitalize  text-lg")}
+                className={cl(
+                  "tab font-medium capitalize  text-inherit text-lg"
+                )}
                 aria-label="Product Details"
               />
               <div role="tabpanel" className="tab-content p-10">
@@ -307,7 +309,9 @@ const Product = () => {
                 type="radio"
                 name="my_tabs_1"
                 role="tab"
-                className={cl("tab font-medium capitalize text-lg")}
+                className={cl(
+                  "tab font-medium capitalize text-inherit text-lg"
+                )}
                 aria-label="Rating & Reviews"
                 defaultChecked
               />
@@ -318,21 +322,10 @@ const Product = () => {
                   productId={id}
                 />
               </div>
-
-              {/* <input
-                type="radio"
-                name="my_tabs_1"
-                role="tab"
-                className={cl("tab font-medium capitalize  text-lg")}
-                aria-label="FAQS"
-              />
-              <div role="tabpanel" className="tab-content p-10">
-                <ProductFAQS />
-              </div> */}
             </div>
           </div>
           {/* relative products */}
-          <RealativeProducts />
+          <RealativeProducts productId={id} />
         </div>
       </section>
     </>

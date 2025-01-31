@@ -1,3 +1,4 @@
+import { useQuery } from "@tanstack/react-query";
 import { PrivateAxios } from "../services/api/api";
 
 const newArivals = async ({ limit = 4, skip = 0 }) => {
@@ -7,7 +8,6 @@ const newReview = async ({ id, data }) => {
   return await PrivateAxios.post(`/product/review/add/${id}`, data);
 };
 const deleteReview = async (id, reviewId) => {
-  console.log(id, reviewId);
   return await PrivateAxios.delete(
     `/product/review/remove/${id}?reviewId=${reviewId}`
   );
@@ -65,6 +65,18 @@ let getProductOrderDetails = async ({ productId, color }) => {
 let getShopAllProducts = async (limit, skip) => {
   return await PrivateAxios.get(`/product/shop?limit=${limit}&skip=${skip}`);
 };
+let getRelativeProducts = async (id = "", limit = 5, skip = 0) => {
+  let { data } = await PrivateAxios.get(
+    `product/relative/${id}?limit=${limit}&skip=${skip}`
+  );
+  return data?.data;
+};
+let useRelativeProducts = (id = "", limit = 5, skip = 0) => {
+  return useQuery({
+    queryKey: ["relativeProducts", id],
+    queryFn: () => getRelativeProducts(id, limit, skip),
+  });
+};
 
 export {
   newArivals,
@@ -79,4 +91,5 @@ export {
   newReview,
   getProductOrderDetails,
   getShopAllProducts,
+  useRelativeProducts,
 };

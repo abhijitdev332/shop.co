@@ -10,7 +10,7 @@ const Loader = () => {
       {loadingStatus &&
         createPortal(
           <>
-            <div className="h-screen w-screen">
+            <div className="h-screen w-screen bg-slate-500">
               <div className="flex justify-center items-center h-full w-full">
                 <span className="loading loading-spinner loading-lg"></span>
               </div>

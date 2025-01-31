@@ -12,6 +12,7 @@ import Logout from "./logout/Logout";
 import { LoaderBtn } from "./button/btn";
 import ProductsBySlug from "./productByCategory/ProductBySlug";
 import Modal from "./modal/Modal";
+import CheckOutModal from "./modal/CheckoutModal";
 import DropDown from "./dropdown/Dropdown";
 import LoadingScreen from "./loader/Loader";
 // import NewProductDetails from "./Product/NewCodeProduct";
@@ -32,4 +33,5 @@ export {
   Modal,
   LoadingScreen,
   DropDown,
+  CheckOutModal,
 };

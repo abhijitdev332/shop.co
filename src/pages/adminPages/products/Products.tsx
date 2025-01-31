@@ -13,7 +13,12 @@ import { DropDown, Modal } from "../../../components/component";
 import { AdminPagination } from "../adminPages";
 
 const AllProductsTable = () => {
-  let { data: products } = useAdminProduct();
+  const itemsPerPage = 5;
+  const [currentPage, setCurrentPage] = useState(1);
+  let { data: products, isLoading } = useAdminProduct(
+    currentPage * itemsPerPage,
+    (currentPage - 1) * itemsPerPage
+  );
   const queryClient = useQueryClient();
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
   const [deleteSelect, setDeleteSelect] = useState("");
@@ -75,6 +80,9 @@ const AllProductsTable = () => {
 
         {/* Table */}
         <div className="overflow-x-auto">
+          {isLoading && (
+            <div className="skeleton h-96 columns-1 w-full bg-gray-200 dark:bg-white "></div>
+          )}
           <table className="w-full rounded">
             <thead className="sticky top-0 bg-gray-200 p-2 z-10">
               <tr>
@@ -99,8 +107,8 @@ const AllProductsTable = () => {
               </tr>
             </thead>
             <tbody>
-              {products?.map((product: any) => (
-                <tr key={product?._id} className="text-black text-lg">
+              {products?.allProducts?.map((product: any) => (
+                <tr key={product?._id} className="text-gray-800 text-base">
                   {/* Checkbox */}
 
                   {/* Product Name */}
@@ -125,7 +133,7 @@ const AllProductsTable = () => {
                           </div>
                         </div>
                         <p className="inline-flex flex-col">
-                          <span className="capitalize font-medium">
+                          <span className="capitalize text-sm md:text-base text-gray-800 font-medium">
                             {product?.name}
                           </span>
                           <span className="text-sm text-gray-400">
@@ -213,7 +221,11 @@ const AllProductsTable = () => {
             </tbody>
           </table>
         </div>
-        <AdminPagination totalPage={5} />
+        <AdminPagination
+          totalPage={Math.ceil(products?.totalProductsLen / itemsPerPage)}
+          currentPage={currentPage}
+          setPage={setCurrentPage}
+        />
       </div>
       {/* modal */}
       <Modal modalRef={modalRef}>

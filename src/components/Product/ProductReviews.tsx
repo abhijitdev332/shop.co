@@ -81,7 +81,7 @@ export function ProductReviews({
               </h3>
               {/* fillter and write review */}
               <div className="flex gap-3 items-center">
-                <div className="rounded-full bg-gray-300 p-3 ">
+                {/* <div className="rounded-full bg-gray-300 p-3 ">
                   <GrSort />
                 </div>
                 <div className="rounded-badge bg-gray-300 px-3 py-2 flex gap-1 items-center ">
@@ -89,7 +89,7 @@ export function ProductReviews({
                   <span>
                     <IoIosArrowDown />
                   </span>
-                </div>
+                </div> */}
                 <button
                   className="rounded-badge px-3 py-2  text-sm bg-black text-white"
                   onClick={() => modalRef.current?.showModal()}
@@ -109,11 +109,11 @@ export function ProductReviews({
                 />
               ))}
             </div>
-            <div className="flex w-full justify-center">
+            {/* <div className="flex w-full justify-center">
               <button className="btn rounded-badge  btn-active capitalize">
                 Load more Reviews
               </button>
-            </div>
+            </div> */}
           </div>
         </div>
       </section>

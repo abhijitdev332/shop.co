@@ -4,7 +4,7 @@ import { FaRegTrashAlt } from "react-icons/fa";
 import { IoEye } from "react-icons/io5";
 import { MdModeEdit } from "react-icons/md";
 import { Link } from "react-router-dom";
-import { adminAllUser } from "../../../querys/admin/adminQuery";
+import { useAdminAllUser } from "../../../querys/admin/adminQuery";
 import { FaRegTrashCan } from "react-icons/fa6";
 import { deleteUser } from "../../../querys/userQuery";
 import { toast } from "react-toastify";
@@ -12,10 +12,9 @@ import { DropDown, Modal } from "../../../components/component";
 import { AdminPagination } from "../adminPages";
 
 const UsersTable = () => {
-  const { data } = useQuery({
-    queryKey: ["adminUsers"],
-    queryFn: adminAllUser,
-  });
+  const itemsperpage = 5;
+  const [currentPage, setCurrentPage] = useState(1);
+  const { data, isLoading } = useAdminAllUser(currentPage, itemsperpage);
   const users = data?.data?.data;
   const queryClient = useQueryClient();
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
@@ -90,6 +89,9 @@ const UsersTable = () => {
 
         {/* Table */}
         <div className="overflow-x-auto">
+          {isLoading && (
+            <div className="skeleton h-96 columns-1 w-full bg-gray-200 dark:bg-white "></div>
+          )}
           <table className="w-full rounded">
             <thead className="bg-gray-100 text-black">
               <tr>
@@ -109,8 +111,8 @@ const UsersTable = () => {
               </tr>
             </thead>
             <tbody>
-              {users?.map((eachUser) => (
-                <tr key={eachUser?._id} className="text-black text-lg">
+              {data?.allUsers?.map((eachUser) => (
+                <tr key={eachUser?._id} className="text-gray-800 text-base">
                   {/* Checkbox */}
                   <td className=" px-4 py-2 text-center">
                     <input
@@ -139,7 +141,7 @@ const UsersTable = () => {
                       </Link>
 
                       <div className="inline-flex flex-col">
-                        <p className="capitalize font-medium">
+                        <p className="text-gray-800 text-base capitalize">
                           {eachUser?.username}
                         </p>
                         <span className="text-gray-400 text-sm">
@@ -212,7 +214,11 @@ const UsersTable = () => {
             </tbody>
           </table>
         </div>
-        <AdminPagination totalPage={5} />
+        <AdminPagination
+          currentPage={currentPage}
+          setPage={setCurrentPage}
+          totalPage={Math.ceil(data?.totalUsers / itemsperpage)}
+        />
       </div>
       {/* modal for confirm delete */}
       <Modal modalRef={modalRef}>

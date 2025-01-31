@@ -12,15 +12,13 @@ import { useTheme } from "../../services/providers/ThemeProvider";
 const imageUrl =
   "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
 const AdminDashboardHeader = () => {
-  const [theme, toggleTheme] = useTheme();
+  const [_, toggleTheme] = useTheme();
   const { userDetails } = useSelector((store) => store.user);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [inputFull, setInputFull] = useState(false);
-
   const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
   const toggleInput = () => setInputFull(!inputFull);
   const handleTheme = () => {
-    console.log(theme);
     toggleTheme();
   };
   return (
@@ -46,12 +44,12 @@ const AdminDashboardHeader = () => {
           </span>
         </div>
         {/* Notifications */}
-        <div className="relative">
+        {/* <div className="relative">
           <FiBell className="text-2xl text-gray-600 cursor-pointer" />
           <span className="absolute top-0 right-0 inline-flex items-center justify-center h-4 w-4 bg-red-500 text-white text-xs rounded-full">
             3
           </span>
-        </div>
+        </div> */}
 
         {/* Profile */}
         <div className="relative">
@@ -66,10 +64,10 @@ const AdminDashboardHeader = () => {
                 className="h-10 w-10 rounded-full object-cover"
               />
             ) : (
-              <ImageLetter name={userDetails?.username} style={"!w-10"} />
+              <ImageLetter name={userDetails?.username} style={"!w-12"} />
             )}
 
-            <span className="text-gray-700 font-medium">
+            <span className="text-gray-700 font-medium capitalize">
               {userDetails?.username}
             </span>
             <MdOutlineKeyboardArrowDown className="text-xl text-gray-600" />
@@ -92,7 +90,7 @@ const AdminDashboardHeader = () => {
                 </span>
                 Roles
               </button> */}
-              <Logout style={"w-full mt-2"}>
+              <Logout style={"w-full mt-2 text-white"}>
                 <span>
                   <IoLogOut color="white" />
                 </span>

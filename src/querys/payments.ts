@@ -1,6 +1,6 @@
 import { PrivateAxios } from "../services/api/api";
 
-const verifyPayment = async (session) => {
+const verifyPayment = async (session = "") => {
   return await PrivateAxios.post("/payment/verify-payment", {
     sessionId: session,
   });

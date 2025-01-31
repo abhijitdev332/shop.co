@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { AiOutlineMenu, AiOutlineClose } from "react-icons/ai";
-import { FaHouseCircleCheck } from "react-icons/fa6";
 import { IoLogOut, IoReceiptSharp } from "react-icons/io5";
 import { MdDashboard, MdPeopleAlt, MdStorefront } from "react-icons/md";
 import { TbCategoryFilled } from "react-icons/tb";

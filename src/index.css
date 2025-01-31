@@ -10,6 +10,7 @@
 }
 body {
   background: #fff;
+  overflow-x: hidden;
 }
 
 p,

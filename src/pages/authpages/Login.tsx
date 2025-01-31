@@ -10,6 +10,7 @@ import { useMutation } from "@tanstack/react-query";
 import { login } from "../../querys/authQuery";
 import { useDispatch } from "react-redux";
 import { setUser } from "../../services/store/user/userSlice";
+import { setUserToLocal } from "../../utils/utils";
 
 // Define validation schema using Zod
 const loginSchema = z.object({
@@ -38,6 +39,7 @@ const LoginPage: React.FC = () => {
       setTimeout(() => {
         navigate("/");
       }, 1000);
+      setUserToLocal(data?.data?.data);
     },
   });
 

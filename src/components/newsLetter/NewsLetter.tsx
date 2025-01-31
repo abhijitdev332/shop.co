@@ -5,7 +5,7 @@ function NewsLetter() {
     <section className="py-10 lg:container lg:mx-auto">
       <div className="wrapper  w-[90%] mx-auto rounded-2xl p-10 bg-black ">
         <div className="flex flex-col md:flex-row gap-3 justify-between">
-          <h2 className="uppercase font-extrabold whitespace-normal text-white  text-4xl  basis-1/3">
+          <h2 className="uppercase font-extrabold whitespace-normal text-white  md:text-4xl  basis-1/3">
             Stay upto date with about our latest offers
           </h2>
           <div className="flex flex-col justify-center items-center gap-2 basis-1/3">

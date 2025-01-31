@@ -3,10 +3,10 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import authImg from "../../assets/svgs/auth/frame.svg";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
-import { register as userRegister } from "../../querys/authQuery";
 import { toast } from "react-toastify";
+import { createUser } from "../../querys/userQuery";
 // Validation schema with Zod
 const registrationSchema = z.object({
   name: z
@@ -24,20 +24,35 @@ const registrationSchema = z.object({
 type RegistrationFormInputs = z.infer<typeof registrationSchema>;
 
 const RegistrationPage: React.FC = () => {
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<RegistrationFormInputs>({
     resolver: zodResolver(registrationSchema),
   });
   const { mutate, isError, isPending, error } = useMutation({
-    mutationFn: (data) => userRegister(JSON.stringify(data)),
-    onSuccess: (data) => toast.success(data?.data?.message),
+    mutationFn: (data) => createUser(data),
+    onSuccess: () => {
+      reset();
+      toast.info("Please login");
+      navigate("/auth");
+    },
   });
 
   const onSubmit = (data: RegistrationFormInputs) => {
-    mutate(data as any);
+    let formdata = new FormData();
+    let userData = {
+      displayName: data.name,
+      email: data.email,
+      password: data.password,
+      phoneNumber: data.phone,
+    };
+
+    formdata.append("data", JSON.stringify(userData));
+    mutate(formdata);
   };
 
   useEffect(() => {

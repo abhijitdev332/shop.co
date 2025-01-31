@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { createAddress, getUserAddress } from "../../querys/addressQuery";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -7,14 +7,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { IoMdAdd } from "react-icons/io";
-import { LoaderBtn } from "../../components/component";
+import { LoaderBtn, Modal } from "../../components/component";
 import { FaLocationArrow } from "react-icons/fa";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import cl from "classnames";
 import { IoArrowForward } from "react-icons/io5";
-import { PrivateAxios } from "../../services/api/api";
-import { loadStripe } from "@stripe/stripe-js";
-import { newPayment } from "../../querys/payments";
+import { newPayment, verifyPayment } from "../../querys/payments";
+import { newOrder } from "../../querys/orderQuery";
+import { resetCart } from "../../services/store/cart/cartSlice";
 const addressSchema = z.object({
   landMark: z.string().min(1, "land mark is required"),
   houseNo: z.string().optional(),
@@ -33,14 +33,17 @@ const addressObject = {
   country: "",
   pin: "",
 };
-const stripepre = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
+
 type AddressFormInputs = z.infer<typeof addressSchema>;
 const CartAddress = () => {
+  const navigate = useNavigate();
   const { userDetails } = useSelector((store) => store.user);
   const { products } = useSelector((store) => store.cart);
+  const dispatch = useDispatch();
+  const cart = useSelector((store) => store.cart);
   const { state } = useLocation();
   const queryClient = useQueryClient();
-  const userId = userDetails?._id || 12;
+  const userId = userDetails?._id || "";
   const { data } = useQuery({
     queryKey: ["userAddress", userId],
     queryFn: () => getUserAddress(userId),
@@ -48,27 +51,85 @@ const CartAddress = () => {
   });
   let userAddress = data?.data?.data || [];
   const [selectedAddress, setSelectedAddress] = useState("");
+  const [checkoutUrl, setCheckoutUrl] = useState("");
   const modalRef = useRef(null);
   const { mutate } = useMutation({
     mutationKey: ["newpayment"],
     mutationFn: (data) => newPayment(data),
     onSuccess: async (data) => {
-      redirectToPayment(data);
+      setCheckoutUrl(data?.data?.data?.paymentUrl);
+      let checkoutUrl = data?.data?.data?.paymentUrl;
+      const checkoutWindow = window.open(
+        checkoutUrl,
+        "_blank",
+        "width=600,height=700"
+      );
+
+      if (checkoutWindow) {
+        const sessionId = data?.data?.data?.sessionId;
+        pollPaymentStatus(sessionId, checkoutWindow);
+      }
+    },
+  });
+  const { mutateAsync: verifyMutaion } = useMutation({
+    mutationKey: ["verify-payment", checkoutUrl],
+    mutationFn: (session) => verifyPayment(session),
+    // onSuccess: (data) => {
+    //   toast.success(data?.data?.message);
+    // },
+  });
+  const { mutateAsync: orderMutation } = useMutation({
+    mutationKey: ["newOrder", checkoutUrl],
+    mutationFn: (data) => newOrder(data),
+    onSuccess: () => {
+      dispatch(resetCart());
     },
   });
 
-  // redirect
-  async function redirectToPayment(data) {
-    console.log(data?.data?.data);
-    let stripe = await stripepre;
-    let { error } = await stripe?.redirectToCheckout({
-      sessionId: data?.data?.data?.sessionId,
-    });
+  const pollPaymentStatus = (
+    sessionId: string,
+    checkoutWindow: Window | null
+  ) => {
+    const interval = setInterval(async () => {
+      let res = await verifyMutaion(sessionId);
+      if (res.status !== 200) {
+        clearInterval(interval);
+        navigate("/declined");
+        return toast.error(res.data?.message);
+      }
+      clearInterval(interval);
+      if (checkoutWindow) checkoutWindow.close();
+      if (res.data?.data?.payment_status === "paid") {
+        let paymentDeatils = res.data?.data;
+        let orderData = {
+          products: cart?.products?.map((prod) => ({
+            productId: prod?.productId,
+            variantId: prod?.variantId,
+            quantity: prod?.quantity,
+          })),
+          address: paymentDeatils?.metadata?.address,
+          userId: paymentDeatils?.metadata?.userId,
+          transactionId: paymentDeatils?.payment_intent,
+          totalAmount:
+            cart?.totalAmount +
+            paymentDeatils?.total_details?.amount_shipping / 100 -
+            paymentDeatils?.total_details?.amount_discount / 100,
+          discount: paymentDeatils?.total_details?.amount_discount / 100,
+        };
+        let orderRes = await orderMutation(orderData);
+        if (orderRes.status == 201) {
+          navigate("/success");
+          toast.success("Order Successfull");
+        }
+        toast(
+          res.data?.data?.payment_status === "paid"
+            ? "Payment successful!"
+            : "Payment canceled."
+        );
+      }
+    }, 3000); // Poll every 3 seconds
+  };
 
-    if (error) {
-      console.log(error);
-    }
-  }
   //   chekcout func
   const handleCheckout = async () => {
     if (selectedAddress == "") {
@@ -202,48 +263,51 @@ const CartAddress = () => {
               <IoArrowForward />
             </button>
           </div>
-          <dialog id="my_modal_2" className="modal" ref={modalRef}>
-            <div className="modal-box bg-white w-lg">
-              <div className="wrapper">
-                <div className="flex flex-col gap-2 p-2">
-                  <form onSubmit={addressSubmit(handleAddressSubmit)}>
-                    {Object.keys(addressObject).map((obj) => (
-                      <label htmlFor="" className="flex flex-col gap-1">
-                        <span className="py-2 font-medium text-lg capitalize">
-                          {obj}
-                        </span>
+          <Modal modalRef={modalRef}>
+            <div className="wrapper">
+              <div className="flex flex-col gap-2 p-2">
+                <form onSubmit={addressSubmit(handleAddressSubmit)}>
+                  {Object.keys(addressObject).map((obj) => (
+                    <label htmlFor="" className="flex flex-col gap-1">
+                      <span className="py-2 font-medium text-lg capitalize">
+                        {obj}
+                      </span>
 
-                        <input
-                          type="text"
-                          name={obj}
-                          className="input input-bordered bg-transparent"
-                          {...addressReg(obj)}
-                        />
-                        {addressErr[obj] && (
-                          <p className="mt-1 text-sm text-red-500">
-                            {addressErr[obj].message}
-                          </p>
-                        )}
-                      </label>
-                    ))}
-                    <div className="flex justify-center py-2">
-                      <LoaderBtn
-                        pending={addresAddPending}
-                        type="submit"
-                        style="!flex gap-1 !btn-primary"
-                      >
-                        <FaLocationArrow />
-                        <span>Save Address</span>
-                      </LoaderBtn>
-                    </div>
-                  </form>
-                </div>
+                      <input
+                        type="text"
+                        name={obj}
+                        className="input input-bordered bg-transparent"
+                        {...addressReg(obj)}
+                      />
+                      {addressErr[obj] && (
+                        <p className="mt-1 text-sm text-red-500">
+                          {addressErr[obj].message}
+                        </p>
+                      )}
+                    </label>
+                  ))}
+                  <div className="flex justify-center py-2">
+                    <LoaderBtn
+                      pending={addresAddPending}
+                      type="submit"
+                      style="!flex gap-1 !btn-primary"
+                    >
+                      <FaLocationArrow />
+                      <span>Save Address</span>
+                    </LoaderBtn>
+                  </div>
+                </form>
               </div>
+            </div>
+          </Modal>
+          {/* <dialog id="my_modal_2" className="modal" ref={modalRef}>
+            <div className="modal-box bg-white w-lg">
+            
             </div>
             <form method="dialog" className="modal-backdrop">
               <button>close</button>
             </form>
-          </dialog>
+          </dialog> */}
         </div>
       </section>
     </>

@@ -11,7 +11,7 @@ import { IoIosArrowDown } from "react-icons/io";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { IoClose, IoLogOutSharp } from "react-icons/io5";
-import { Logout } from "../../components/component";
+import { Logout, Modal } from "../../components/component";
 import { useRef, useState } from "react";
 import { MdOutlineStorage } from "react-icons/md";
 const Header = () => {
@@ -106,17 +106,17 @@ const Header = () => {
                           </div>
                         </div>
                       </li>
-                      <li>
+                      {/* <li>
                         <Link to={"/product/category/sale"}>On Sale</Link>
-                      </li>
+                      </li> */}
                       <li>
                         <Link to={"/product/category/new arrivel"}>
                           New Arrival
                         </Link>
                       </li>
-                      <li>
+                      {/* <li>
                         <Link to={"/product/category/brands"}>Brands</Link>
-                      </li>
+                      </li> */}
 
                       <li className="mt-auto">
                         <Logout style={"btn-error text-white"}>Logout</Logout>
@@ -167,17 +167,17 @@ const Header = () => {
                       </li>
                     </ul>
                   </li>
-                  <li>
+                  {/* <li>
                     <Link to={"/product/category/sale"}>On Sale</Link>
-                  </li>
+                  </li> */}
                   <li>
                     <Link to={"/product/category/new arrivel"}>
                       New Arrival
                     </Link>
                   </li>
-                  <li>
+                  {/* <li>
                     <Link to={"/product/category/brands"}>Brands</Link>
-                  </li>
+                  </li> */}
                 </ul>
               </div>
               {/* searchbar */}
@@ -252,31 +252,24 @@ const Header = () => {
 
       {/* search modal */}
 
-      <dialog id="my_modal_2" ref={searchRef} className="modal">
-        <div className="modal-box bg-white space-y-3 text-center">
-          <label className="input input-bordered flex items-center bg-transparent gap-2">
-            <input type="text" className="grow" placeholder="Search" />
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 16 16"
-              fill="currentColor"
-              className="h-4 w-4 opacity-70"
-            >
-              <path
-                fillRule="evenodd"
-                d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z"
-                clipRule="evenodd"
-              />
-            </svg>
-          </label>
-          <button className="btn btn-md btn-primary">Search</button>
-          {/* <h3 className="font-bold text-lg">Hello!</h3>
-          <p className="py-4">Press ESC key or click outside to close</p> */}
-        </div>
-        <form method="dialog" className="modal-backdrop">
-          <button>close</button>
-        </form>
-      </dialog>
+      <Modal modalRef={searchRef} style="bg-white space-y-3 text-center">
+        <label className="input input-bordered flex items-center bg-transparent gap-2">
+          <input type="text" className="grow" placeholder="Search" />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 16 16"
+            fill="currentColor"
+            className="h-4 w-4 opacity-70"
+          >
+            <path
+              fillRule="evenodd"
+              d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z"
+              clipRule="evenodd"
+            />
+          </svg>
+        </label>
+        <button className="btn btn-md btn-neutral">Search</button>
+      </Modal>
     </>
   );
 };

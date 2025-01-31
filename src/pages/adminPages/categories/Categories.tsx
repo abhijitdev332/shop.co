@@ -180,7 +180,7 @@ function CategoryTable() {
             </thead>
             <tbody>
               {catagories?.map((cata) => (
-                <tr key={cata?._id} className="text-black text-lg">
+                <tr key={cata?._id} className="text-gray-800 text-base">
                   {/* Product Name */}
                   <td className=" px-4 py-2">
                     <div className="flex items-center gap-2">
@@ -203,7 +203,7 @@ function CategoryTable() {
                         </div>
                       </div>
 
-                      <p className="capitalize  font-medium">
+                      <p className="capitalize  text-gray-800 text-sm md:text-base">
                         {cata?.categoryName}
                       </p>
                     </div>
@@ -406,7 +406,7 @@ function SubCategoryTable() {
             </thead>
             <tbody>
               {catagories?.map((cata) => (
-                <tr key={cata?._id} className="text-black text-lg">
+                <tr key={cata?._id} className="text-gray-800 text-base">
                   {/* Product Name */}
                   <td className=" px-4 py-2">
                     <div className="flex gap-2 items-center">
@@ -426,7 +426,7 @@ function SubCategoryTable() {
                             <img src={cata?.subCategoryImage} />
                           </Link>
                         </div>
-                        <p className="font-medium text-lg capitalize">
+                        <p className="text-gray-800 text-sm md:text-base capitalize">
                           {cata?.SubCategoryName}
                         </p>
                       </div>

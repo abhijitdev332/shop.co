@@ -13,12 +13,12 @@ const Category = () => {
             browse by dress style
           </h2>
 
-          <div className="grid grid-cols-3 gap-4 py-10">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 py-10">
             {category?.map((ele, i) => {
               if (i + 1 == 2) {
                 return (
                   <div
-                    className="col-span-2 h-60 rounded-lg"
+                    className="md:col-span-2 w-full h-60 rounded-lg"
                     style={{
                       background: `url(${ele.categoryImage})`,
                       backgroundSize: "cover",
@@ -38,7 +38,7 @@ const Category = () => {
               } else if (i + 1 == 3) {
                 return (
                   <div
-                    className="col-span-2 h-60 rounded-lg"
+                    className="md:col-span-2 w-full h-60 rounded-lg"
                     style={{
                       background: `url(${ele.categoryImage})`,
                       backgroundPosition: "center center",
@@ -56,7 +56,7 @@ const Category = () => {
               } else {
                 return (
                   <div
-                    className="h-60 rounded-xl"
+                    className="h-60 w-full rounded-xl"
                     style={{ background: `url(${ele.categoryImage})` }}
                   >
                     <Link to={`/product/category/${ele.categoryName}`}>

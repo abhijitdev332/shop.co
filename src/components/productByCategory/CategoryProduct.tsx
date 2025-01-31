@@ -48,7 +48,7 @@ const CategoryProduct = () => {
               <li className="capitalize">{id}</li>
             </ul>
           </div>
-          <div className="flex w-full gap-10 ">
+          <div className="flex w-full">
             <div className="wrapper h-full overflow-y-auto">
               <FillterCard show={fillterShow} setShow={setFillterShow} />
             </div>
@@ -81,12 +81,12 @@ const CategoryProduct = () => {
                   </div>
                 </div>
               </div>
-              <div className="grid  columns-1 sm:grid-cols-2 md:grid-cols-3 gap-6 overflow-y-auto">
+              <div className="grid  grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 overflow-y-auto">
                 {allProducts?.map((ele) => (
                   <ProductCard
                     product={ele}
                     style="!w-full"
-                    imgStyle={"h-48"}
+                    imgStyle={"h-52"}
                   />
                 ))}
               </div>

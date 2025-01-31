@@ -16,23 +16,30 @@ import {
   BsFillEyeFill,
   BsPersonCheckFill,
 } from "react-icons/bs";
-import { FaMoneyBill, FaRegTrashAlt } from "react-icons/fa";
+import { FaMoneyBill } from "react-icons/fa";
 import { AdminPagination } from "./adminPages";
-import { MdCurrencyExchange } from "react-icons/md";
+import { MdPendingActions } from "react-icons/md";
 import { useQuery } from "@tanstack/react-query";
 import { topSelling } from "../../querys/productQuery";
 import {
   adminTopCategories,
   useAdminOrders,
+  useAdminOrdersByCountry,
+  useAdminOrderStats,
   useAdminStats,
 } from "../../querys/admin/adminQuery";
 import { Link } from "react-router-dom";
 const Dashbroad = () => {
-  const stats = useAdminStats();
-  console.log(stats);
+  const times = ["7d", "1m", "1y"];
+  const [selectedTime, setSelectedTime] = useState("7d");
+  const { data: stats } = useAdminStats();
+  const { data: orderStats } = useAdminOrderStats(selectedTime);
+  const handleTabClick = (time) => {
+    setSelectedTime(time);
+  };
   return (
     <section>
-      <div className="wrapper px-5 py-7 text-black">
+      <div className="wrapper grid gap-5 px-5 py-7 text-black">
         {/* greet */}
         <div className="flex flex-col gap-2">
           <h2 className="text-2xl font-bold ">Welcome Back Admin</h2>
@@ -41,37 +48,76 @@ const Dashbroad = () => {
             necessitatibus?
           </p>
         </div>
-        <div className="flex gap-3 justify-between p-5">
+        {/* dashcards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 justify-between md:p-5">
           <DashCard
             title={"income"}
-            count={235346}
+            count={stats?.totalSaleAmount}
+            today={stats?.todaySaleAmount}
             currency={true}
-            icon={<FaMoneyBill color="blue" />}
+            icon={<FaMoneyBill color="blue" size={20} />}
           />
           <DashCard
             title={"Orders"}
-            count={2356}
-            icon={<BsCartCheckFill color="green" />}
+            count={stats?.totalOrders}
+            today={stats?.todayOrders}
+            icon={<BsCartCheckFill color="green" size={20} />}
           />
           <DashCard
-            title={"Expenses"}
-            count={23236}
-            icon={<MdCurrencyExchange color="crimson" />}
+            title={"Pending Orders"}
+            today={stats?.todayOrderStatus?.pending}
+            count={stats?.orderStatus?.pending}
+            icon={<MdPendingActions color="#fb4141" size={20} />}
           />
           <DashCard
             title={"customers"}
-            count={2356}
-            icon={<BsPersonCheckFill color="purple" />}
+            count={stats?.totalCustomers}
+            today={stats?.todayCustomers}
+            icon={<BsPersonCheckFill color="#287f8a" size={20} />}
           />
         </div>
-        <div className="flex gap-2">
+        {/* sales chart */}
+
+        <div className="flex flex-col md:px-5 gap-2">
+          <div
+            role="tablist"
+            className="tabs tabs-boxed bg-transparent border space-x-3 w-fit ms-auto"
+          >
+            {times?.map((tab) => (
+              <a
+                role="tab"
+                className={cl(
+                  "tab text-black",
+                  selectedTime == tab ? "bg-primary text-gray-200" : ""
+                )}
+                onClick={() => handleTabClick(tab)}
+              >
+                {tab}
+              </a>
+            ))}
+
+            {/* <a
+              role="tab"
+              className={cl("tab text-black")}
+              onClick={handleTabClick}
+            >
+              Tab 2
+            </a>
+            <a
+              role="tab"
+              className={cl("tab text-black")}
+              onClick={handleTabClick}
+            >
+              Tab 3
+            </a> */}
+          </div>
           <Card style={"w-full h-full"}>
-            <SalesChart />
+            <SalesChart orderStats={orderStats} />
           </Card>
         </div>
-        <div className="grid gap-3 grid-cols-1 md:grid-cols-2 lg:grid-cols-3  h-80">
+        <div className="grid  gap-3 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 ">
           <Card>
-            <ExpenseChart />
+            <ExpenseChart orderStatus={stats?.orderStatus} />
           </Card>
           <Card>
             <TopProduct />
@@ -84,7 +130,9 @@ const Dashbroad = () => {
           <Card style="p-0 basis-2/3">
             <RecentOrders />
           </Card>
-          <Card style="basis-1/3"></Card>
+          <Card style="basis-1/3 h-fit">
+            <OrdersByCountry />
+          </Card>
         </div>
       </div>
     </section>
@@ -95,6 +143,7 @@ function DashCard({
   icon = "",
   title,
   count,
+  today = 0,
   currency = false,
   style = "",
   children,
@@ -102,22 +151,29 @@ function DashCard({
   return (
     <div
       className={cl(
-        "stats shadow rounded-btn  bg-white text-black w-60",
+        "stats w-full shadow rounded-btn  bg-white text-black",
         style
       )}
     >
       <div className="stat gap-1">
-        <div className="stat-title text-black font-medium flex items-center gap-1 capitalize">
+        <div className="stat-title text-gray-900 flex items-center gap-1 capitalize overflow-hidden">
           <span>{icon}</span>
-          <span>{title}</span>
+          <span className="text-wrap">{title}</span>
         </div>
         <div className="stat-value font-medium text-3xl">
           {currency ? "$" : ""}
           {count}
         </div>
         <div className="stat-desc flex gap-1 text-slate-800 font-medium">
-          <span className="text-green-500">10%</span>
-          <span>+$150 today</span>
+          {/* <span className="text-green-500">10%</span> */}
+          {today !== "" && (
+            <span>
+              <span className={cl(today > 0 ? "text-green-600 py-3" : "")}>
+                {currency ? "+ $" : "+"}
+                {today} today
+              </span>
+            </span>
+          )}
         </div>
       </div>
     </div>
@@ -136,126 +192,112 @@ function Card({ style = "", children }) {
     </div>
   );
 }
-function SalesChart() {
-  const data = [
-    {
-      name: "Jan",
-      uv: 4000,
-      pv: 2400,
-      amt: 2400,
-    },
-    {
-      name: "Feb",
-      uv: 3000,
-      pv: 1398,
-      amt: 2210,
-    },
-    {
-      name: "Mar",
-      uv: 2000,
-      pv: 9800,
-      amt: 2290,
-    },
-    {
-      name: "Apr",
-      uv: 2780,
-      pv: 3908,
-      amt: 2000,
-    },
-    {
-      name: "May",
-      uv: 1890,
-      pv: 4800,
-      amt: 2181,
-    },
-    {
-      name: "June",
-      uv: 2390,
-      pv: 3800,
-      amt: 2500,
-    },
-    {
-      name: "July",
-      uv: 3490,
-      pv: 4300,
-      amt: 2100,
-    },
-    {
-      name: "Aug",
-      uv: 4590,
-      pv: 8000,
-      amt: 2100,
-    },
-    {
-      name: "Sep",
-      uv: 4300,
-      pv: 3950,
-      amt: 2100,
-    },
-    {
-      name: "Oct",
-      uv: 3390,
-      pv: 4100,
-      amt: 2000,
-    },
-    {
-      name: "Nov",
-      uv: 4050,
-      pv: 5000,
-      amt: 2700,
-    },
-    {
-      name: "Dec",
-      uv: 3430,
-      pv: 4150,
-      amt: 2150,
-    },
-  ];
+function SalesChart({ orderStats }) {
+  // const data = [
+  //   {
+  //     name: "Jan",
+  //     uv: 4000,
+  //     pv: 2400,
+  //     amt: 2400,
+  //   },
+  //   {
+  //     name: "Feb",
+  //     uv: 3000,
+  //     pv: 1398,
+  //     amt: 2210,
+  //   },
+  //   {
+  //     name: "Mar",
+  //     uv: 2000,
+  //     pv: 9800,
+  //     amt: 2290,
+  //   },
+  //   {
+  //     name: "Apr",
+  //     uv: 2780,
+  //     pv: 3908,
+  //     amt: 2000,
+  //   },
+  //   {
+  //     name: "May",
+  //     uv: 1890,
+  //     pv: 4800,
+  //     amt: 2181,
+  //   },
+  //   {
+  //     name: "June",
+  //     uv: 2390,
+  //     pv: 3800,
+  //     amt: 2500,
+  //   },
+  //   {
+  //     name: "July",
+  //     uv: 3490,
+  //     pv: 4300,
+  //     amt: 2100,
+  //   },
+  //   {
+  //     name: "Aug",
+  //     uv: 4590,
+  //     pv: 8000,
+  //     amt: 2100,
+  //   },
+  //   {
+  //     name: "Sep",
+  //     uv: 4300,
+  //     pv: 3950,
+  //     amt: 2100,
+  //   },
+  //   {
+  //     name: "Oct",
+  //     uv: 3390,
+  //     pv: 4100,
+  //     amt: 2000,
+  //   },
+  //   {
+  //     name: "Nov",
+  //     uv: 4050,
+  //     pv: 5000,
+  //     amt: 2700,
+  //   },
+  //   {
+  //     name: "Dec",
+  //     uv: 3430,
+  //     pv: 4150,
+  //     amt: 2150,
+  //   },
+  // ];
+
   return (
     <div className="wrapper w-full h-full">
       <ResponsiveContainer width="100%" height={300}>
         <AreaChart
-          data={data}
+          data={orderStats}
           margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
         >
           <defs>
-            <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8} />
-              <stop offset="95%" stopColor="#8884d8" stopOpacity={0} />
-            </linearGradient>
             <linearGradient id="colorPv" x1="0" y1="0" x2="0" y2="1">
               <stop offset="5%" stopColor="#82ca9d" stopOpacity={0.8} />
               <stop offset="95%" stopColor="#82ca9d" stopOpacity={0} />
             </linearGradient>
-            <linearGradient id="colorAmt" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#52ca9a" stopOpacity={0.8} />
-              <stop offset="95%" stopColor="#32ca9e" stopOpacity={0} />
-            </linearGradient>
           </defs>
-          <XAxis dataKey="name" />
+          <XAxis dataKey={"_id"} />
           <YAxis />
           <CartesianGrid strokeDasharray="0 0" />
           <Tooltip />
-          <Area
+          {/* <Area
             type="monotone"
-            dataKey="uv"
+            dataKey="totalSales"
             stroke="#8884d8"
             fillOpacity={1}
             fill="url(#colorUv)"
-          />
+          /> */}
           <Area
             type="monotone"
-            dataKey="pv"
+            dataKey="totalSales"
             stroke="#82ca9d"
             fillOpacity={1}
             fill="url(#colorPv)"
-          />
-          <Area
-            type="monotone"
-            dataKey="amt"
-            stroke="#52ca2a"
-            fillOpacity={1}
-            fill="url(#colorAmt)"
           />
         </AreaChart>
       </ResponsiveContainer>
@@ -292,7 +334,7 @@ function TopProduct() {
       <div className="flex flex-col gap-3 overflow-y-auto overflow-x-hidden py-2">
         {products.map((ele) => (
           <>
-            <div className="flex">
+            <div className="flex text-gray-800 text-sm md:text-base">
               <img
                 src={ele?.firstVariantImages?.[0]?.url}
                 alt="product image"
@@ -300,12 +342,12 @@ function TopProduct() {
               />
               <p className="inline-flex flex-col px-2">
                 <span
-                  className="text-sm text-ellipsis font-medium capitalize "
+                  className="text-sm text-ellipsis text-inherit capitalize "
                   title={ele?.name}
                 >
                   {ele?.name}
                 </span>
-                <span className="text-xs font-medium text-gray-500 capitalize">
+                <span className="text-xs font-medium text-gray-700 capitalize">
                   Sold:{ele?.totalProductSales}
                 </span>
               </p>
@@ -356,13 +398,13 @@ function TopCategory() {
   return (
     <div className="p-3">
       <div className="flex flex-col">
-        <h2 className="font-bold text-xl">Top Category</h2>
+        <h2 className="font-bold text-xl text-gray-800">Top Category</h2>
         {/* <p>Lorem ipsum dolor sit amet consectetur.</p> */}
       </div>
       <div className="flex flex-col gap-3 py-3 overflow-y-auto overflow-x-hidden">
         {categoryData?.map((ele) => (
           <>
-            <div className="flex">
+            <div className="flex text-gray-800 text-sm md:text-base">
               <div className="rounded-full">
                 <img
                   src={ele?.categoryImage}
@@ -373,11 +415,11 @@ function TopCategory() {
 
               <p className="inline-flex px-2 flex-col  gap-1">
                 {/* <span>{ele.productName}</span> */}
-                <span className="font-medium capitalize text-start">
+                <span className="text-inherit capitalize text-start">
                   {ele?.categoryName}
                 </span>
 
-                <span className="text-xs text-gray-500 font-bold">
+                <span className="text-xs text-gray-700 font-bold">
                   Date: {new Date(ele?.createdAt).toLocaleDateString("en-GB")}
                 </span>
               </p>
@@ -400,75 +442,54 @@ function TopCategory() {
     </div>
   );
 }
-function ExpenseChart() {
-  const data02 = [
-    {
-      name: "Group A",
-      value: 2400,
-    },
-    {
-      name: "Group B",
-      value: 4567,
-    },
-    {
-      name: "Group C",
-      value: 1398,
-    },
-    {
-      name: "Group D",
-      value: 9800,
-    },
-    {
-      name: "Group E",
-      value: 3908,
-    },
-    {
-      name: "Group F",
-      value: 4800,
-    },
+function ExpenseChart({ orderStatus }) {
+  let orderData = [
+    { name: "pending", value: orderStatus?.pending || 0 },
+    { name: "Delivered", value: orderStatus?.delivered || 0 },
+    { name: "shiipped", value: orderStatus?.pendingshipped || 0 },
   ];
+  console.log(orderData);
   return (
     <div className="wrapper w-full h-full">
       <div className="flex flex-col">
-        <h2 className="text-lg font-bold">All Expenses</h2>
+        <h2 className="text-lg font-bold">All Order Stats</h2>
         <p className="text-sm">Lorem ipsum dolor sit amet consectetur.</p>
       </div>
-      <ResponsiveContainer width={300}>
+      <ResponsiveContainer width={"100%"} height={"200px"}>
         <PieChart>
           <Pie
-            data={data02}
+            data={orderData}
             dataKey="value"
             nameKey="name"
             cx="50%"
             cy="50%"
-            innerRadius={60}
-            outerRadius={80}
-            fill="#82ca9d"
+            outerRadius={50}
+            fill="#8884d8"
             label
           />
+          <Tooltip key={"name"} />
         </PieChart>
       </ResponsiveContainer>
     </div>
   );
 }
-
 const RecentOrders = () => {
   const itemsPerPage = 5;
   const [currentPage, setCurrentPage] = useState(1);
-  const { data: orders } = useAdminOrders(currentPage, itemsPerPage);
+  const { data, isLoading } = useAdminOrders(currentPage, itemsPerPage);
   const [selectedDate, setSelectedDate] = useState<string>("");
 
-  const handleDelete = (id: string) => {
-    // setOrders((prev) => prev.filter((order) => order.id !== id));
-  };
+  // const handleDelete = (id: string) => {
+  //   // setOrders((prev) => prev.filter((order) => order.id !== id));
+  // };
 
-  const handleStatusChange = (id: string, newStatus: string) => {
-    // setOrders((prev) =>
-    //   prev.map((order) =>
-    //     order.id === id ? { ...order, status: newStatus } : order
-    //   )
-    // );
-  };
+  // const handleStatusChange = (id: string, newStatus: string) => {
+  //   // setOrders((prev) =>
+  //   //   prev.map((order) =>
+  //   //     order.id === id ? { ...order, status: newStatus } : order
+  //   //   )
+  //   // );
+  // };
 
   return (
     <>
@@ -481,28 +502,6 @@ const RecentOrders = () => {
           </span>
         </h2>
         <div className="flex items-center space-x-4">
-          {/* Date Filter */}
-          {/* <div
-            role="tablist"
-            className="tabs tabs-boxed tabs-md bg-slate-200 font-medium"
-          >
-            <a role="tab" className="tab text-xs">
-              5 Hours
-            </a>
-            <a role="tab" className="tab text-xs tab-active bg-white">
-              3 Hours
-            </a>
-            <a role="tab" className="tab text-xs">
-              2 Hours
-            </a>
-            <a role="tab" className="tab text-xs">
-              1 Hour
-            </a>
-            <a role="tab" className="tab text-xs">
-              3 Minute
-            </a>
-          </div> */}
-          {/* See More Button */}
           <Link
             to={"orders"}
             className="btn btn-neutral text-white btn-md  transition"
@@ -514,18 +513,22 @@ const RecentOrders = () => {
 
       {/* Table */}
       <div className="overflow-x-auto dark:bg-slate-900 dark:text-white text-black">
+        {isLoading && (
+          <div className="skeleton h-96 columns-1 w-full bg-gray-200 dark:bg-white "></div>
+        )}
         <table className="table">
           {/* head */}
-          <thead className=" text-black font-medium space-y-6 sticky top-0 z-10 p-2 border-b-2">
+          <thead className=" text-black bg-slate-200 font-medium space-y-6 sticky top-0 z-10 p-2 border-b-2">
             <th className="font-medium text-inherit">Product</th>
             <th className="font-medium text-inherit">Customer</th>
             <th className="font-medium text-inherit">Total</th>
             <th className="font-medium text-inherit">Status</th>
             <th className="font-medium text-inherit">Action</th>
           </thead>
+
           <tbody>
-            {orders?.map((ele) => (
-              <tr>
+            {data?.orders?.map((ele) => (
+              <tr className={cl("text-gray-800 text-base")}>
                 {/* <th>
                   <label>
                     <input type="checkbox" className="checkbox" />
@@ -542,38 +545,43 @@ const RecentOrders = () => {
                       </div>
                     </div>
                     <p className="inline-flex flex-col gap-1">
-                      <span className="text-sm capitalize font-medium">
+                      <span className="text-sm capitalize text-gray-800">
                         {ele?.firstProduct?.productName}
                       </span>
-                      <span className="text-xs">
+                      <span className="text-xs text-inherit">
                         +{ele?.products?.length}Products
                       </span>
                     </p>
                   </div>
                 </td>
                 <td>
-                  <div className="inline-flex flex-col gap-1">
-                    <p className="font-medium">{ele?.userDetails?.username}</p>
-                    <span className="text-sm">{ele?.userDetails?.email}</span>
+                  <div className="inline-flex flex-col gap-1 text-xs">
+                    <p className="text-inherit">{ele?.userDetails?.username}</p>
+                    <span className="text-inherit">
+                      {ele?.userDetails?.email}
+                    </span>
                   </div>
                 </td>
-                <td>{ele?.totalAmount}</td>
+                <td>${ele?.totalAmount}</td>
                 <td>
                   {ele?.status == "pending" ? (
-                    <span className="badge rounded-btn badge-lg capitalize">
+                    <span className="badge rounded-btn badge-md py-3 capitalize">
                       {ele?.status}
                     </span>
                   ) : (
-                    <span className="badge badge-success capitalize rounded-btn badge-lg">
+                    <span className="badge badge-success capitalize rounded-btn badge-md py-3">
                       {ele?.status}
                     </span>
                   )}
                 </td>
                 <td>
                   <div className="flex gap-1">
-                    <button className="btn btn-sm btn-ghost rounded-full">
+                    <Link
+                      to={`orders/${ele?._id}`}
+                      className="btn btn-sm btn-ghost rounded-full"
+                    >
                       <BsFillEyeFill />
-                    </button>
+                    </Link>
                     {/* <button className="btn btn-sm btn-ghost hover:bg-red-500 rounded-full">
                       <FaRegTrashAlt />
                     </button> */}
@@ -588,8 +596,60 @@ const RecentOrders = () => {
       <AdminPagination
         currentPage={currentPage}
         setPage={setCurrentPage}
-        totalPage={10}
+        totalPage={Math.ceil(data?.totalOrders / itemsPerPage)}
       />
+    </>
+  );
+};
+const OrdersByCountry = () => {
+  const { data: byCountry } = useAdminOrdersByCountry();
+
+  return (
+    <>
+      <div className="p-3 h-fit">
+        <div className="flex flex-col">
+          <h2 className="font-bold text-xl">Top Category</h2>
+          {/* <p>Lorem ipsum dolor sit amet consectetur.</p> */}
+        </div>
+        <div className="flex flex-col gap-3 py-3 overflow-y-auto overflow-x-hidden">
+          {byCountry?.map((ele) => (
+            <>
+              <div className="flex text-gray-800 text-sm md:text-base">
+                {/* <div className="rounded-full">
+                  <img
+                    src={ele?.categoryImage}
+                    alt="product image"
+                    className="w-8 h-8 rounded-full"
+                  />
+                </div> */}
+
+                <p className="inline-flex px-2 flex-col  gap-1">
+                  {/* <span>{ele.productName}</span> */}
+                  <span className="font-medium capitalize  text-xl text-start">
+                    {ele?._id}
+                  </span>
+
+                  <span className="text-xs text-gray-500 font-bold">
+                    Sales: {ele?.totalOrders}
+                  </span>
+                </p>
+                <div className="ms-auto flex items-center text-inherit gap-2">
+                  <p>${ele?.totalSales}</p>
+                  {/* <p
+                  className={cl(
+                    "badge badge-sm",
+                    ele?.totalSold>30?
+
+                  )}
+                >
+                  {ele.stat}
+                </p> */}
+                </div>
+              </div>
+            </>
+          ))}
+        </div>
+      </div>
     </>
   );
 };

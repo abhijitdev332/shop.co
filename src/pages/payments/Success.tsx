@@ -9,6 +9,7 @@ import { toast, ToastContainer } from "react-toastify";
 import { newOrder } from "../../querys/orderQuery";
 import { useDispatch, useSelector } from "react-redux";
 import { resetCart } from "../../services/store/cart/cartSlice";
+import cl from "classnames";
 const Success = () => {
   const cart = useSelector((store) => store.cart);
   const dispatch = useDispatch();
@@ -16,24 +17,16 @@ const Success = () => {
   const [params] = useSearchParams();
   let session_id = params.get("session_id");
   const [paymentStatus, setPaymentStatus] = useState(false);
-  // const [ordersData, setOrderData] = useState(() => ({
-  //   userId: "",
-  //   products: cart?.products?.map((prod) => ({
-  //     productId: prod?.productId,
-  //     variantId: prod?.variantId,
-  //     quantity: prod?.quantity,
-  //   })),
-  //   totalAmount: 0,
-  //   discount: 0,
-  //   transactionId: "",
-  //   address: "",
-  // }));
-  const { mutateAsync: orderMutation, isPending: orderPending } = useMutation({
+
+  const {
+    mutateAsync: orderMutation,
+    isPending: orderPending,
+    isSuccess: orderSucess,
+  } = useMutation({
     mutationKey: ["newOrder", { session_id }],
     mutationFn: (data) => newOrder(data),
     onSuccess: (data) => {
       dispatch(resetCart());
-      console.log(data);
     },
   });
 
@@ -75,57 +68,35 @@ const Success = () => {
     let orderRes = await orderMutation(orderData);
   };
 
-  useEffect(() => {
-    if (session_id) {
-      verifyPaymentDetails();
-    }
-  }, [session_id]);
   // useEffect(() => {
-  //   if (isSuccess) {
-  //     setOrderData((prev) => ({
-  //       ...prev,
-  //       address: paymentDeatils?.metadata?.address,
-  //       userId: paymentDeatils?.metadata?.userId,
-  //       transactionId: paymentDeatils?.payment_intent,
-  //       totalAmount:
-  //         cart?.totalAmount +
-  //         paymentDeatils?.total_details?.amount_shipping / 100 -
-  //         paymentDeatils?.total_details?.amount_discount / 100,
-  //       discount: paymentDeatils?.total_details?.amount_discount / 100,
-  //     }));
-  //     orderMutation(ordersData);
+  //   if (session_id) {
+  //     verifyPaymentDetails();
   //   }
-  // }, [isSuccess]);
-  // console.log(ordersData);
+  // }, [session_id]);
+
   return (
     <>
       <section>
         <Header />
         <div className="wrapper lg:container lg:mx-auto bg-white h-screen">
           {/* <h2>Payment</h2> */}
+          <div className="flex justify-center">
+            <ul className="steps">
+              <li className="step step-primary">Shop</li>
+              <li className="step step-primary">Address</li>
+              <li className="step step-primary">Payment Done</li>
+              <li className={cl("step step-primary")}>Ordered</li>
+            </ul>
+          </div>
           <div className="flex h-full w-full justify-center">
             <div className="card h-fit bg-white w-96 shadow-xl outline outline-2 mt-24">
               <figure>
-                {paymentStatus ? (
-                  <img src={successPng} alt="Payment success" />
-                ) : (
-                  <>
-                    <div className="py-4">
-                      <span className="loading loading-bars loading-lg"></span>
-                    </div>
-                  </>
-                )}
+                <img src={successPng} alt="Payment success" />
               </figure>
               <div className="card-body text-black">
-                {paymentStatus ? (
-                  <h2 className="card-title justify-center py-2">
-                    Payment Successfull
-                  </h2>
-                ) : (
-                  <h2 className="card-title justify-center py-2">
-                    Verifying Payment
-                  </h2>
-                )}
+                <h2 className="card-title justify-center py-2">
+                  Payment Successfull
+                </h2>
 
                 {/* <p>If a dog chews shoes whose shoes does he choose?</p> */}
                 <div className="card-actions justify-center">
@@ -134,7 +105,6 @@ const Success = () => {
                     onClick={() => {
                       navigate("/");
                     }}
-                    disabled={!paymentStatus}
                   >
                     <span>
                       <IoArrowForward fontSize={"1.4rem"} />

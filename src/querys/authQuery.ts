@@ -10,7 +10,11 @@ const refreshToken = async (data) => {
   return PrivateAxios.post("/auth/refresh-token", data);
 };
 const register = async (data) => {
-  return PrivateAxios.post("/user/create", data);
+  return PrivateAxios.post("/user/create", data, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
 };
 
 export { login, logout, refreshToken, register };

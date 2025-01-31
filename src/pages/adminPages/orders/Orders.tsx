@@ -11,7 +11,9 @@ import { getadminOrdersKey } from "../../../querys/admin/adminApi";
 import { AdminPagination } from "../adminPages";
 const ordersStatus = ["pending", "shipped", "delivered"];
 const Orders = () => {
-  const { data: orders } = useAdminOrders();
+  const itemsPerPage = 5;
+  const [currentPage, setCurrentPage] = useState(1);
+  const { data, isLoading } = useAdminOrders(currentPage, itemsPerPage);
   const queryClient = useQueryClient();
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
   const [selectedOrder, setSelectedOrder] = useState({});
@@ -78,13 +80,16 @@ const Orders = () => {
 
       {/* Table */}
       <div className="overflow-x-auto">
+        {isLoading && (
+          <div className="skeleton h-96 columns-1 w-full bg-gray-200 dark:bg-white "></div>
+        )}
         <table className="w-full rounded overflow-y-hidden">
           <thead className="bg-gray-100 sticky top-0 z-10 p-2">
             <tr>
               <th className=" px-4 py-2">
                 <input
                   type="checkbox"
-                  checked={selectedProducts.length === orders?.length}
+                  checked={selectedProducts.length === data?.orders?.length}
                   onChange={toggleSelectAll}
                   className="checkbox"
                 />
@@ -100,8 +105,8 @@ const Orders = () => {
             </tr>
           </thead>
           <tbody>
-            {orders?.map((order: any) => (
-              <tr key={order._id} className="text-black text-lg">
+            {data?.orders?.map((order: any) => (
+              <tr key={order._id} className="text-gray-800 text-base">
                 {/* Checkbox */}
                 <td className=" px-4 py-2 text-center">
                   <input
@@ -128,7 +133,7 @@ const Orders = () => {
                       </div>
                     </div>
                     <div className="inline-flex flex-col capitalize">
-                      <span className="text-wrap font-medium text-gray-800">
+                      <span className="text-wrap capitalize text-sm md:text-base text-gray-800">
                         {order?.firstProduct?.productName || "product name"}
                       </span>
                       {order?.products?.length - 1 > 0 && (
@@ -157,11 +162,11 @@ const Orders = () => {
                 {/* Status */}
                 <td className=" px-4 py-2">
                   {order?.status == "pending" ? (
-                    <span className="badge rounded-btn badge-lg capitalize">
+                    <span className="badge rounded-btn  !text-base !font-normal badge-md capitalize">
                       {order?.status}
                     </span>
                   ) : (
-                    <span className="badge badge-success capitalize rounded-btn badge-lg">
+                    <span className="badge badge-success  !text-base !font-normal capitalize rounded-btn badge-md py-3">
                       {order?.status}
                     </span>
                   )}
@@ -217,7 +222,11 @@ const Orders = () => {
           </tbody>
         </table>
       </div>
-      <AdminPagination totalPage={3} />
+      <AdminPagination
+        currentPage={currentPage}
+        setPage={setCurrentPage}
+        totalPage={Math.ceil(data?.totalOrders / itemsPerPage)}
+      />
     </div>
   );
 };
