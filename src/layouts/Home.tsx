@@ -3,8 +3,7 @@ import InitialData from "../initalData/InitialData";
 import { Outlet } from "react-router-dom";
 import { NewsLetter } from "../components/component";
 import { ToastContainer } from "react-toastify";
-import { Suspense } from "react";
-import { LoaderScreen } from "../pages/page";
+import DataLoader from "../components/dataLoader/DataLoader";
 
 const Home = () => {
   return (
@@ -19,9 +18,9 @@ const Home = () => {
           <Footer />
         </div>
       </section>
-      <Suspense fallback={<LoaderScreen />}>
-        <InitialData />
-      </Suspense>
+
+      <InitialData />
+      <DataLoader />
       <ToastContainer />
     </>
   );

@@ -1,5 +1,5 @@
 import { Link, ScrollRestoration, useParams } from "react-router-dom";
-import { Pagintaion, ProductCard } from "../component";
+import { List, Pagintaion, ProductCard } from "../component";
 import { MdKeyboardArrowRight, MdKeyboardArrowUp } from "react-icons/md";
 import { RiFilter3Line } from "react-icons/ri";
 import { useState } from "react";
@@ -81,15 +81,20 @@ const CategoryProduct = () => {
                   </div>
                 </div>
               </div>
-              <div className="grid   grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 overflow-y-auto">
-                {allProducts?.map((ele) => (
+              {/* view productlist */}
+              <List
+                data={allProducts}
+                renderItem={(item) => <ProductCard product={item} />}
+            
+              />
+              {/* {allProducts?.map((ele) => (
                   <ProductCard
                     product={ele}
                     style="md:!w-64 w-full"
                     imgStyle={"h-44 md:!w-64 w-full"}
                   />
-                ))}
-              </div>
+                ))} */}
+
               <Pagintaion
                 currentPage={currentPage}
                 setPage={setCurrenPage}

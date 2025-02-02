@@ -12,9 +12,13 @@ import {
   setSubCategory,
 } from "../services/store/category/categorySlice";
 import { removeLoading, setLoading } from "../services/store/loader/loader";
+import { useVerifySession } from "../querys/authQuery";
+import { setUser } from "../services/store/user/userSlice";
+import { getInitalCart } from "../services/store/cart/cartSlice";
 
 const InitialData = () => {
   const dispatch = useDispatch();
+  const { data: userData, isLoading: userLoading } = useVerifySession();
   const {
     data: arivalProduct,
     isLoading: arivalLoading,
@@ -70,6 +74,12 @@ const InitialData = () => {
       dispatch(removeLoading());
     }
   }, [category, subCategory]);
+  useEffect(() => {
+    if (userData) {
+      dispatch(setUser(userData));
+      dispatch(getInitalCart(userData?._id));
+    }
+  }, [userData]);
   return null;
 };
 

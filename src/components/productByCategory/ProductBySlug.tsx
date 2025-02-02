@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { Link, ScrollRestoration, useSearchParams } from "react-router-dom";
 import Pagination from "../pagination/Pagination";
 import { getProductsByslug } from "../../querys/productQuery";
-import { ProductList } from "../component";
+import { List, ProductCard, ProductList } from "../component";
 import { current } from "@reduxjs/toolkit";
 
 const ProductBySlug = () => {
@@ -40,9 +40,14 @@ const ProductBySlug = () => {
                 <li className="capitalize">{query} </li>
               </ul>
             </div>
-            <div className="flex">
-              <ProductList heading={`${query} Products`} products={products} />
-            </div>
+
+            {/* product map list */}
+            <List
+              data={products}
+              title={`${query} Products`}
+              renderItem={(item) => <ProductCard product={item} />}
+            />
+         
 
             <Pagination
               currentPage={currentpage}

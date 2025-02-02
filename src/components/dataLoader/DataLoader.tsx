@@ -1,7 +1,7 @@
 import { createPortal } from "react-dom";
 import { useSelector } from "react-redux";
 
-const Loader = () => {
+const DataLoader = () => {
   // react query global fetching
   const loadingStatus = useSelector((store) => store.loader);
 
@@ -22,4 +22,4 @@ const Loader = () => {
   );
 };
 
-export default Loader;
+export default DataLoader;
