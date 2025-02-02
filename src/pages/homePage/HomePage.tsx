@@ -2,6 +2,8 @@ import { useMemo } from "react";
 import {
   Category,
   Hero,
+  List,
+  ProductCard,
   ProductList,
   ReviewCard,
 } from "../../components/component";
@@ -14,16 +16,30 @@ const HomePage = () => {
       <div className="lg:container mx-auto">
         <Hero />
         <div className="bg-white">
-          <ProductList
-            heading="NEW ARRIVALS"
-            products={products?.arivalsProducts}
+          <List
+            title="New Arrivals"
+            exstyle="flex justify-center"
+            data={products?.arivalsProducts}
+            renderItem={(product) => (
+              <ProductCard
+                product={product}
+                imgStyle={"max-h-[20rem] max-w-[20rem]"}
+              />
+            )}
             viewLink="/product/slug?query=arrival"
           />
 
           <div className="divider w-full"></div>
-          <ProductList
-            heading="TOP SELLING"
-            products={products?.topProducts}
+          <List
+            title="TOP SELLING"
+            exstyle="flex justify-center"
+            data={products?.topProducts}
+            renderItem={(item) => (
+              <ProductCard
+                product={item}
+                imgStyle={"max-h-[20rem] max-w-[20rem]"}
+              />
+            )}
             viewLink="/product/slug?query=top"
           />
           {/* browse by category */}

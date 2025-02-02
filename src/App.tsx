@@ -55,7 +55,6 @@ function SuspenseLayout() {
     <>
       <Suspense fallback={<LoaderScreen />}>
         <Outlet />
-        <Loader />
       </Suspense>
     </>
   );

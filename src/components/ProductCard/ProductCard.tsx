@@ -20,12 +20,12 @@ const ProductCard = ({ product = {}, style = "", size = "", imgStyle }) => {
   };
 
   return (
-    <div className={cl(style, "card rounded-box w-32 sm:w-52 md:w-60")}>
+    <div className={cl(style, "rounded-none size-auto")}>
       <figure>
         <Link to={`/product/${product._id}`} className="w-full">
           <img
             src={product?.imgurl || product?.firstVariantImages?.[0]?.url || ""}
-            className={cl(imgStyle, "rounded-xl h-32 md:h-64 w-auto")}
+            className={cl(imgStyle, "rounded-xl size-full")}
             alt="cloth"
             onError={(e: SyntheticEvent<HTMLImageElement, ErrorEvent>) => {
               e.target.parentElement.parentElement.parentElement.style.display =
@@ -35,10 +35,10 @@ const ProductCard = ({ product = {}, style = "", size = "", imgStyle }) => {
         </Link>
       </figure>
       <div className="card-body p-2 gap-0">
-        <h2 className="card-title w-fit text-gray-900  md:text-lg font-medium capitalize text-ellipsis overflow-hidden">
+        <h2 className="card-title text-gray-900 text-sm md:text-base lg:text-lg font-medium capitalize  overflow-hidden">
           {product?.name}
           {/* <div className="badge badge-seconday">{product.category.name}</div> */}
-          <div className="flex w-full justify-end gap-1">
+          <div className="w-fit ms-auto gap-1 ">
             <span>
               <Star
                 count={product?.averageRating || 1}

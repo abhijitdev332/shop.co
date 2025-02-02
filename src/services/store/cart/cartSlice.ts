@@ -1,8 +1,20 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { PrivateAxios } from "../../api/api";
+import { useGetUserCart } from "../../../querys/cart/cartQuery";
 const inital = {
   products: [],
   totalAmount: 0,
 };
+export const getInitalCart=createAsyncThunk("cart/getInital",async(userId)=>{
+  try {
+    let {data}=await PrivateAxios.get(`/cart/${userId}`)
+    return data?.data
+    
+  } catch (err) {
+    return Promise.reject(err)
+    
+  }
+})
 const cartSlice = createSlice({
   name: "cart",
   initialState: inital,
@@ -89,6 +101,18 @@ const cartSlice = createSlice({
       return inital;
     },
   },
+  extraReducers:(builder)=>
+    builder.addCase(getInitalCart.fulfilled,(state,action)=>{
+      return (state = {
+        products:action.payload?.products,
+        totalAmount: action.payload?.cartTotal,
+      });
+
+    })
+    .addCase(getInitalCart.rejected,(state,action)=>{
+      return state=inital
+    })
+    
 });
 
 export default cartSlice.reducer;

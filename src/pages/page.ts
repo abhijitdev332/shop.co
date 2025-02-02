@@ -1,4 +1,4 @@
-import LoaderScreen from "./loading/Loader";
+import LoaderScreen from "./loadingPage/Loader";
 import Login from "./authpages/Login";
 import Register from "./authpages/Register";
 import HomePage from "./homePage/HomePage";

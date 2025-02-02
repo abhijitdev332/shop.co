@@ -41,16 +41,15 @@ const LoginPage: React.FC = () => {
       }, 1000);
       setUserToLocal(data?.data?.data);
     },
+    onError:(err)=>{
+      toast.error(err?.message);
+    }
   });
 
   const onSubmit = (data: LoginFormInputs) => {
     mutate(data as any);
   };
-  useEffect(() => {
-    if (isError) {
-      toast.error(error?.response?.data?.message);
-    }
-  }, [isError]);
+
 
   return (
     <div className="flex h-screen items-center justify-center bg-gray-100">
