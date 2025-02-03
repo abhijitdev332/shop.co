@@ -1,34 +1,46 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { deleteCart, getUserCart, newCart, updateCart } from "./cartApi";
+import {
+  addProductToCart,
+  deleteCart,
+  getUserCart,
+  newCart,
+  removeProductToCart,
+  updateCart,
+} from "./cartApi";
 
-const CreateCartMutaion = () => {
+export const CreateCartMutaion = () => {
   return useMutation({
     mutationKey: ["createcart"],
     mutationFn: (data) => newCart(data),
   });
 };
-const useGetUserCart = (userid = "") => {
+export const useGetUserCart = (userid = "") => {
   return useQuery({
     queryKey: ["getusercart", userid],
     queryFn: () => getUserCart(userid),
   });
 };
-const UpdateCartMutation = () => {
+export const UpdateCartMutation = () => {
   return useMutation({
     mutationKey: ["updatecart"],
-    mutationFn: ({userId,data}) => updateCart(userId, data),
+    mutationFn: ({ userId, data }) => updateCart(userId, data),
   });
 };
-const DeleteCartMutation = () => {
+export const DeleteCartMutation = () => {
   return useMutation({
     mutationKey: ["deletecart"],
     mutationFn: (userId) => deleteCart(userId),
   });
 };
-
-export {
-  CreateCartMutaion,
-  useGetUserCart,
-  UpdateCartMutation,
-  DeleteCartMutation,
+export const AddToCartMutaion = () => {
+  return useMutation({
+    mutationKey: ["addProduct"],
+    mutationFn: ({ userId, data }) => addProductToCart(userId, data),
+  });
+};
+export const RemoveFromCartMutaion = () => {
+  return useMutation({
+    mutationKey: ["removefromcart"],
+    mutationFn: ({ userId, data }) => removeProductToCart(userId, data),
+  });
 };

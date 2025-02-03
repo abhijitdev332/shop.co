@@ -91,43 +91,60 @@ const CartAddress = () => {
     checkoutWindow: Window | null
   ) => {
     const interval = setInterval(async () => {
-      let res = await verifyMutaion(sessionId);
-      if (res.status !== 200) {
-        clearInterval(interval);
-        navigate("/declined");
-        return toast.error(res.data?.message);
-      }
-      clearInterval(interval);
-      if (checkoutWindow) checkoutWindow.close();
-      if (res.data?.data?.payment_status === "paid") {
-        let paymentDeatils = res.data?.data;
-        let orderData = {
-          products: cart?.products?.map((prod) => ({
-            productId: prod?.productId,
-            variantId: prod?.variantId,
-            quantity: prod?.quantity,
-          })),
-          address: paymentDeatils?.metadata?.address,
-          userId: paymentDeatils?.metadata?.userId,
-          transactionId: paymentDeatils?.payment_intent,
-          totalAmount:
-            cart?.totalAmount +
-            paymentDeatils?.total_details?.amount_shipping / 100 -
-            paymentDeatils?.total_details?.amount_discount / 100,
-          discount: paymentDeatils?.total_details?.amount_discount / 100,
-        };
-        let orderRes = await orderMutation(orderData);
-        if (orderRes.status == 201) {
-          navigate("/success");
-          toast.success("Order Successfull");
+      try {
+        let res = await verifyMutaion(sessionId);
+
+        if (!res || res.status !== 200) {
+          clearInterval(interval);
+          navigate("/declined");
+          return toast.error("Payment verification failed. Please try again.");
         }
-        toast(
-          res.data?.data?.payment_status === "paid"
-            ? "Payment successful!"
-            : "Payment canceled."
-        );
+
+        const paymentStatus = res.data?.data?.payment_status;
+
+        if (paymentStatus === "paid") {
+          clearInterval(interval);
+          if (checkoutWindow) checkoutWindow.close();
+
+          let paymentDetails = res.data?.data;
+          let orderData = {
+            products: cart?.products?.map((prod) => ({
+              productId: prod?.productId,
+              variantId: prod?.variantId,
+              quantity: prod?.quantity,
+            })),
+            address: paymentDetails?.metadata?.address,
+            userId: paymentDetails?.metadata?.userId,
+            transactionId: paymentDetails?.payment_intent,
+            totalAmount:
+              cart?.totalAmount +
+              paymentDetails?.total_details?.amount_shipping / 100 -
+              paymentDetails?.total_details?.amount_discount / 100,
+            discount: paymentDetails?.total_details?.amount_discount / 100,
+          };
+
+          let orderRes = await orderMutation(orderData);
+          if (orderRes.status === 201) {
+            navigate("/success");
+            toast.success("Order successful!");
+          }
+        } else if (paymentStatus === "unpaid" || paymentStatus === "canceled") {
+          clearInterval(interval);
+          if (checkoutWindow) checkoutWindow.close();
+          navigate("/declined");
+          toast.error(
+            paymentStatus === "canceled"
+              ? "Payment was canceled by the user."
+              : "Payment failed. Please try again."
+          );
+        }
+      } catch (error) {
+        clearInterval(interval);
+        console.error("Error polling payment status:", error);
+        navigate("/declined");
+        toast.error("An error occurred while verifying payment.");
       }
-    }, 3000); // Poll every 3 seconds
+    }, 3000); // runs every 3 seconds
   };
 
   //   chekcout func
@@ -189,7 +206,7 @@ const CartAddress = () => {
   return (
     <>
       <section className="bg-white">
-        <div className="wrapper px-10">
+        <div className="wrapper p-2 sm:px-10">
           {/* breadcrumbs */}
           <div className="breadcrumbs text-sm">
             <ul>
@@ -220,12 +237,12 @@ const CartAddress = () => {
               {userAddress?.map((addr: any) => (
                 <div
                   className={cl(
-                    "w-60 flex flex-col items-center h-40 py-3 px-5  shadow-lg rounded-lg my-4 cursor-pointer",
+                    "w-60 flex flex-col items-center h-fit sm:h-40 py-3 px-5  shadow-lg rounded-lg my-4 cursor-pointer",
                     addr?._id == selectedAddress ? "bg-accent" : ""
                   )}
                   onClick={() => setSelectedAddress(addr?._id)}
                 >
-                  <p className="text-gray-600 text-xl  bg-transparent flex flex-wrap mt-2 capitalize justify-center leading-tight">
+                  <p className="text-gray-600  sm:text-xl  bg-transparent flex flex-wrap mt-2 capitalize justify-center leading-tight">
                     <span>{addr?.houseNo},</span>
                     <span>{addr?.landMark},</span>
                     <span>{addr?.city},</span>
@@ -236,7 +253,7 @@ const CartAddress = () => {
                 </div>
               ))}
 
-              <div className="w-60 h-40 flex justify-center items-center p-5 bg-white shadow-lg rounded-lg my-4">
+              <div className="w-60 h-fit sm:h-40 flex justify-center items-center p-5 bg-white shadow-lg rounded-lg my-4">
                 <button
                   onClick={() => {
                     if (modalRef?.current) {

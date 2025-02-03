@@ -1,6 +1,5 @@
 import React, { useCallback, useState } from "react";
 import { FaMinus, FaPlus } from "react-icons/fa";
-import { MdAttachMoney } from "react-icons/md";
 import { PiCurrencyDollarBold } from "react-icons/pi";
 import { RiDeleteBin6Fill } from "react-icons/ri";
 import { useDispatch, useSelector } from "react-redux";
@@ -10,9 +9,11 @@ import {
   removeQuantity,
 } from "../../services/store/cart/cartSlice";
 import cl from "classnames";
+import { RemoveFromCartMutaion } from "../../querys/cart/cartQuery";
 
 const CartProduct = ({ product }) => {
-  const cart = useSelector((store) => store.cart);
+  const { userDetails } = useSelector((store) => store.user);
+  const removeProductMutaion = RemoveFromCartMutaion();
   const [quantity, setQuantity] = useState<number>(product?.quantity || 1);
   const dispatch = useDispatch();
   const addQuantityClick = () => {
@@ -27,25 +28,29 @@ const CartProduct = ({ product }) => {
     dispatch(removeQuantity(product?.productId));
   };
   const handleProductRemove = useCallback(() => {
+    removeProductMutaion.mutate({
+      userId: userDetails?._id,
+      data: { productId: product?.productId, variantId: product?.variantId },
+    });
     dispatch(removeProduct(product?.productId));
   }, [product]);
 
   return (
     <div>
       <div className="wrapper">
-        <div className="flex text-black">
+        <div className="flex flex-col  gap-3 sm:gap-0 sm:flex-row text-black">
           <img
             src={product?.imgurl}
             alt="products image"
-            className="w-24 h-24  rounded-lg"
+            className="sm:w-24 sm:h-24 w-36 h-36 self-center   rounded-lg"
           />
           <div className="flex flex-col px-3">
-            <h4 className="font-semibold text-xl capitalize">
+            <h4 className="font-semibold text-sm sm:text-xl capitalize">
               {product?.name}
             </h4>
             <p>
               <span className="font-medium">Size:</span>
-              <span className="text-sm">{product?.size}</span>
+              <span className=" text-xs sm:text-sm">{product?.size}</span>
             </p>
             <p className="inline-flex items-center gap-1">
               <span className="font-medium">Color:</span>
@@ -57,9 +62,11 @@ const CartProduct = ({ product }) => {
               >
                 <span
                   style={{ background: product?.color }}
-                  className={` rounded-full p-3`}
+                  className={` rounded-full p-2 sm:p-3`}
                 ></span>
-                <span className="capitalize">{product?.color}</span>
+                <span className="capitalize text-xs sm:text-base">
+                  {product?.color}
+                </span>
               </button>
             </p>
             <p className="flex gap-0  items-center">
@@ -69,9 +76,9 @@ const CartProduct = ({ product }) => {
               <span className="text-xl font-bold">{product?.price}</span>
             </p>
           </div>
-          <div className="flex flex-col justify-between ms-auto">
+          <div className="flex sm:flex-col gap-3 justify-between ms-auto">
             <button
-              className="self-end btn btn-ghost rounded-full hover:bg-gray-200"
+              className="sm:self-end order-2 sm:order-1 btn btn-ghost rounded-full hover:bg-gray-200"
               onClick={handleProductRemove}
             >
               <span>

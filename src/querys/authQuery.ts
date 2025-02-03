@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { PrivateAxios } from "../services/api/api";
-import { logout, verifySession } from "./auth/authApi";
+import { login, logout, verifySession } from "./auth/authApi";
 
 const useVerifySession = () => {
   return useQuery({
@@ -9,8 +9,11 @@ const useVerifySession = () => {
     retry: false,
   });
 };
-const login = async (data) => {
-  return PrivateAxios.post("/auth/login", data);
+export const LoginMutaion = () => {
+  return useMutation({
+    mutationKey: ["login"],
+    mutationFn: (data) => login(data),
+  });
 };
 export const LogoutMutaion = () => {
   return useMutation({

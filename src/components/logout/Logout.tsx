@@ -4,8 +4,10 @@ import { LogoutMutaion } from "../../querys/authQuery";
 import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
 import { removeUser } from "../../services/store/user/userSlice";
+import { useNavigate } from "react-router-dom";
 const Logout = ({ style, children = "" }) => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const logoutMutaion = LogoutMutaion();
   const handleLogout = async () => {
     logoutMutaion.mutate();
@@ -13,7 +15,8 @@ const Logout = ({ style, children = "" }) => {
   useEffect(() => {
     if (logoutMutaion.isSuccess) {
       dispatch(removeUser());
-      toast.error(logoutMutaion.data?.message);
+      navigate("/");
+      toast.success(logoutMutaion.data?.message);
     }
   }, [logoutMutaion.isSuccess]);
   return (

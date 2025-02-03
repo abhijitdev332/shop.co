@@ -23,7 +23,6 @@ import {
   Product,
   CategoryProduct,
   ProductsBySlug,
-  Loader,
 } from "./components/component";
 import {
   AddCategory,
@@ -41,6 +40,7 @@ import {
   AddSubCategory,
   SubCategoryProducts,
 } from "./pages/adminPages/adminPages";
+import InitialData from "./initalData/InitialData";
 
 // lazy loadings
 const HomeLayout = lazy(() => import("./layouts/Home"));
@@ -109,6 +109,7 @@ function App() {
   return (
     <Suspense fallback={<LoaderScreen />}>
       <RouterProvider router={router} />
+      <InitialData />
     </Suspense>
   );
 }

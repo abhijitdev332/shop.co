@@ -1,17 +1,30 @@
-import { PrivateAxios } from "../../services/api/api"
+import { PrivateAxios } from "../../services/api/api";
 
-const newCart=async(body)=>{
-    let {data}=await PrivateAxios.post("/cart/create",body)
-    return data?.data
-}
-const getUserCart=async(userId)=>{
-    let {data}=await PrivateAxios.get(`/${userId}`)
-    return data?.data
-}
-const updateCart=async(userId,data)=>{
-    return await PrivateAxios.put(`/cart/update/${userId}`)
-}
-const deleteCart=async(userId)=>{
-    return await PrivateAxios.delete(`/cart/remove/${userId}`)
-}
-export { newCart, getUserCart, updateCart, deleteCart };
+export const newCart = async (body) => {
+  let { data } = await PrivateAxios.post("/cart/create", body);
+  return data?.data;
+};
+export const getUserCart = async (userId) => {
+  let { data } = await PrivateAxios.get(`/${userId}`);
+  return data?.data;
+};
+export const updateCart = async (userId = "", body = []) => {
+  let { data } = await PrivateAxios.put(`/cart/update/${userId}`, body);
+  return data;
+};
+export const deleteCart = async (userId) => {
+  let { data } = await PrivateAxios.delete(`/cart/remove/${userId}`);
+  return data;
+};
+
+export const addProductToCart = async (userId = "", body = {}) => {
+  let { data } = await PrivateAxios.post(`/cart/product/add/${userId}`, body);
+  return data;
+};
+export const removeProductToCart = async (userId = "", body = {}) => {
+  let { data } = await PrivateAxios.post(
+    `/cart/product/remove/${userId}`,
+    body
+  );
+  return data;
+};

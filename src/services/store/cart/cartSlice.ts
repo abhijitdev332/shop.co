@@ -1,20 +1,20 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { PrivateAxios } from "../../api/api";
-import { useGetUserCart } from "../../../querys/cart/cartQuery";
 const inital = {
   products: [],
   totalAmount: 0,
 };
-export const getInitalCart=createAsyncThunk("cart/getInital",async(userId)=>{
-  try {
-    let {data}=await PrivateAxios.get(`/cart/${userId}`)
-    return data?.data
-    
-  } catch (err) {
-    return Promise.reject(err)
-    
+export const getInitalCart = createAsyncThunk(
+  "cart/getInital",
+  async (userId) => {
+    try {
+      let { data } = await PrivateAxios.get(`/cart/${userId}`);
+      return data?.data;
+    } catch (err) {
+      return Promise.reject(err);
+    }
   }
-})
+);
 const cartSlice = createSlice({
   name: "cart",
   initialState: inital,
@@ -30,34 +30,28 @@ const cartSlice = createSlice({
         size,
         color,
       } = action.payload;
-      let totalAmount = [
+      if (!Array.isArray(state.products)) {
+        state.products = [];
+      }
+      const updatedProducts = [
         ...state.products,
-        { productId, price, quantity },
-      ].reduce((prev, curr) => {
-        let productCost = curr.price * curr.quantity;
-        return (prev = prev + productCost);
+        { productId, variantId, name, price, quantity, imgurl, size, color },
+      ];
+      let totalAmount = updatedProducts?.reduce((prev, curr) => {
+        return prev + curr.price * curr.quantity;
       }, 0);
-      return (state = {
-        products: [
-          ...state.products,
-          { productId, variantId, name, price, quantity, imgurl, size, color },
-        ],
-        totalAmount: totalAmount,
-      });
+      state.products = updatedProducts;
+      state.totalAmount = totalAmount;
     },
     removeProduct: (state, action) => {
-      // let productInx = state.products.findIndex(
-      //   (ele) => ele?.productId == action.payload
-      // );
-
       let fillterData = state.products?.filter(
         (ele) => ele?.productId !== action.payload
       );
       let totalAmount = fillterData?.reduce((prev, curr) => {
-        let productCost = curr.price * curr.quantity;
-        return (prev = prev + productCost);
+        return prev + curr.price * curr.quantity;
       }, 0);
-      return (state = { products: [...fillterData], totalAmount: totalAmount });
+      state.products = fillterData;
+      state.totalAmount = totalAmount;
     },
     addQuantity: (state, action) => {
       let product = state.products.find(
@@ -73,11 +67,9 @@ const cartSlice = createSlice({
       });
 
       let totalAmount = state.products?.reduce((prev, curr) => {
-        let productCost = curr.price * curr.quantity;
-        return (prev = prev + productCost);
+        return prev + curr.price * curr.quantity;
       }, 0);
       state.totalAmount = totalAmount;
-      return state;
     },
     removeQuantity: (state, action) => {
       let product = state.products.find(
@@ -92,8 +84,7 @@ const cartSlice = createSlice({
         quantity: quantity,
       });
       let totalAmount = state.products?.reduce((prev, curr) => {
-        let productCost = curr.price * curr.quantity;
-        return (prev = prev + productCost);
+        return prev + curr.price * curr.quantity;
       }, 0);
       state.totalAmount = totalAmount;
     },
@@ -101,18 +92,16 @@ const cartSlice = createSlice({
       return inital;
     },
   },
-  extraReducers:(builder)=>
-    builder.addCase(getInitalCart.fulfilled,(state,action)=>{
-      return (state = {
-        products:action.payload?.products,
-        totalAmount: action.payload?.cartTotal,
-      });
-
-    })
-    .addCase(getInitalCart.rejected,(state,action)=>{
-      return state=inital
-    })
-    
+  extraReducers: (builder) =>
+    builder
+      .addCase(getInitalCart.fulfilled, (state, action) => {
+        console.log(action.payload);
+        state.products = action.payload?.products;
+        state.totalAmount = action.payload?.cartTotal;
+      })
+      .addCase(getInitalCart.rejected, (state, action) => {
+        state = inital;
+      }),
 });
 
 export default cartSlice.reducer;

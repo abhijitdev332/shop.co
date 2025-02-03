@@ -5,12 +5,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import authImg from "../../assets/svgs/auth/frame.svg";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { useMutation } from "@tanstack/react-query";
-import { login } from "../../querys/authQuery";
+import { LoginMutaion } from "../../querys/authQuery";
 import { useDispatch } from "react-redux";
 import { setUser } from "../../services/store/user/userSlice";
-import { setUserToLocal } from "../../utils/utils";
 import { loginSchema } from "./schema";
+import { useEffect } from "react";
 
 // Define validation schema using Zod
 type LoginFormInputs = z.infer<typeof loginSchema>;
@@ -18,6 +17,7 @@ type LoginFormInputs = z.infer<typeof loginSchema>;
 const LoginPage: React.FC = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const loginMutaion = LoginMutaion();
   const {
     register,
     handleSubmit,
@@ -26,24 +26,18 @@ const LoginPage: React.FC = () => {
     resolver: zodResolver(loginSchema),
   });
 
-  const { mutate, isPending } = useMutation({
-    mutationFn: (data) => login(JSON.stringify(data)),
-    onSuccess: (data) => {
-      toast.success(data?.data?.message);
-      dispatch(setUser(data?.data?.data));
+  const onSubmit = (data: LoginFormInputs) => {
+    loginMutaion.mutate(data as any);
+  };
+  useEffect(() => {
+    if (loginMutaion.isSuccess) {
+      toast.success("Login SuccessFull");
+      dispatch(setUser(loginMutaion?.data));
       setTimeout(() => {
         navigate("/");
       }, 1000);
-      setUserToLocal(data?.data?.data);
-    },
-    onError: (err) => {
-      toast.error(err?.message);
-    },
-  });
-
-  const onSubmit = (data: LoginFormInputs) => {
-    mutate(data as any);
-  };
+    }
+  }, [loginMutaion.isSuccess]);
 
   return (
     <div className="flex h-screen items-center justify-center bg-gray-100">
@@ -127,9 +121,9 @@ const LoginPage: React.FC = () => {
             <button
               type="submit"
               className="w-full flex gap-1 px-4 py-2 btn btn-md btn-primary transition duration-200"
-              disabled={isPending}
+              disabled={loginMutaion.isPending}
             >
-              {isPending && (
+              {loginMutaion.isPending && (
                 <span className="loading loading-spinner text-white loading-md"></span>
               )}
               <span className="text-white">Login</span>

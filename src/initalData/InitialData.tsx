@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useGetAllCategory, useGetSubCategory } from "../querys/categoryQuery";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   setArivalProducts,
   setTopProducts,
@@ -14,15 +14,23 @@ import { useVerifySession } from "../querys/authQuery";
 import { setUser } from "../services/store/user/userSlice";
 import { getInitalCart } from "../services/store/cart/cartSlice";
 import { useNewArivals, useTopSelling } from "../querys/product/productQuery";
+import { UpdateCartMutation } from "../querys/cart/cartQuery";
 
 const InitialData = () => {
   const dispatch = useDispatch();
+  const cart = useSelector((store) => store.cart);
   const { data: userData, isLoading: userLoading } = useVerifySession();
   const { data: category, isLoading: categoryLoading } = useGetAllCategory();
   const { data: subCategory, isLoading: subLoading } = useGetSubCategory();
   const { data: arivalProduct, isLoading: arivalLoading } = useNewArivals();
   const { data: topProduct, isLoading: topLoading } = useTopSelling();
-
+  const updateCartMutaion = UpdateCartMutation();
+  // window.addEventListener("contextmenu", () => {
+  //   updateCartMutaion.mutate({
+  //     userId: userData?._id,
+  //     data: { cartTotal: cart?.totalAmount, products: cart?.products },
+  //   });
+  // });
   //   product effect
   useEffect(() => {
     if (arivalLoading || topLoading) {
@@ -53,8 +61,27 @@ const InitialData = () => {
     if (userData) {
       dispatch(setUser(userData));
       dispatch(getInitalCart(userData?._id));
+      dispatch(removeLoading());
     }
   }, [userData]);
+  // update cart before unload
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      if (userData?._id) {
+        updateCartMutaion.mutate({
+          userId: userData?._id,
+          data: { cartTotal: cart?.totalAmount, products: cart?.products },
+        });
+      }
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [cart, userData]);
+
   return null;
 };
 

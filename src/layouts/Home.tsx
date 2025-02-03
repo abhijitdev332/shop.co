@@ -1,5 +1,4 @@
 import { Footer, Header } from "../includes/includes";
-import InitialData from "../initalData/InitialData";
 import { Outlet } from "react-router-dom";
 import { NewsLetter } from "../components/component";
 import { ToastContainer } from "react-toastify";
@@ -18,8 +17,6 @@ const Home = () => {
           <Footer />
         </div>
       </section>
-
-      <InitialData />
       <DataLoader />
       <ToastContainer />
     </>

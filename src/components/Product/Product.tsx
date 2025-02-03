@@ -4,23 +4,23 @@ import { Star } from "../component";
 import cl from "classnames";
 import style from "./product.module.scss";
 import { FaMinus, FaPlus } from "react-icons/fa";
-import useFetch from "../../hooks/useFetch";
 import { useDispatch, useSelector } from "react-redux";
 import { addProduct, removeProduct } from "../../services/store/cart/cartSlice";
 import RealativeProducts from "./RealativeProducts";
 import ProductReviews from "./ProductReviews";
 import ProductDetails from "./ProductDetails";
 import { toast } from "react-toastify";
+import { userGetProductById } from "../../querys/product/productQuery";
+import { AddToCartMutaion } from "../../querys/cart/cartQuery";
 
 // default img url
 const imgUrl =
   "https://images.pexels.com/photos/769733/pexels-photo-769733.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1";
 const Product = () => {
   const { id } = useParams();
-  const { data, isLoading, isError } = useFetch({
-    url: `/product/${id}`,
-    queryKey: ["product", id],
-  });
+  const { userDetails } = useSelector((store) => store.user);
+  const { data } = userGetProductById(id);
+  const updateCartMutaion = AddToCartMutaion();
   const dispatch = useDispatch();
   const cart = useSelector((store) => store.cart);
   // product data and its all variants
@@ -48,17 +48,28 @@ const Product = () => {
     if (!selectedProductSize) {
       return toast.info("Please Select an size!!");
     }
-
+    let product = {
+      productId: productData?._id,
+      variantId: currentProductVariant?._id,
+      name: productData?.name,
+      price: currentProductVariant?.sellPrice,
+      quantity: quantity,
+      color: currentProductColor,
+      size: selectedProductSize,
+      imgurl: currentProductImage,
+    };
+    if (userDetails?._id) {
+      updateCartMutaion.mutate({
+        userId: userDetails._id,
+        data: {
+          cartTotal: quantity * currentProductVariant?.sellPrice,
+          product: product,
+        },
+      });
+    }
     dispatch(
       addProduct({
-        productId: productData?._id,
-        variantId: currentProductVariant?._id,
-        name: productData?.name,
-        price: currentProductVariant?.sellPrice,
-        quantity: quantity,
-        color: currentProductColor,
-        size: selectedProductSize,
-        imgurl: currentProductImage,
+        ...product,
       })
     );
   };
@@ -70,6 +81,9 @@ const Product = () => {
   const addClick = () => {
     if (!selectedProductSize) {
       return toast.info("Please Select an size!!");
+    }
+    if (quantity + 1 > currentProductVariant?.stock) {
+      return toast.info(`Availble Stock is ${currentProductVariant?.stock}`);
     }
 
     setQuantity((prev) => prev + 1);
@@ -85,8 +99,8 @@ const Product = () => {
   // effect on data changes
 
   useEffect(() => {
-    if (data?.data) {
-      const { matchedProduct, productVariants } = data?.data;
+    if (data) {
+      const { matchedProduct, productVariants } = data;
       setProductData(matchedProduct || null);
       setAllVariants(productVariants || []);
       // Extract unique colors
@@ -97,6 +111,7 @@ const Product = () => {
       const defaultVariant = productVariants[0] || {};
       setCurrentProductColor(defaultVariant?.color || "");
       setCurrentProductVariant(defaultVariant);
+      setSelectedProductSize(defaultVariant?.size);
       setProductImages(defaultVariant?.images || []);
       setCurrentProductImage(defaultVariant?.images?.[0]?.url || "");
       setSizes(
@@ -115,7 +130,7 @@ const Product = () => {
       setSizes(filteredVariants?.map((v) => v?.size));
       setProductImages(filteredVariants[0]?.images || []);
       setCurrentProductImage(filteredVariants?.[0]?.images?.[0]?.url || "");
-      setSelectedProductSize("");
+      setSelectedProductSize(filteredVariants[0]?.size);
       setCurrentProductVariant(filteredVariants[0] || {});
     }
   }, [currentProductColor, allVariants]);
@@ -193,6 +208,14 @@ const Product = () => {
                   <span className="text-sm font-mono">
                     {Math.round(productData?.averageRating)}/5
                   </span>
+                  {currentProductVariant?.stock < 5 &&
+                  currentProductVariant?.stock > 0 ? (
+                    <span className="text-red-600 px-3">
+                      Only {currentProductVariant?.stock} Left!!
+                    </span>
+                  ) : (
+                    ""
+                  )}
                 </div>
                 {/* price */}
                 <div className="price flex py-4 font-bold text-2xl  items-center gap-3">
@@ -269,17 +292,25 @@ const Product = () => {
                   </div>
                   {productExisted ? (
                     <button
-                      className="btn w-72 text-center  bg-black rounded-badge"
+                      className={cl(
+                        "btn w-72 text-center  bg-black rounded-badge"
+                      )}
                       onClick={handleCartRemove}
+                      disabled={currentProductVariant?.stock <= 0}
                     >
                       Remove from Cart
                     </button>
                   ) : (
                     <button
-                      className="btn w-72 text-center  bg-black rounded-badge"
+                      className={cl(
+                        "btn w-72 text-center disabled:text-black  bg-black rounded-badge"
+                      )}
                       onClick={handleCartAdd}
+                      disabled={currentProductVariant?.stock <= 0}
                     >
-                      Add to Cart
+                      {currentProductVariant?.stock <= 0
+                        ? "Out Of Stock"
+                        : "Add to Cart"}
                     </button>
                   )}
                 </div>

@@ -8,38 +8,9 @@ import { PrivateAxios } from "../../services/api/api";
 
 const CartPage = () => {
   const { products, totalAmount } = useSelector((state) => state.cart);
-
-  const handleCheckout = async () => {
-    let productData = findCartProduct.map((ele) => ({
-      name: ele?.title,
-      image: ele?.images[0],
-      price: ele?.price,
-      quantity: ele?.quantity,
-    }));
-    let delivery = {
-      name: "Delihivery Fees",
-      price: delhivery,
-      quantity: 1,
-    };
-    let discountCode = {
-      code: "Discount10",
-      price: discount,
-      percent: 10,
-    };
-
-    let res = await PrivateAxios.post("/checkout", {
-      productData,
-      delivery,
-      discountCode,
-    });
-    if (res.status == 200) {
-      window.location.href = res.data?.data?.paymentUrl;
-    }
-  };
-
   return (
     <section className="bg-white">
-      <div className="wrapper px-10">
+      <div className="wrapper px-2 sm:px-10">
         {/* breadcrumbs */}
         <div className="breadcrumbs text-sm">
           <ul>
@@ -52,7 +23,7 @@ const CartPage = () => {
         <h2 className="font-extrabold  text-3xl py-7 ">YOUR CART</h2>
         {/* map products */}
         <div className="flex flex-col md:flex-row  gap-4">
-          <div className="flex  w-full flex-col rounded-2xl outline outline-1 p-4">
+          <div className="flex  w-full flex-col rounded-2xl outline outline-1 p-2 sm:p-4">
             {products?.length > 0 ? (
               products?.map((ele) => (
                 <>
