@@ -1,7 +1,5 @@
-import { useSuspenseQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
-import { newArivals, topSelling } from "../querys/productQuery";
-import { getAllCategory, getSubsCategory } from "../querys/categoryQuery";
+import { useGetAllCategory, useGetSubCategory } from "../querys/categoryQuery";
 import { useDispatch } from "react-redux";
 import {
   setArivalProducts,
@@ -15,51 +13,24 @@ import { removeLoading, setLoading } from "../services/store/loader/loader";
 import { useVerifySession } from "../querys/authQuery";
 import { setUser } from "../services/store/user/userSlice";
 import { getInitalCart } from "../services/store/cart/cartSlice";
+import { useNewArivals, useTopSelling } from "../querys/product/productQuery";
 
 const InitialData = () => {
   const dispatch = useDispatch();
   const { data: userData, isLoading: userLoading } = useVerifySession();
-  const {
-    data: arivalProduct,
-    isLoading: arivalLoading,
-    isError: arivalErr,
-  } = useSuspenseQuery({
-    queryKey: ["products", "arrivals"],
-    queryFn: newArivals,
-  });
-  const {
-    data: topProduct,
-    isLoading: topLoading,
-    isError: topErr,
-  } = useSuspenseQuery({
-    queryKey: ["products", "top"],
-    queryFn: topSelling,
-  });
-  const {
-    data: category,
-    isLoading: categoryLoading,
-    isError: categoryErr,
-  } = useSuspenseQuery({
-    queryKey: ["category"],
-    queryFn: getAllCategory,
-  });
+  const { data: category, isLoading: categoryLoading } = useGetAllCategory();
+  const { data: subCategory, isLoading: subLoading } = useGetSubCategory();
+  const { data: arivalProduct, isLoading: arivalLoading } = useNewArivals();
+  const { data: topProduct, isLoading: topLoading } = useTopSelling();
 
-  const {
-    data: subCategory,
-    isLoading: subLoading,
-    isError: subErr,
-  } = useSuspenseQuery({
-    queryKey: ["subCategory"],
-    queryFn: getSubsCategory,
-  });
   //   product effect
   useEffect(() => {
     if (arivalLoading || topLoading) {
       dispatch(setLoading());
     }
-    if (arivalProduct?.data || topProduct?.data) {
-      dispatch(setArivalProducts(arivalProduct?.data));
-      dispatch(setTopProducts(topProduct?.data));
+    if (arivalProduct || topProduct) {
+      dispatch(setArivalProducts(arivalProduct));
+      dispatch(setTopProducts(topProduct));
       dispatch(removeLoading());
     }
   }, [arivalProduct, topProduct]);
@@ -68,13 +39,17 @@ const InitialData = () => {
     if (categoryLoading || subLoading) {
       dispatch(setLoading());
     }
-    if (category?.data || subCategory?.data) {
-      dispatch(setCategory(category?.data));
-      dispatch(setSubCategory(subCategory?.data));
+    if (category || subCategory) {
+      dispatch(setCategory(category));
+      dispatch(setSubCategory(subCategory));
       dispatch(removeLoading());
     }
   }, [category, subCategory]);
+
   useEffect(() => {
+    if (userLoading) {
+      dispatch(setLoading());
+    }
     if (userData) {
       dispatch(setUser(userData));
       dispatch(getInitalCart(userData?._id));

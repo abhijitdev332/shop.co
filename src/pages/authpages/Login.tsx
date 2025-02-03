@@ -1,4 +1,3 @@
-import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { FcGoogle } from "react-icons/fc";
@@ -11,13 +10,9 @@ import { login } from "../../querys/authQuery";
 import { useDispatch } from "react-redux";
 import { setUser } from "../../services/store/user/userSlice";
 import { setUserToLocal } from "../../utils/utils";
+import { loginSchema } from "./schema";
 
 // Define validation schema using Zod
-const loginSchema = z.object({
-  email: z.string().email("Invalid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters long"),
-});
-
 type LoginFormInputs = z.infer<typeof loginSchema>;
 
 const LoginPage: React.FC = () => {
@@ -31,7 +26,7 @@ const LoginPage: React.FC = () => {
     resolver: zodResolver(loginSchema),
   });
 
-  const { mutate, isError, isPending, error } = useMutation({
+  const { mutate, isPending } = useMutation({
     mutationFn: (data) => login(JSON.stringify(data)),
     onSuccess: (data) => {
       toast.success(data?.data?.message);
@@ -41,21 +36,20 @@ const LoginPage: React.FC = () => {
       }, 1000);
       setUserToLocal(data?.data?.data);
     },
-    onError:(err)=>{
+    onError: (err) => {
       toast.error(err?.message);
-    }
+    },
   });
 
   const onSubmit = (data: LoginFormInputs) => {
     mutate(data as any);
   };
 
-
   return (
     <div className="flex h-screen items-center justify-center bg-gray-100">
-      <div className="flex w-full max-w-4xl bg-white shadow-lg rounded-lg overflow-hidden">
+      <div className="flex flex-col sm:flex-row w-full max-w-4xl bg-white shadow-lg rounded-lg overflow-hidden">
         {/* Left Side - Form */}
-        <div className="w-1/2 p-8">
+        <div className="order-2 sm:order-1 sm:w-1/2 p-8">
           <h2 className="text-2xl font-bold text-gray-800">Login</h2>
           <p className="mt-2 text-sm text-gray-600">
             Welcome back! Please enter your credentials to continue.
@@ -165,11 +159,11 @@ const LoginPage: React.FC = () => {
         </div>
 
         {/* Right Side - Image */}
-        <div className="hidden md:block w-1/2">
+        <div className="order-1 sm:order-2 block sm:w-1/2">
           <img
             src={authImg}
             alt="Login illustration"
-            className="object-cover w-full h-full"
+            className="object-fill p-1 w-full h-full"
           />
         </div>
       </div>

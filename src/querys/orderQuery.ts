@@ -1,3 +1,4 @@
+import { useMutation } from "@tanstack/react-query";
 import { PrivateAxios } from "../services/api/api";
 
 const getOrderDeatils = async (id) => {
@@ -11,6 +12,13 @@ const userOrders = async (id) => {
 };
 const updateOrderStatus = async (id, data) => {
   return await PrivateAxios.put(`/order/update/${id}`, data);
+};
+
+export const UpdateOrderStausMutaion = () => {
+  return useMutation({
+    mutationKey: ["updateorderstatus"],
+    mutationFn: ({ id, data }) => updateOrderStatus(id, data),
+  });
 };
 
 export { getOrderDeatils, newOrder, userOrders, updateOrderStatus };

@@ -1,11 +1,12 @@
-import { useQuery } from "@tanstack/react-query";
 import { PrivateAxios } from "../../services/api/api";
 
-export const newArrivalKey="newArrivals"
+export const newArrivalKey = "newArrivals";
 
-
-export const getNewArivals = async ({ limit = 4, skip = 0 }) => {
-  return await PrivateAxios.get(`/product/arival?limit=${limit}&skip=${skip}`);
+export const getNewArivals = async (limit = 0, skip = 0) => {
+  let { data } = await PrivateAxios.get(
+    `/product/arival?limit=${limit}&skip=${skip}`
+  );
+  return data?.data;
 };
 export const newReview = async ({ id, data }) => {
   return await PrivateAxios.post(`/product/review/add/${id}`, data);
@@ -15,11 +16,15 @@ export const deleteReview = async (id, reviewId) => {
     `/product/review/remove/${id}?reviewId=${reviewId}`
   );
 };
-export const getTopSelling = async ({ limit = 4, skip = 0 }) => {
-  return await PrivateAxios.get(`/product/top?limit=${limit}&skip=${skip}`);
+export const getTopSelling = async (limit = 0, skip = 0) => {
+  let { data } = await PrivateAxios.get(
+    `/product/top?limit=${limit}&skip=${skip}`
+  );
+  return data?.data;
 };
 export const getProductById = async (id: string) => {
-  return await PrivateAxios.get(`/product/${id}`);
+  let { data } = await PrivateAxios.get(`/product/${id}`);
+  return data?.data;
 };
 export const getAllproducts = async () => {
   return await PrivateAxios.get("/admin/products");
@@ -60,14 +65,17 @@ export let getProductsByslug = async ({ query = "", limit, skip }) => {
       return newArivals({ limit, skip });
   }
 };
-export let getProductOrderDetails = async ({ productId, color }) => {
-  return await PrivateAxios.get(
+export let getProductOrderDetails = async (productId, color) => {
+  let { data } = await PrivateAxios.get(
     `/product/orders?productId=${productId}&color=${color}`
   );
+  return data?.data;
 };
-export let getShopAllProducts = async (limit=5, skip=0) => {
-  let {data}= await PrivateAxios.get(`/product/shop?limit=${limit}&skip=${skip}`);
-  return data?.data
+export let getShopAllProducts = async (limit = 5, skip = 0) => {
+  let { data } = await PrivateAxios.get(
+    `/product/shop?limit=${limit}&skip=${skip}`
+  );
+  return data?.data;
 };
 export let getRelativeProducts = async (id = "", limit = 5, skip = 0) => {
   let { data } = await PrivateAxios.get(
@@ -75,6 +83,3 @@ export let getRelativeProducts = async (id = "", limit = 5, skip = 0) => {
   );
   return data?.data;
 };
-
-
-

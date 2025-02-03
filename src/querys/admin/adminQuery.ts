@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { AdminAxios } from "../../services/api/api";
 import {
+  getAdminCategories,
   getAdminOrderByCountry,
   getAdminOrders,
   getadminOrdersKey,
@@ -40,9 +41,7 @@ const useAdminOrders = (currentPage = 1, itemsPerPage = 5) => {
       ),
   });
 };
-const adminCategories = async () => {
-  return await AdminAxios.get("/categories");
-};
+
 const adminTopCategories = async ({ limit = 5, skip = 0 }) => {
   return await AdminAxios.get(`/categories/top?limit=${limit}&skip=${skip}`);
 };
@@ -69,12 +68,17 @@ const useAdminOrdersByCountry = () => {
   });
 };
 
+export const useAdminCategories = () => {
+  return useQuery({
+    queryKey: ["admincategories"],
+    queryFn: getAdminCategories,
+  });
+};
 export {
   useAdminProduct,
   adminProductVariant,
   useAdminAllUser,
   useAdminOrders,
-  adminCategories,
   adminTopCategories,
   useAdminStats,
   useAdminOrderStats,

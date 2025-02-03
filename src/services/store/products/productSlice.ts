@@ -1,4 +1,4 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 const inital = {
   topProducts: [],
   arivalsProducts: [],
@@ -8,10 +8,10 @@ const productSlice = createSlice({
   initialState: inital,
   reducers: {
     setTopProducts: (state, action) => {
-      return (state = { ...state, topProducts: action?.payload?.data });
+      return (state = { ...state, topProducts: action?.payload });
     },
     setArivalProducts: (state, action) => {
-      return (state = { ...state, arivalsProducts: action?.payload?.data });
+      return (state = { ...state, arivalsProducts: action?.payload });
     },
     resetProducts: () => {
       return inital;

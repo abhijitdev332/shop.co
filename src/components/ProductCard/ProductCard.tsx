@@ -20,12 +20,12 @@ const ProductCard = ({ product = {}, style = "", size = "", imgStyle }) => {
   };
 
   return (
-    <div className={cl(style, "rounded-none size-auto")}>
-      <figure>
+    <div className={cl("w-40 md:w-44 overflow-hidden", style)}>
+      <figure className={cl("h-full max-h-[12rem]", imgStyle)}>
         <Link to={`/product/${product._id}`} className="w-full">
           <img
             src={product?.imgurl || product?.firstVariantImages?.[0]?.url || ""}
-            className={cl(imgStyle, "rounded-xl size-full")}
+            className={cl("rounded-xl size-full")}
             alt="cloth"
             onError={(e: SyntheticEvent<HTMLImageElement, ErrorEvent>) => {
               e.target.parentElement.parentElement.parentElement.style.display =
@@ -34,21 +34,21 @@ const ProductCard = ({ product = {}, style = "", size = "", imgStyle }) => {
           />
         </Link>
       </figure>
-      <div className="card-body p-2 gap-0">
-        <h2 className="card-title text-gray-900 text-sm md:text-base lg:text-lg font-medium capitalize  overflow-hidden">
+      <div className="sm:p-2  p-1 gap-1 flex flex-col">
+        <h2 className="text-gray-900 text-xs sm:text-sm  font-medium capitalize  overflow-hidden">
           {product?.name}
           {/* <div className="badge badge-seconday">{product.category.name}</div> */}
-          <div className="w-fit ms-auto gap-1 ">
-            <span>
-              <Star
-                count={product?.averageRating || 1}
-                color="orange"
-                size={15}
-              />
-            </span>
-            {/* <span>{Math.round(product?.averageRating)}/5</span> */}
-          </div>
         </h2>
+        <div className="w-fit">
+          <span>
+            <Star
+              count={product?.averageRating || 1}
+              color="orange"
+              size={10}
+            />
+          </span>
+          {/* <span>{Math.round(product?.averageRating)}/5</span> */}
+        </div>
         <div className="flex gap-1">
           {/* <p className="text-sm text-gray-500 capitalize font-medium">
             {product?.description}
@@ -68,7 +68,7 @@ const ProductCard = ({ product = {}, style = "", size = "", imgStyle }) => {
           )}
         </div> */}
 
-        <p className="flex items-center gap-2 md:text-2xl font-bold">
+        <p className="flex gap-2 text-xs md:text-2xl font-bold">
           {/* <span>${product?.price}</span> */}
           <span>${product?.firstVariantSellPrice}</span>
           {product?.firstVariantDiscount && (

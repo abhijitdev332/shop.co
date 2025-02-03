@@ -1,34 +1,28 @@
 import React, { useEffect } from "react";
 import cl from "classnames";
-import { useMutation } from "@tanstack/react-query";
-import { logout } from "../../querys/authQuery";
+import { LogoutMutaion } from "../../querys/authQuery";
 import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
 import { removeUser } from "../../services/store/user/userSlice";
 const Logout = ({ style, children = "" }) => {
   const dispatch = useDispatch();
-  const { mutate, isError, isPending, error } = useMutation({
-    mutationFn: () => logout(),
-    onSuccess: (data) => {
-      toast.success(data?.data?.message);
-      dispatch(removeUser());
-    },
-  });
+  const logoutMutaion = LogoutMutaion();
   const handleLogout = async () => {
-    mutate();
+    logoutMutaion.mutate();
   };
   useEffect(() => {
-    if (isError) {
-      toast.error(error?.response?.data?.message);
+    if (logoutMutaion.isSuccess) {
+      dispatch(removeUser());
+      toast.error(logoutMutaion.data?.message);
     }
-  }, [isError]);
+  }, [logoutMutaion.isSuccess]);
   return (
     <button
       onClick={handleLogout}
       className={cl("btn", style)}
-      disabled={isError || isPending}
+      disabled={logoutMutaion.isError || logoutMutaion.isPending}
     >
-      {isPending && (
+      {logoutMutaion.isPending && (
         <span className="loading loading-spinner text-white loading-md"></span>
       )}
       {children}

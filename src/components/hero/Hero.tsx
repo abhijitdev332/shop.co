@@ -16,27 +16,33 @@ const Hero = () => {
         <div className="relative h-fit">
           <div className="flex flex-col bg-[#F2F0F1] sm:bg-transparent">
             <div className="flex flex-col items-center md:items-start gap-8 p-5 lg:p-20 z-[5]">
-              <h2 className={cl(style.hero__title)}>
+              <h2
+                className={cl(
+                  "text-center text-2xl font-extrabold capitalize md:text-start md:text-5xl md:w-2/4"
+                )}
+              >
                 find Clothes that matches your style
               </h2>
-              <p className={cl(style.hero__para)}>
+              <p
+                className={cl(
+                  "text-center text-sm capitalize md:text-start  md:w-1/3"
+                )}
+              >
                 Browse through our diverse range of meticulously crafted
                 garments, designed to bring out your individuality and cater to
                 your sense of style.
               </p>
               <button
-                className="btn btn-active w-40  rounded-badge text-lg"
+                className="btn  w-40  text-white rounded-badge text-lg"
                 onClick={() => {
                   navigate("/product/category");
                 }}
               >
                 Shop Now
               </button>
-              <div className="flex gap-2 flex-wrap">
+              <div className="flex  gap-3 flex-wrap">
                 <HeroStats title="International Brands" number="200" />
-                <div className="divider divider-horizontal"></div>
                 <HeroStats title="High-Quality Products" number="2,000" />
-                <div className="divider divider-horizontal"></div>
                 <HeroStats title="Happy Coustomers" number="30,000" />
               </div>
             </div>
@@ -58,10 +64,14 @@ function HeroBanner() {
 
   return (
     <div className="py-4 px-10 bg-base border-b-2">
-      <div className="flex justify-between flex-wrap gap-3">
+      <div className="flex justify-center gap-4  flex-wrap md:justify-between">
         {bannerData.map((ele) => {
           return (
-            <img src={ele} alt="brand img" className={style.hero__brand__img} />
+            <img
+              src={ele}
+              alt="brand img"
+              className={cl(style.hero__brand__img, " size-full max-w-[8rem]")}
+            />
           );
         })}
       </div>
@@ -70,14 +80,17 @@ function HeroBanner() {
 }
 function HeroStats({ title = "", number = "" }) {
   return (
-    <div className="flex flex-col">
-      <div className="font-semibold text-3xl">
-        <span>{number}+</span>
+    <>
+      <div className="divider divider-horizontal"></div>
+      <div className="flex flex-col">
+        <div className="font-semibold  md:text-3xl">
+          <span>{number}+</span>
+        </div>
+        <div className=" text-xs md:text-sm text-gray-700 leading-4">
+          <span>{title}</span>
+        </div>
       </div>
-      <div className="title  text-sm text-gray-700 leading-4">
-        <span>{title}</span>
-      </div>
-    </div>
+    </>
   );
 }
 

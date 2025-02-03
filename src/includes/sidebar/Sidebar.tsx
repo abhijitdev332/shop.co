@@ -7,7 +7,7 @@ import { Link, NavLink } from "react-router-dom"; // Assuming React Router is us
 import { Logout } from "../../components/component";
 
 const Sidebar: React.FC = () => {
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
 
   // Toggle sidebar
   const toggleSidebar = () => {
@@ -17,7 +17,7 @@ const Sidebar: React.FC = () => {
   return (
     <div
       className={`flex flex-col h-screen dark:bg-gray-900 dark:text-white bg-gray-200 text-black ${
-        isOpen ? "w-64" : "w-20"
+        isOpen ? "w-64" : "w-15"
       } transition-all duration-300`}
     >
       {/* Top Section */}

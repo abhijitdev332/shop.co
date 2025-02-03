@@ -16,6 +16,11 @@ import CheckOutModal from "./modal/CheckoutModal";
 import DropDown from "./dropdown/Dropdown";
 import Loader from "./dataLoader/DataLoader";
 import List from "./list/List";
+import DeleteModal from "./modal/DeleteModal";
+import TableHeader from "./table/TableHeader";
+import TableCell from "./table/TableCell";
+import TableBody from "./table/TableBody";
+
 // import NewProductDetails from "./Product/NewCodeProduct";
 export {
   Hero,
@@ -34,6 +39,10 @@ export {
   Modal,
   Loader,
   DropDown,
+  DeleteModal,
   CheckOutModal,
-  List
+  List,
+  TableHeader,
+  TableCell,
+  TableBody,
 };

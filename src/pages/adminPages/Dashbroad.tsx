@@ -4,6 +4,7 @@ import {
   Area,
   AreaChart,
   CartesianGrid,
+  Legend,
   Pie,
   PieChart,
   ResponsiveContainer,
@@ -29,6 +30,7 @@ import {
   useAdminStats,
 } from "../../querys/admin/adminQuery";
 import { Link } from "react-router-dom";
+import { TableBody, TableCell, TableHeader } from "../../components/component";
 const Dashbroad = () => {
   const times = ["7d", "1m", "1y"];
   const [selectedTime, setSelectedTime] = useState("7d");
@@ -442,20 +444,24 @@ function TopCategory() {
     </div>
   );
 }
-function ExpenseChart({ orderStatus }) {
+function ExpenseChart({ orderStatus = {} }) {
   let orderData = [
-    { name: "pending", value: orderStatus?.pending || 0 },
+    { name: "Pending", value: orderStatus?.pending || 0 },
     { name: "Delivered", value: orderStatus?.delivered || 0 },
-    { name: "shiipped", value: orderStatus?.pendingshipped || 0 },
+    { name: "Shipped", value: orderStatus?.shipped || 0 },
   ];
-  console.log(orderData);
+
+  if (!orderData) {
+    return <div className="w-52 h-52 skeleton"></div>;
+  }
+
   return (
-    <div className="wrapper w-full h-full">
+    <div className="wrapper w-full h-[300px]">
       <div className="flex flex-col">
         <h2 className="text-lg font-bold">All Order Stats</h2>
         <p className="text-sm">Lorem ipsum dolor sit amet consectetur.</p>
       </div>
-      <ResponsiveContainer width={"100%"} height={"200px"}>
+      <ResponsiveContainer width={"100%"} height={"100%"}>
         <PieChart>
           <Pie
             data={orderData}
@@ -463,11 +469,13 @@ function ExpenseChart({ orderStatus }) {
             nameKey="name"
             cx="50%"
             cy="50%"
-            outerRadius={50}
+            innerRadius={30}
+            outerRadius={80}
             fill="#8884d8"
             label
           />
           <Tooltip key={"name"} />
+          <Legend verticalAlign="top" height={36} />
         </PieChart>
       </ResponsiveContainer>
     </div>
@@ -478,18 +486,6 @@ const RecentOrders = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const { data, isLoading } = useAdminOrders(currentPage, itemsPerPage);
   const [selectedDate, setSelectedDate] = useState<string>("");
-
-  // const handleDelete = (id: string) => {
-  //   // setOrders((prev) => prev.filter((order) => order.id !== id));
-  // };
-
-  // const handleStatusChange = (id: string, newStatus: string) => {
-  //   // setOrders((prev) =>
-  //   //   prev.map((order) =>
-  //   //     order.id === id ? { ...order, status: newStatus } : order
-  //   //   )
-  //   // );
-  // };
 
   return (
     <>
@@ -518,85 +514,80 @@ const RecentOrders = () => {
         )}
         <table className="table">
           {/* head */}
-          <thead className=" text-black bg-slate-200 font-medium space-y-6 sticky top-0 z-10 p-2 border-b-2">
-            <th className="font-medium text-inherit">Product</th>
-            <th className="font-medium text-inherit">Customer</th>
-            <th className="font-medium text-inherit">Total</th>
-            <th className="font-medium text-inherit">Status</th>
-            <th className="font-medium text-inherit">Action</th>
-          </thead>
+          <TableHeader
+            columns={["Product", "Customer", "Total", "Status", "Action"]}
+            style={"!text-black"}
+          />
 
-          <tbody>
-            {data?.orders?.map((ele) => (
-              <tr className={cl("text-gray-800 text-base")}>
-                {/* <th>
-                  <label>
-                    <input type="checkbox" className="checkbox" />
-                  </label>
-                </th> */}
-                <td>
-                  <div className="flex gap-1">
-                    <div className="avatar">
-                      <div className="mask mask-squircle h-10 w-10">
-                        <img
-                          src={ele?.firstProduct?.variantImages?.[0].url}
-                          alt="Avatar Tailwind CSS Component"
-                        />
+          <TableBody
+            columnsData={data?.orders}
+            renderItem={(ele) => {
+              return (
+                <tr className={cl("text-gray-800 text-base")}>
+                  <TableCell>
+                    <div className="flex gap-1">
+                      <div className="avatar">
+                        <div className="mask mask-squircle h-10 w-10">
+                          <img
+                            src={ele?.firstProduct?.variantImages?.[0].url}
+                            alt="Avatar Tailwind CSS Component"
+                          />
+                        </div>
                       </div>
+                      <p className="inline-flex flex-col gap-1">
+                        <span className="text-sm capitalize text-gray-800">
+                          {ele?.firstProduct?.productName}
+                        </span>
+                        <span className="text-xs text-inherit">
+                          +{ele?.products?.length}Products
+                        </span>
+                      </p>
                     </div>
-                    <p className="inline-flex flex-col gap-1">
-                      <span className="text-sm capitalize text-gray-800">
-                        {ele?.firstProduct?.productName}
+                  </TableCell>
+                  <TableCell>
+                    <div className="inline-flex flex-col gap-1 text-xs">
+                      <p className="text-inherit">
+                        {ele?.userDetails?.username}
+                      </p>
+                      <span className="text-inherit">
+                        {ele?.userDetails?.email}
                       </span>
-                      <span className="text-xs text-inherit">
-                        +{ele?.products?.length}Products
+                    </div>
+                  </TableCell>
+                  <TableCell>${ele?.totalAmount}</TableCell>
+                  <TableCell>
+                    {ele?.status == "pending" ? (
+                      <span className="badge rounded-btn badge-md py-3 capitalize">
+                        {ele?.status}
                       </span>
-                    </p>
-                  </div>
-                </td>
-                <td>
-                  <div className="inline-flex flex-col gap-1 text-xs">
-                    <p className="text-inherit">{ele?.userDetails?.username}</p>
-                    <span className="text-inherit">
-                      {ele?.userDetails?.email}
-                    </span>
-                  </div>
-                </td>
-                <td>${ele?.totalAmount}</td>
-                <td>
-                  {ele?.status == "pending" ? (
-                    <span className="badge rounded-btn badge-md py-3 capitalize">
-                      {ele?.status}
-                    </span>
-                  ) : (
-                    <span className="badge badge-success capitalize rounded-btn badge-md py-3">
-                      {ele?.status}
-                    </span>
-                  )}
-                </td>
-                <td>
-                  <div className="flex gap-1">
-                    <Link
-                      to={`orders/${ele?._id}`}
-                      className="btn btn-sm btn-ghost rounded-full"
-                    >
-                      <BsFillEyeFill />
-                    </Link>
-                    {/* <button className="btn btn-sm btn-ghost hover:bg-red-500 rounded-full">
-                      <FaRegTrashAlt />
-                    </button> */}
-                  </div>
-                </td>
-              </tr>
-            ))}
-            {/* row 1 */}
-          </tbody>
+                    ) : (
+                      <span className="badge badge-success capitalize rounded-btn badge-md py-3">
+                        {ele?.status}
+                      </span>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex gap-1">
+                      <Link
+                        to={`orders/${ele?._id}`}
+                        className="btn btn-sm btn-ghost rounded-full"
+                      >
+                        <BsFillEyeFill />
+                      </Link>
+                    </div>
+                  </TableCell>
+                </tr>
+              );
+            }}
+          />
         </table>
       </div>
       <AdminPagination
         currentPage={currentPage}
         setPage={setCurrentPage}
         totalPage={Math.ceil(data?.totalOrders / itemsPerPage)}
+        itemperPage={itemsPerPage}
+        totalLen={data?.totalOrders}
       />
     </>
   );

@@ -25,6 +25,10 @@ const getAdminOrderByCountry = async () => {
   let { data } = await AdminAxios.get(`/byCountry`);
   return data?.data;
 };
+export const getAdminCategories = async () => {
+  let { data } = await AdminAxios.get("/categories");
+  return data?.data;
+};
 
 export {
   getadminProducts,

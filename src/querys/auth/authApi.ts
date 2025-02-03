@@ -1,11 +1,10 @@
 import { PrivateAxios } from "../../services/api/api";
 
-const verifySession = async () => {
+export const verifySession = async () => {
   let { data } = await PrivateAxios.post("/auth/verify-session");
   return data?.data;
 };
-
-
-
-
-export {verifySession}
+export const logout = async (body) => {
+  let { data } = await PrivateAxios.post("/auth/logout", body);
+  return data;
+};

@@ -3,7 +3,7 @@ import cl from "classnames";
 const Dropdown = ({ style = "", children, ...others }) => {
   return (
     <>
-      <div className="dropdown dropdown-bottom dropdown-end">
+      <div className="dropdown  dropdown-end ">
         <div tabIndex={0} role="button" className="btn btn-ghost">
           <HiOutlineDotsVertical size={20} />
         </div>

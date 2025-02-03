@@ -6,7 +6,7 @@ import { Loader } from "../components/component";
 const Admin = () => {
   return (
     <>
-      <div className="wrapper lg:container lg:mx-auto h-screen">
+      <div className="wrapper xl:container xl:mx-auto h-screen">
         <div className="flex h-full">
           <Sidebar />
           <div className="flex flex-col w-full overflow-y-scroll">

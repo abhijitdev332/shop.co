@@ -8,14 +8,19 @@ import { useAdminAllUser } from "../../../querys/admin/adminQuery";
 import { FaRegTrashCan } from "react-icons/fa6";
 import { deleteUser } from "../../../querys/userQuery";
 import { toast } from "react-toastify";
-import { DropDown, Modal } from "../../../components/component";
+import {
+  DropDown,
+  Modal,
+  TableBody,
+  TableCell,
+  TableHeader,
+} from "../../../components/component";
 import { AdminPagination } from "../adminPages";
 
 const UsersTable = () => {
   const itemsperpage = 5;
   const [currentPage, setCurrentPage] = useState(1);
   const { data, isLoading } = useAdminAllUser(currentPage, itemsperpage);
-  const users = data?.data?.data;
   const queryClient = useQueryClient();
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
   const [deleteSelect, setDelectSelect] = useState("");
@@ -29,10 +34,10 @@ const UsersTable = () => {
 
   // Select or deselect all products
   const toggleSelectAll = () => {
-    if (selectedProducts.length === users?.length) {
+    if (selectedProducts.length === data?.allUsers?.length) {
       setSelectedProducts([]);
     } else {
-      setSelectedProducts(users?.map((product) => product?._id));
+      setSelectedProducts(data?.allUsers?.map((user) => user?._id));
     }
   };
   const { mutate: deleteMutation } = useMutation({
@@ -93,131 +98,134 @@ const UsersTable = () => {
             <div className="skeleton h-96 columns-1 w-full bg-gray-200 dark:bg-white "></div>
           )}
           <table className="w-full rounded">
-            <thead className="bg-gray-100 text-black">
-              <tr>
-                <th className=" px-4 py-2">
-                  <input
-                    type="checkbox"
-                    checked={selectedProducts.length === users?.length}
-                    onChange={toggleSelectAll}
-                    className="checkbox"
-                  />
-                </th>
-                <th className=" px-4 py-2 text-left">UserName</th>
-                <th className=" px-4 py-2 text-left">Access</th>
-                <th className=" px-4 py-2 text-left">Status</th>
-                <th className=" px-4 py-2 text-left">Date Added</th>
-                <th className=" px-4 py-2 text-left">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data?.allUsers?.map((eachUser) => (
-                <tr key={eachUser?._id} className="text-gray-800 text-base">
-                  {/* Checkbox */}
-                  <td className=" px-4 py-2 text-center">
-                    <input
-                      type="checkbox"
-                      checked={selectedProducts.includes(eachUser?._id)}
-                      onChange={() => toggleSelectProduct(eachUser?._id)}
-                      className="checkbox"
-                    />
-                  </td>
+            <TableHeader
+              columns={[
+                "",
+                "Name",
+                "Access",
+                "Status",
+                "Date Added",
+                "Actions",
+              ]}
+              input={true}
+              oncheck={selectedProducts.length === data?.allUsers?.length}
+              onchange={toggleSelectAll}
+            />
+            <TableBody
+              columnsData={data?.allUsers}
+              renderItem={(eachUser) => {
+                return (
+                  <tr key={eachUser?._id} className="text-gray-800 text-base">
+                    {/* Checkbox */}
+                    <TableCell>
+                      <input
+                        type="checkbox"
+                        checked={selectedProducts.includes(eachUser?._id)}
+                        onChange={() => toggleSelectProduct(eachUser?._id)}
+                        className="checkbox"
+                      />
+                    </TableCell>
 
-                  {/* Product Name */}
-                  <td className=" px-4 py-2">
-                    <div className="inline-flex gap-2">
-                      <Link to={eachUser?._id}>
-                        {eachUser?.imgUrl !== "" ? (
-                          <>
-                            <div className="avatar">
-                              <div className="w-14 rounded-full">
-                                <img src={eachUser?.imgUrl} />
+                    {/* Product Name */}
+                    <TableCell>
+                      <div className="inline-flex gap-2">
+                        <Link to={eachUser?._id}>
+                          {eachUser?.imgUrl !== "" ? (
+                            <>
+                              <div className="avatar">
+                                <div className="w-14 rounded-full">
+                                  <img src={eachUser?.imgUrl} />
+                                </div>
                               </div>
-                            </div>
-                          </>
-                        ) : (
-                          <ImageLetter name={eachUser?.username} />
-                        )}
-                      </Link>
-
-                      <div className="inline-flex flex-col">
-                        <p className="text-gray-800 text-base capitalize">
-                          {eachUser?.username}
-                        </p>
-                        <span className="text-gray-400 text-sm">
-                          {eachUser?.email}
-                        </span>
-                      </div>
-                    </div>
-                  </td>
-
-                  {/* SKU */}
-                  <td className=" px-4 py-2">
-                    <div className="flex gap-2">
-                      {eachUser?.roles?.map((role) => (
-                        <span className="badge  badge-primary">{role}</span>
-                      ))}
-                    </div>
-                  </td>
-
-                  {/* active */}
-                  <td className=" px-4 py-2">
-                    {eachUser?.isActive ? (
-                      <span className="badge badge-success badge-outline">
-                        Active
-                      </span>
-                    ) : (
-                      <span className="badge badge-neutral">Active</span>
-                    )}
-                  </td>
-
-                  {/* added */}
-                  <td className=" px-4 py-2">
-                    {new Date(eachUser?.createdAt).toLocaleDateString("en-GB")}
-                  </td>
-
-                  {/* Price */}
-
-                  {/* Actions */}
-                  <td className=" px-4 py-2">
-                    <DropDown>
-                      <li>
-                        <Link
-                          to={`${eachUser?._id}`}
-                          className="hover:bg-gray-300 font-medium"
-                        >
-                          <IoEye />
-                          View
+                            </>
+                          ) : (
+                            <ImageLetter name={eachUser?.username} />
+                          )}
                         </Link>
-                      </li>
-                      <li>
-                        <button
-                          className="hover:bg-gray-300 font-medium"
-                          onClick={() => {
-                            if (modalRef?.current) {
-                              setDelectSelect(eachUser?._id);
-                              modalRef?.current?.showModal();
-                            }
-                          }}
-                        >
-                          <FaRegTrashAlt />
-                          Delete
-                        </button>
-                      </li>
-                      {/* <button className="btn btn-sm btn-ghost rounded-full">
-                      <MdModeEdit />
-                    </button> */}
-                    </DropDown>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
+
+                        <div className="inline-flex flex-col">
+                          <p className="text-gray-800 text-base capitalize">
+                            {eachUser?.username}
+                          </p>
+                          <span className="text-gray-400 text-sm">
+                            {eachUser?.email}
+                          </span>
+                        </div>
+                      </div>
+                    </TableCell>
+
+                    {/* SKU */}
+                    <TableCell>
+                      <div className="flex gap-2">
+                        {eachUser?.roles?.map((role) => (
+                          <span className="badge  badge-primary">{role}</span>
+                        ))}
+                      </div>
+                    </TableCell>
+
+                    {/* active */}
+                    <TableCell>
+                      {eachUser?.isActive ? (
+                        <span className="badge badge-success badge-outline">
+                          Active
+                        </span>
+                      ) : (
+                        <span className="badge badge-neutral">Active</span>
+                      )}
+                    </TableCell>
+
+                    {/* added */}
+                    <TableCell>
+                      {new Date(eachUser?.createdAt).toLocaleDateString(
+                        "en-GB"
+                      )}
+                    </TableCell>
+
+                    {/* Price */}
+
+                    {/* Actions */}
+                    <TableCell>
+                      <DropDown>
+                        <li>
+                          <Link
+                            to={`${eachUser?._id}`}
+                            className="hover:bg-gray-300 font-medium"
+                          >
+                            <IoEye />
+                            View
+                          </Link>
+                        </li>
+                        <li>
+                          <button
+                            className="hover:bg-gray-300 font-medium"
+                            onClick={() => {
+                              if (modalRef?.current) {
+                                setDelectSelect(eachUser?._id);
+                                modalRef?.current?.showModal();
+                              }
+                            }}
+                          >
+                            <FaRegTrashAlt />
+                            Delete
+                          </button>
+                        </li>
+                        {/* <button className="btn btn-sm btn-ghost rounded-full">
+            <MdModeEdit />
+          </button> */}
+                      </DropDown>
+                    </TableCell>
+                  </tr>
+                );
+              }}
+            />
           </table>
         </div>
         <AdminPagination
           currentPage={currentPage}
           setPage={setCurrentPage}
           totalPage={Math.ceil(data?.totalUsers / itemsperpage)}
+          totalLen={data?.totalUsers}
+          itemperPage={itemsperpage}
         />
       </div>
       {/* modal for confirm delete */}

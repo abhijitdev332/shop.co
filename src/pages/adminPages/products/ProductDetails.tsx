@@ -1,23 +1,41 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import {
-  deleteReview,
-  getProductOrderDetails,
-} from "../../../querys/productQuery";
+import { deleteReview } from "../../../querys/productQuery";
 import cl from "classnames";
-import { DropDown, ReviewCard, Star } from "../../../components/component";
+import {
+  DropDown,
+  ReviewCard,
+  Star,
+  TableBody,
+  TableCell,
+  TableHeader,
+} from "../../../components/component";
 import style from "./style.module.scss";
-import useFetch from "../../../hooks/useFetch";
 import { IoEye } from "react-icons/io5";
 import { MdModeEdit } from "react-icons/md";
 import { toast } from "react-toastify";
-import { updateOrderStatus } from "../../../querys/orderQuery";
+import { UpdateOrderStausMutaion } from "../../../querys/orderQuery";
 import { getadminOrdersKey } from "../../../querys/admin/adminApi";
+import {
+  useProductOrderDetails,
+  userGetProductById,
+} from "../../../querys/product/productQuery";
 // default img url
 const imgUrl =
   "https://images.pexels.com/photos/769733/pexels-photo-769733.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1";
 
+const OrderTableHeader = [
+  "",
+  "Order Id",
+  "Products",
+  "Dated",
+  "Customer",
+  "Total",
+  "Payment",
+  "Status",
+  "Actions",
+];
 // main export tab group
 const ProductDetailsTabGroup = () => {
   const { id } = useParams();
@@ -109,10 +127,7 @@ const ProductDetailsTabGroup = () => {
 // product details
 const ProductDetails = ({ setVariant, setReview }) => {
   const { id } = useParams();
-  const { data, isLoading, isError } = useFetch({
-    url: `/product/${id}`,
-    queryKey: ["product", id],
-  });
+  const { data } = userGetProductById(id);
   const [productData, setProductData] = useState(null);
   const [allVariants, setAllVariants] = useState([]);
   const [currentProductVariant, setCurrentProductVariant] = useState({});
@@ -123,8 +138,8 @@ const ProductDetails = ({ setVariant, setReview }) => {
   const [sizes, setSizes] = useState([]);
 
   useEffect(() => {
-    if (data?.data) {
-      const { matchedProduct, productVariants } = data?.data;
+    if (data) {
+      const { matchedProduct, productVariants } = data;
       setProductData(matchedProduct || null);
       setReview(matchedProduct?.reviews);
       setAllVariants(productVariants || []);
@@ -192,16 +207,16 @@ const ProductDetails = ({ setVariant, setReview }) => {
           </div>
           <div className="product-dsc basis-2/3 flex flex-col p-2 shadow-lg rounded-xl">
             <div className="title">
-              <h2 className="text-3xl font-extrabold uppercase leading-tight">
+              <h2 className="text-2xl font-extrabold capitalize leading-tight">
                 {productData?.name}
               </h2>
             </div>
             <div className="flex space-x-1 items-center pt-2">
-              <p className="flex gap-2 items-center">
+              <p className="flex gap-2 items-center text-sm">
                 Rating:
                 <Star
                   count={productData?.averageRating || 1}
-                  size={20}
+                  size={15}
                   color="orange"
                 />
                 <span className="text-sm font-mono">
@@ -209,7 +224,7 @@ const ProductDetails = ({ setVariant, setReview }) => {
                 </span>
               </p>
               <div className="divider divider-horizontal divider-neutral"></div>
-              <p>
+              <p className="text-sm">
                 Stock: <span>{currentProductVariant?.stock}</span>
               </p>
             </div>
@@ -226,7 +241,9 @@ const ProductDetails = ({ setVariant, setReview }) => {
               )}
             </div>
             <div className="dsc py-2">
-              <p className="text-gray-500">{productData?.description}</p>
+              <p className="text-gray-500 capitalize">
+                {productData?.description}
+              </p>
             </div>
             <div className="outline outline-1 outline-slate-300"></div>
             {/* color */}
@@ -284,28 +301,22 @@ const ProductDetails = ({ setVariant, setReview }) => {
     </>
   );
 };
-const ordersStatus = ["pending", "shipped", "delivered"];
+
 // product orders
 function ProductOrders({ id = "", color = "" }) {
   const queryClient = useQueryClient();
-  const { data, error } = useQuery({
-    queryKey: ["adminProductsOrders", id, color],
-    queryFn: () => getProductOrderDetails({ productId: id, color: color }),
-    enabled: color !== "" && id !== "",
-  });
-  let orders = data?.data?.data || [];
-
+  const updateOrderStatusMutaion = UpdateOrderStausMutaion();
+  const { data: orders } = useProductOrderDetails(id, color);
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
   const [selectedOrder, setSelectedOrder] = useState({});
   const [orderStatusstate, setOrdersStatus] = useState("");
-
+  const ordersStatus = ["pending", "shipped", "delivered"];
   // Toggle product selection
   const toggleSelectProduct = (id: string) => {
     setSelectedProducts((prev) =>
       prev.includes(id) ? prev.filter((pid) => pid !== id) : [...prev, id]
     );
   };
-
   // Select or deselect all products
   const toggleSelectAll = () => {
     if (selectedProducts.length === orders.length) {
@@ -315,24 +326,19 @@ function ProductOrders({ id = "", color = "" }) {
     }
   };
 
-  const handleDelete = (id: string) => {
-    // setProducts((prev) => prev.filter((product) => product.id !== id));
-  };
-  const updateOrderMutaion = useMutation({
-    mutationKey: ["updateOrderStaus"],
-    mutationFn: (data) => updateOrderStatus(selectedOrder, data),
-    onSuccess: (data) => {
-      toast.success(data?.data?.message);
-      queryClient.invalidateQueries([
-        getadminOrdersKey,
-        "orders",
-        selectedOrder,
-      ]);
-    },
-  });
-  const handleUpdateOrderStatus = () => {
+  const handleUpdateOrderStatus = async () => {
     if (orderStatusstate !== "") {
-      updateOrderMutaion.mutate({ status: orderStatusstate });
+      let res = await updateOrderStatusMutaion.mutateAsync({
+        id: selectedOrder,
+        data: { status: orderStatusstate },
+      });
+      if (res.status == 200) {
+        queryClient.invalidateQueries([
+          getadminOrdersKey,
+          "orders",
+          selectedOrder,
+        ]);
+      }
     }
   };
 
@@ -342,154 +348,133 @@ function ProductOrders({ id = "", color = "" }) {
         {/* Table */}
         <div className="overflow-x-auto h-fit">
           <table className="w-full rounded">
-            <thead className="bg-gray-100 text-black">
-              <tr>
-                <th className=" px-4 py-2">
-                  <input
-                    type="checkbox"
-                    checked={selectedProducts.length === orders?.length}
-                    onChange={toggleSelectAll}
-                    className="checkbox"
-                  />
-                </th>
-                <th className=" px-4 py-2 text-left">Order Id</th>
-                <th className=" px-4 py-2 text-left">Products</th>
-                <th className=" px-4 py-2 text-left">Date</th>
-                <th className=" px-4 py-2 text-left">Cutstomer</th>
-                <th className=" px-4 py-2 text-left">Total</th>
-                <th className=" px-4 py-2 text-left">Payment</th>
-                <th className=" px-4 py-2 text-left">Status</th>
-                <th className=" px-4 py-2 text-left">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {orders?.map((order: any) => (
-                <tr key={order._id} className="text-black text-lg h-fit">
-                  {/* Checkbox */}
-                  <td className=" px-4 py-2 text-center">
-                    <input
-                      type="checkbox"
-                      checked={selectedProducts.includes(order._id)}
-                      onChange={() => toggleSelectProduct(order._id)}
-                      className="checkbox"
-                    />
-                  </td>
-                  <td>
-                    <Link to={order._id} title={order?._id}>
-                      {order._id.slice(0, 8)}
-                    </Link>
-                  </td>
-                  {/* Products Name */}
-                  <td className=" px-4 py-2">
-                    <div className="flex gap-1">
-                      <div className="avatar">
-                        <div className="w-12 rounded">
-                          <img
-                            src={order?.firstProduct?.variantImages?.[0]?.url}
-                            alt="variant image"
-                          />
+            <TableHeader
+              columns={OrderTableHeader}
+              input={true}
+              oncheck={selectedProducts.length === orders?.length}
+              onchange={toggleSelectAll}
+            />
+
+            <TableBody
+              columnsData={orders || []}
+              renderItem={(order) => {
+                return (
+                  <tr key={order._id} className="text-black text-lg h-fit">
+                    {/* Checkbox */}
+                    <TableCell>
+                      <input
+                        type="checkbox"
+                        checked={selectedProducts.includes(order._id)}
+                        onChange={() => toggleSelectProduct(order._id)}
+                        className="checkbox"
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Link to={order._id} title={order?._id}>
+                        {order._id.slice(0, 8)}
+                      </Link>
+                    </TableCell>
+                    {/* Products Name */}
+                    <TableCell>
+                      <div className="flex gap-1">
+                        <div className="avatar">
+                          <div className="w-10 h-14 rounded">
+                            <img
+                              src={order?.firstProduct?.variantImages?.[0]?.url}
+                              alt="variant image"
+                            />
+                          </div>
+                        </div>
+                        <div className="inline-flex flex-col capitalize">
+                          <span className="text-wrap text-sm font-medium text-gray-800">
+                            {order?.firstProduct?.productDetails?.name ||
+                              "product name"}
+                          </span>
+                          {order?.products?.length - 1 > 0 && (
+                            <span className="text-sm text-gray-600">
+                              +{order?.products?.length - 1} More Products
+                            </span>
+                          )}
                         </div>
                       </div>
-                      <div className="inline-flex flex-col capitalize">
-                        <span className="text-wrap font-medium text-gray-800">
-                          {order?.firstProduct?.productDetails?.name ||
-                            "product name"}
+                    </TableCell>
+
+                    {/* date */}
+                    <TableCell>
+                      {new Date(order?.createdAt).toLocaleDateString("en-GB")}
+                    </TableCell>
+
+                    {/* Category */}
+                    <TableCell>{order?.userDetails?.username}</TableCell>
+
+                    {/* Stock */}
+                    <TableCell>{order?.totalAmount}</TableCell>
+
+                    {/* Price */}
+                    <TableCell>{order?.paymentGateway}</TableCell>
+
+                    {/* Status */}
+                    <TableCell>
+                      {order?.status == "pending" ? (
+                        <span className="badge rounded-btn badge-lg capitalize">
+                          {order?.status}
                         </span>
-                        {order?.products?.length - 1 > 0 && (
-                          <span className="text-sm text-gray-600">
-                            +{order?.products?.length - 1} More Products
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  </td>
+                      ) : (
+                        <span className="badge badge-success capitalize rounded-btn badge-lg">
+                          {order?.status}
+                        </span>
+                      )}
+                    </TableCell>
 
-                  {/* date */}
-                  <td className=" px-4 py-2">
-                    {new Date(order?.createdAt).toLocaleDateString("en-GB")}
-                  </td>
-
-                  {/* Category */}
-                  <td className=" px-4 py-2">{order?.userDetails?.username}</td>
-
-                  {/* Stock */}
-                  <td className=" px-4 py-2">{order?.totalAmount}</td>
-
-                  {/* Price */}
-                  <td className=" px-4 py-2">{order?.paymentGateway}</td>
-
-                  {/* Status */}
-                  <td className=" px-4 py-2">
-                    {order?.status == "pending" ? (
-                      <span className="badge rounded-btn badge-lg capitalize">
-                        {order?.status}
-                      </span>
-                    ) : (
-                      <span className="badge badge-success capitalize rounded-btn badge-lg">
-                        {order?.status}
-                      </span>
-                    )}
-                  </td>
-
-                  {/* Actions */}
-                  <td className=" px-4 py-2">
-                    <DropDown>
-                      <li>
-                        <Link
-                          to={`/admin/orders/${order?._id}`}
-                          className="hover:bg-gray-300 font-medium"
-                        >
-                          <IoEye />
-                          View
-                        </Link>
-                      </li>
-                      <li>
-                        <select
-                          className="select  w-full bg-white !text-black"
-                          onChange={(ev) => {
-                            setSelectedOrder(order?._id);
-                            setOrdersStatus(ev.target.value);
-                          }}
-                        >
-                          {/* <option disabled selected className="text-black">
-                          Update Status
-                        </option> */}
-                          {ordersStatus.map((ele) => (
-                            <option
-                              className="capitalize text-black"
-                              value={ele}
-                              selected={order?.status == ele}
-                            >
-                              {ele}
-                            </option>
-                          ))}
-                        </select>
-                        <button
-                          className="hover:bg-gray-300 btn btn-neutral my-3 font-medium"
-                          onClick={handleUpdateOrderStatus}
-                        >
-                          <div className="flex gap-1">
-                            <MdModeEdit />
-                            <span className="text-white">Update</span>
-                          </div>
-                        </button>
-                      </li>
-                    </DropDown>
-                    {/* <div className="flex gap-1 ">
-                    <Link
-                      to={`${order?._id}`}
-                      className="btn btn-sm btn-neutral rounded-full"
-                    >
-                      <IoEye />
-                    </Link>
-                    <button className="btn btn-sm btn-primary  rounded-full">
-                      <MdModeEdit />
-                    </button>
-                  </div> */}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
+                    {/* Actions */}
+                    <TableCell>
+                      <DropDown>
+                        <li>
+                          <Link
+                            to={`/admin/orders/${order?._id}`}
+                            className="hover:bg-gray-300 font-medium"
+                          >
+                            <IoEye />
+                            View
+                          </Link>
+                        </li>
+                        <li>
+                          <select
+                            className="select  w-full bg-white !text-black"
+                            onChange={(ev) => {
+                              setSelectedOrder(order?._id);
+                              setOrdersStatus(ev.target.value);
+                            }}
+                          >
+                            {/* <option disabled selected className="text-black">
+                      Update Status
+                    </option> */}
+                            {ordersStatus.map((ele) => (
+                              <option
+                                className="capitalize text-black"
+                                value={ele}
+                                selected={order?.status == ele}
+                              >
+                                {ele}
+                              </option>
+                            ))}
+                          </select>
+                          <button
+                            className="hover:bg-gray-300 btn btn-neutral my-3 font-medium"
+                            onClick={handleUpdateOrderStatus}
+                          >
+                            <div className="flex gap-1">
+                              <MdModeEdit />
+                              <span className="text-white">Update</span>
+                            </div>
+                          </button>
+                        </li>
+                      </DropDown>
+                    </TableCell>
+                  </tr>
+                );
+              }}
+            />
           </table>
         </div>
       </div>

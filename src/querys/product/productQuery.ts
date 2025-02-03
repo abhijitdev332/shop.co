@@ -1,9 +1,23 @@
 import { useQuery } from "@tanstack/react-query";
 import { PrivateAxios } from "../../services/api/api";
-import { getProductOrderDetails, getRelativeProducts, getShopAllProducts } from "./productApi";
+import {
+  getNewArivals,
+  getProductById,
+  getProductOrderDetails,
+  getRelativeProducts,
+  getShopAllProducts,
+  getTopSelling,
+} from "./productApi";
 
-const newArivals = async ({ limit = 4, skip = 0 }) => {
-  return await PrivateAxios.get(`/product/arival?limit=${limit}&skip=${skip}`);
+export const useNewArivals = (currentPage = 1, itemsperpage = 5) => {
+  return useQuery({
+    queryKey: ["newarrivals"],
+    queryFn: () =>
+      getNewArivals(
+        currentPage * itemsperpage,
+        (currentPage - 1) * itemsperpage
+      ),
+  });
 };
 const newReview = async ({ id, data }) => {
   return await PrivateAxios.post(`/product/review/add/${id}`, data);
@@ -13,8 +27,15 @@ const deleteReview = async (id, reviewId) => {
     `/product/review/remove/${id}?reviewId=${reviewId}`
   );
 };
-const topSelling = async ({ limit = 4, skip = 0 }) => {
-  return await PrivateAxios.get(`/product/top?limit=${limit}&skip=${skip}`);
+export const useTopSelling = (currentPage = 1, itemsperpage = 5) => {
+  return useQuery({
+    queryKey: ["topselling"],
+    queryFn: () =>
+      getTopSelling(
+        currentPage * itemsperpage,
+        (currentPage - 1) * itemsperpage
+      ),
+  });
 };
 const getProduct = async (id: string) => {
   return await PrivateAxios.get(`/product/${id}`);
@@ -58,23 +79,30 @@ let getProductsByslug = async ({ query = "", limit, skip }) => {
       return newArivals({ limit, skip });
   }
 };
-let useProductOrderDetails = ({ productId, color }) => {
+let useProductOrderDetails = (productId = "", color = "") => {
   return useQuery({
-    queryKey:["productorders"],
-    queryFn:()=>getProductOrderDetails(productId,color)
-  })
+    queryKey: ["productorders", productId, color],
+    queryFn: () => getProductOrderDetails(productId, color),
+  });
 };
 let useAllProducts = (limit, skip) => {
- return useQuery({
-    queryKey:["getallproducts"],
-    queryFn:()=>getShopAllProducts(limit,skip)
-  })
+  return useQuery({
+    queryKey: ["getallproducts"],
+    queryFn: () => getShopAllProducts(limit, skip),
+  });
 };
 
 let useRelativeProducts = (id = "", limit = 5, skip = 0) => {
   return useQuery({
     queryKey: ["relativeProducts", id],
     queryFn: () => getRelativeProducts(id, limit, skip),
+  });
+};
+
+export const userGetProductById = (id = "") => {
+  return useQuery({
+    queryKey: ["getproductbyid", id],
+    queryFn: () => getProductById(id),
   });
 };
 

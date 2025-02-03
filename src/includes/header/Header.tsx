@@ -23,8 +23,8 @@ const Header = () => {
     <>
       <header className="bg-white z-10 sticky top-0">
         <div className="lg:container mx-auto md:px-10">
-          <div className="wrapper py-4 px-5 md:px-10">
-            <div className="flex gap-3 justify-between">
+          <div className="wrapper py-4 px-2 md:px-10">
+            <div className="flex gap-1 sm:gap-3 items-center justify-between">
               <div className="ham md:hidden flex items-center cursor-pointer">
                 {/* responsive side bar */}
                 <div className="drawer">
@@ -38,10 +38,7 @@ const Header = () => {
                       htmlFor="my-drawer"
                       className="btn btn-ghost drawer-button"
                     >
-                      <GiHamburgerMenu
-                        fontSize={"1.2rem"}
-                        className="drawer-button"
-                      />
+                      <GiHamburgerMenu size={25} className="drawer-button" />
                     </label>
                   </span>
 
@@ -56,10 +53,10 @@ const Header = () => {
                         <label
                           htmlFor="my-drawer"
                           aria-label="close sidebar"
-                          className="drawer-overlay absolute top-5 right-5 bg-orange-400 p-2 rounded-s-btn"
+                          className="drawer-overlay cursor-pointer absolute top-5 right-5 bg-base-200  p-2 rounded-btn"
                         >
                           <span>
-                            <IoClose />
+                            <IoClose color="white" size={30} />
                           </span>
                         </label>
                       </div>
@@ -119,7 +116,9 @@ const Header = () => {
                       </li> */}
 
                       <li className="mt-auto">
-                        <Logout style={"btn-error text-white"}>Logout</Logout>
+                        {status && (
+                          <Logout style={"btn-error text-white"}>Logout</Logout>
+                        )}
                       </li>
                     </ul>
                   </div>
@@ -129,7 +128,7 @@ const Header = () => {
               {/* home logo */}
               <Link
                 to={"/"}
-                className="logo flex items-center font-extrabold  text-3xl"
+                className="logo flex items-center justify-center sm:justify-start font-extrabold text-3xl"
               >
                 <span>SHOP</span>
                 <span>.CO</span>
@@ -181,7 +180,7 @@ const Header = () => {
                 </ul>
               </div>
               {/* searchbar */}
-              <div className="searchBar flex items-center justify-end md:justify-center basis-2/6">
+              <div className="flex h-full items-center justify-end md:justify-center basis-2/6">
                 <label className="hidden md:flex items-center rounded-badge px-2 py-2 bg-gray-200 ">
                   <span>
                     <RiSearch2Line />
@@ -193,7 +192,7 @@ const Header = () => {
                   />
                 </label>
                 <label
-                  className="flex md:hidden items-center rounded-badge px-2 py-2 bg-gray-200"
+                  className="flex  md:hidden justify-center items-center rounded-badge px-2 py-2 bg-gray-200"
                   onClick={() => {
                     if (searchRef?.current) {
                       searchRef?.current?.showModal();
@@ -252,7 +251,11 @@ const Header = () => {
 
       {/* search modal */}
 
-      <Modal modalRef={searchRef} style="bg-white space-y-3 text-center">
+      <Modal
+        modalRef={searchRef}
+        style="bg-white space-y-3 text-center"
+        className="modal modal-top"
+      >
         <label className="input input-bordered flex items-center bg-transparent gap-2">
           <input type="text" className="grow" placeholder="Search" />
           <svg
@@ -268,7 +271,9 @@ const Header = () => {
             />
           </svg>
         </label>
-        <button className="btn btn-md btn-neutral">Search</button>
+        <button className="btn btn-md btn-neutral my-3 text-white">
+          Search
+        </button>
       </Modal>
     </>
   );

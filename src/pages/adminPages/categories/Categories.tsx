@@ -1,19 +1,18 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Children, useEffect, useRef, useState } from "react";
 import { FaEdit, FaRegTrashAlt } from "react-icons/fa";
 import { IoEye } from "react-icons/io5";
 import { MdModeEdit } from "react-icons/md";
 import { Link, useLocation } from "react-router-dom";
-import { adminCategories } from "../../../querys/admin/adminQuery";
+import { useAdminCategories } from "../../../querys/admin/adminQuery";
 import {
-  getSubsCategory,
-  updateCategory,
-  updateSubCategory,
+  DeleteCategoryMutaion,
+  DeleteSubCategoryMutaion,
+  UpdateCategoryMutaion,
+  UpdateSubCategoryMutaion,
+  useGetSubCategory,
 } from "../../../querys/categoryQuery";
-import {
-  deleteCategory,
-  deleteSubsCategory,
-} from "../../../querys/categoryQuery";
+
 import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
 import {
@@ -21,7 +20,15 @@ import {
   setSubCategory,
 } from "../../../services/store/category/categorySlice";
 import { FaRegTrashCan } from "react-icons/fa6";
-import { DropDown, LoaderBtn, Modal } from "../../../components/component";
+import {
+  DeleteModal,
+  DropDown,
+  LoaderBtn,
+  Modal,
+  TableBody,
+  TableCell,
+  TableHeader,
+} from "../../../components/component";
 import Dropdown from "../../../components/dropdown/Dropdown";
 import { AdminPagination } from "../adminPages";
 
@@ -94,25 +101,22 @@ const Categories = () => {
 };
 
 function CategoryTable() {
-  const { data } = useQuery({
-    queryKey: ["AdminCategory"],
-    queryFn: adminCategories,
-  });
-  let catagories = data?.data?.data;
+  const { data: catagories } = useAdminCategories();
+  const updateMutaion = UpdateCategoryMutaion();
+  const deleteMutaion = DeleteCategoryMutaion();
   const queryClient = useQueryClient();
-  const dispatch = useDispatch();
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
   const [deleteSelect, setDeleteSelect] = useState("");
   const [selectUpdateCata, setSelectedUpdateCata] = useState({});
   const modalRef = useRef(null);
   const updateModal = useRef(null);
+  const tableHeadeData = ["Category", "Sales", "Stock", "Added", "Actions"];
   // Toggle product selection
   const toggleSelectProduct = (id: string) => {
     setSelectedProducts((prev) =>
       prev.includes(id) ? prev.filter((pid) => pid !== id) : [...prev, id]
     );
   };
-
   // Select or deselect all products
   const toggleSelectAll = () => {
     if (selectedProducts.length === catagories.length) {
@@ -121,30 +125,17 @@ function CategoryTable() {
       setSelectedProducts(catagories.map((product) => product?._id));
     }
   };
-  // update mutaion
-  const updateMutaion = useMutation({
-    mutationKey: ["updateCategory", selectUpdateCata?.id],
-    mutationFn: (data) => updateCategory(selectUpdateCata?.id, data),
-    onSuccess: (data) => {
-      toast.success(data.data?.message);
-      updateModal.current?.close();
-      queryClient.invalidateQueries(["AdminCategory"]);
-    },
-  });
-
-  const { mutate: delCategory } = useMutation({
-    mutationKey: ["deletecategory"],
-    mutationFn: (id) => deleteCategory(id),
-    onSuccess: (data) => {
-      toast.success(data?.data?.message);
-      dispatch(setCategory(data?.data?.data));
-      queryClient.invalidateQueries("AdminCategory");
-    },
-  });
   // delete click
   const handleDelete = () => {
-    delCategory(deleteSelect);
+    deleteMutaion.mutate(deleteSelect);
   };
+  useEffect(() => {
+    if (updateMutaion.isSuccess || deleteMutaion.isSuccess) {
+      toast.success(updateMutaion.data?.message);
+      updateModal.current?.close();
+      queryClient.invalidateQueries(["AdminCategory"]);
+    }
+  }, [updateMutaion.isSuccess, deleteMutaion.isSuccess]);
 
   return (
     <>
@@ -155,126 +146,119 @@ function CategoryTable() {
             <button className="btn btn-neutral">Add Category</button>
           </Link>
         </div>
-
         {/* Table */}
         <div className="overflow-x-auto">
           <table className="w-full rounded">
-            <thead className="sticky top-0 z-10 bg-gray-100 p-2">
-              <tr>
-                <th className=" px-4 py-2 text-left">
-                  <div className="flex gap-2">
-                    <input
-                      type="checkbox"
-                      checked={selectedProducts?.length === catagories?.length}
-                      onChange={toggleSelectAll}
-                      className="checkbox"
-                    />
-                    <span>Category</span>
-                  </div>
-                </th>
-                <th className=" px-4 py-2 text-left">Sales</th>
-                <th className=" px-4 py-2 text-left">Stock</th>
-                <th className=" px-4 py-2 text-left">Added</th>
-                <th className=" px-4 py-2 text-left">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {catagories?.map((cata) => (
-                <tr key={cata?._id} className="text-gray-800 text-base">
-                  {/* Product Name */}
-                  <td className=" px-4 py-2">
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="checkbox"
-                        checked={selectedProducts?.includes(cata?._id)}
-                        onChange={() => toggleSelectProduct(cata?._id)}
-                        className="checkbox"
-                      />
-                      <div className="avatar">
-                        <div className="w-12 rounded-full">
-                          <Link to={`${cata?._id}?query=${cata?.categoryName}`}>
-                            <img
-                              src={
-                                cata?.categoryImage ||
-                                "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
-                              }
-                            />
-                          </Link>
+            <TableHeader
+              columns={tableHeadeData}
+              input={true}
+              oncheck={selectedProducts?.length === catagories?.length}
+              onchange={toggleSelectAll}
+            />
+
+            <TableBody
+              columnsData={catagories}
+              renderItem={(cata) => {
+                return (
+                  <tr key={cata?._id} className="text-gray-800 text-base">
+                    {/* Product Name */}
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          checked={selectedProducts?.includes(cata?._id)}
+                          onChange={() => toggleSelectProduct(cata?._id)}
+                          className="checkbox"
+                        />
+                        <div className="avatar">
+                          <div className="w-12 rounded-full">
+                            <Link
+                              to={`${cata?._id}?query=${cata?.categoryName}`}
+                            >
+                              <img
+                                src={
+                                  cata?.categoryImage ||
+                                  "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
+                                }
+                              />
+                            </Link>
+                          </div>
                         </div>
+
+                        <p className="capitalize  text-gray-800 text-sm md:text-base">
+                          {cata?.categoryName}
+                        </p>
                       </div>
+                    </TableCell>
 
-                      <p className="capitalize  text-gray-800 text-sm md:text-base">
-                        {cata?.categoryName}
-                      </p>
-                    </div>
-                  </td>
+                    {/* SKU */}
+                    <TableCell>{cata?.totalSales}</TableCell>
 
-                  {/* SKU */}
-                  <td className=" px-4 py-2">{cata?.totalSales}</td>
+                    {/* Category */}
+                    <TableCell>{cata?.totalStock}</TableCell>
 
-                  {/* Category */}
-                  <td className=" px-4 py-2">{cata?.totalStock}</td>
+                    {/* Stock */}
+                    <TableCell>
+                      {new Date(cata?.addedDate).toLocaleDateString("en-GB")}
+                    </TableCell>
 
-                  {/* Stock */}
-                  <td className=" px-4 py-2">
-                    {new Date(cata?.addedDate).toLocaleDateString("en-GB")}
-                  </td>
-
-                  {/* Actions */}
-                  <td className=" px-4 py-2">
-                    <DropDown>
-                      <li>
-                        <Link
-                          to={`${cata?._id}?query=${cata?.categoryName}`}
-                          className="font-medium hover:bg-gray-300"
-                        >
-                          <IoEye />
-                          View
-                        </Link>
-                      </li>
-                      <li>
-                        <button
-                          className="font-medium hover:bg-gray-300"
-                          onClick={() => {
-                            if (updateModal?.current) {
-                              setSelectedUpdateCata({
-                                name: cata?.categoryName,
-                                image: cata?.categoryImage,
-                                id: cata?._id,
-                              });
-                              updateModal?.current?.showModal();
-                            }
-                          }}
-                        >
-                          <MdModeEdit />
-                          Edit
-                        </button>
-                      </li>
-                      <li>
-                        <button
-                          className="font-medium hover:bg-gray-300"
-                          onClick={() => {
-                            if (modalRef?.current) {
-                              setDeleteSelect(cata?._id);
-                              modalRef?.current?.showModal();
-                            }
-                          }}
-                        >
-                          <FaRegTrashAlt />
-                          Delete
-                        </button>
-                      </li>
-                    </DropDown>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
+                    {/* Actions */}
+                    <TableCell>
+                      <DropDown>
+                        <li>
+                          <Link
+                            to={`${cata?._id}?query=${cata?.categoryName}`}
+                            className="font-medium hover:bg-gray-300"
+                          >
+                            <IoEye />
+                            View
+                          </Link>
+                        </li>
+                        <li>
+                          <button
+                            className="font-medium hover:bg-gray-300"
+                            onClick={() => {
+                              if (updateModal?.current) {
+                                setSelectedUpdateCata({
+                                  name: cata?.categoryName,
+                                  image: cata?.categoryImage,
+                                  id: cata?._id,
+                                });
+                                updateModal?.current?.showModal();
+                              }
+                            }}
+                          >
+                            <MdModeEdit />
+                            Edit
+                          </button>
+                        </li>
+                        <li>
+                          <button
+                            className="font-medium hover:bg-gray-300"
+                            onClick={() => {
+                              if (modalRef?.current) {
+                                setDeleteSelect(cata?._id);
+                                modalRef?.current?.showModal();
+                              }
+                            }}
+                          >
+                            <FaRegTrashAlt />
+                            Delete
+                          </button>
+                        </li>
+                      </DropDown>
+                    </TableCell>
+                  </tr>
+                );
+              }}
+            />
           </table>
         </div>
         <AdminPagination totalPage={5} />
       </div>
       {/* modal */}
-      <Modal modalRef={modalRef}>
+      <DeleteModal modalRef={modalRef} func={handleDelete} />
+      {/* <Modal modalRef={modalRef}>
         <div className="card flex justify-center flex-col gap-3 items-center">
           <div className="flex justify-center border-spacing-1 bg-red-400 w-20 rounded-full p-5">
             <span>
@@ -308,8 +292,7 @@ function CategoryTable() {
             </button>
           </div>
         </div>
-      </Modal>
-
+      </Modal> */}
       {/* updatemodal */}
       <Modal modalRef={updateModal}>
         <UpdateCategoryModal
@@ -323,13 +306,10 @@ function CategoryTable() {
 }
 
 function SubCategoryTable() {
-  const { data } = useQuery({
-    queryKey: ["AdminSubCategory"],
-    queryFn: () => getSubsCategory(),
-  });
-  let catagories = data?.data?.data;
+  const { data: catagories } = useGetSubCategory();
+  const updateMutaion = UpdateSubCategoryMutaion();
+  const deleteMutaion = DeleteSubCategoryMutaion();
   const queryClient = useQueryClient();
-  const dispatch = useDispatch();
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
   const [selectUpdateCata, setSelectedUpdateCata] = useState({});
   const [deleteSelect, setDeleteSelect] = useState("");
@@ -349,29 +329,16 @@ function SubCategoryTable() {
       setSelectedProducts(catagories.map((product) => product?._id));
     }
   };
-
-  // update mutaion
-  const updateMutaion = useMutation({
-    mutationKey: ["updateSubcategory"],
-    mutationFn: (data) => updateSubCategory(selectUpdateCata?.id, data),
-    onSuccess: (data) => {
-      toast.success(data?.data?.message);
-      updateModal.current?.close();
-      queryClient.invalidateQueries(["AdminSubCategory"]);
-    },
-  });
-  const { mutate: deleteMutaion } = useMutation({
-    mutationKey: ["subcategory"],
-    mutationFn: (id) => deleteSubsCategory(id),
-    onSuccess: (data) => {
-      toast.success(data?.data?.message);
-      dispatch(setSubCategory(data?.data?.data));
-      queryClient.invalidateQueries("AdminSubCategory");
-    },
-  });
   const handleDelete = () => {
-    deleteMutaion(deleteSelect);
+    deleteMutaion.mutate(deleteSelect);
   };
+  useEffect(() => {
+    if (updateMutaion.isSuccess || deleteMutaion.isSuccess) {
+      toast.success(updateMutaion.data?.message);
+      updateModal.current?.close();
+      queryClient.invalidateQueries(["adminsubcategory"]);
+    }
+  }, [updateMutaion.isSuccess, deleteMutaion.isSuccess]);
 
   return (
     <>
@@ -408,7 +375,7 @@ function SubCategoryTable() {
               {catagories?.map((cata) => (
                 <tr key={cata?._id} className="text-gray-800 text-base">
                   {/* Product Name */}
-                  <td className=" px-4 py-2">
+                  <TableCell>
                     <div className="flex gap-2 items-center">
                       <input
                         type="checkbox"
@@ -431,7 +398,7 @@ function SubCategoryTable() {
                         </p>
                       </div>
                     </div>
-                  </td>
+                  </TableCell>
 
                   <td className=" px-4 py-2">
                     {new Date(cata?.createdAt).toLocaleDateString("en-GB")}

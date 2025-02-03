@@ -1,4 +1,5 @@
-.list{
-    display: grid !important;
-    grid-template-columns: repeat(auto-fit, minmax(auto,250px)) !important;
+.list {
+  display: grid !important;
+  justify-content: center;
+  grid-template-columns: repeat(auto-fit, minmax(auto, 150px)) !important;
 }

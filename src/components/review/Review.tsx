@@ -48,7 +48,7 @@ const Review = ({
             </span>
           </div>
           <p className="text-sm text-slate-700 leading-snug  text-ellipsis">
-            "{reviewText}"
+            {reviewText}
           </p>
         </div>
       </div>

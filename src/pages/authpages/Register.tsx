@@ -7,19 +7,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { createUser } from "../../querys/userQuery";
+import { registrationSchema } from "./schema";
 // Validation schema with Zod
-const registrationSchema = z.object({
-  name: z
-    .string()
-    .min(2, "Name must be at least 2 characters")
-    .max(50, "Name must be less than 50 characters"),
-  email: z.string().email("Invalid email address"),
-  password: z
-    .string()
-    .min(6, "Password must be at least 6 characters")
-    .max(20, "Password must be less than 20 characters"),
-  phone: z.string().regex(/^\d{10}$/, "Phone number must be 10 digits"),
-});
 
 type RegistrationFormInputs = z.infer<typeof registrationSchema>;
 
@@ -62,9 +51,9 @@ const RegistrationPage: React.FC = () => {
   }, [isError]);
   return (
     <div className="flex h-screen items-center justify-center bg-gray-100">
-      <div className="flex w-full max-w-4xl bg-white shadow-lg rounded-lg overflow-hidden">
+      <div className="flex flex-col sm:flex-row w-full max-w-4xl bg-white shadow-lg rounded-lg overflow-hidden">
         {/* Left Side - Form */}
-        <div className="w-1/2 p-8">
+        <div className="order-2 sm:order-2 sm:w-1/2 p-8">
           <h2 className="text-2xl font-bold text-gray-800">Register</h2>
           <p className="mt-2 text-sm text-gray-600">
             Create an account to start using our services.
@@ -193,11 +182,11 @@ const RegistrationPage: React.FC = () => {
         </div>
 
         {/* Right Side - Image */}
-        <div className="hidden md:block w-1/2">
+        <div className="order-1 sm:order-2 block sm:w-1/2">
           <img
             src={authImg}
             alt="Registration illustration"
-            className="object-cover w-full h-full object-center"
+            className="object-fill p-1 w-full h-full object-center"
           />
         </div>
       </div>

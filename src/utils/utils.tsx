@@ -18,11 +18,4 @@ const ImageLetter = ({ name = "", style = "" }) => {
   );
 };
 
-const setUserToLocal = (user = {}) => {
-  localStorage.setItem("user", { ...user });
-};
-const removeUserfromLocal = (key = "user") => {
-  localStorage.removeItem(key);
-};
-
-export { ImageLetter, setUserToLocal, removeUserfromLocal };
+export { ImageLetter };

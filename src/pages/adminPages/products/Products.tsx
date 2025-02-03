@@ -9,13 +9,30 @@ import { deleteProduct } from "../../../querys/productQuery";
 import { toast } from "react-toastify";
 import { FaRegTrashCan } from "react-icons/fa6";
 import { getadminProductskey } from "../../../querys/admin/adminApi";
-import { DropDown, Modal } from "../../../components/component";
+import {
+  DeleteModal,
+  DropDown,
+  Modal,
+  TableBody,
+  TableCell,
+  TableHeader,
+} from "../../../components/component";
 import { AdminPagination } from "../adminPages";
 
+const productTableHead = [
+  "Product",
+  "SKU",
+  "Category",
+  "Stock",
+  "Price",
+  "Status",
+  "Added",
+  "Actions",
+];
 const AllProductsTable = () => {
   const itemsPerPage = 5;
   const [currentPage, setCurrentPage] = useState(1);
-  let { data: products, isLoading } = useAdminProduct(
+  let { data: productData, isLoading } = useAdminProduct(
     currentPage * itemsPerPage,
     (currentPage - 1) * itemsPerPage
   );
@@ -31,10 +48,12 @@ const AllProductsTable = () => {
   };
   // Select or deselect all products
   const toggleSelectAll = () => {
-    if (selectedProducts.length === products.length) {
+    if (selectedProducts.length === productData?.allProducts?.length) {
       setSelectedProducts([]);
     } else {
-      setSelectedProducts(products.map((product) => product?._id));
+      setSelectedProducts(
+        productData?.allProducts?.map((product) => product?._id)
+      );
     }
   };
   const { mutate: deleteMutation } = useMutation({
@@ -84,183 +103,142 @@ const AllProductsTable = () => {
             <div className="skeleton h-96 columns-1 w-full bg-gray-200 dark:bg-white "></div>
           )}
           <table className="w-full rounded">
-            <thead className="sticky top-0 bg-gray-200 p-2 z-10">
-              <tr>
-                <th className=" px-4 py-2 text-left">
-                  <div className="flex gap-2">
-                    <input
-                      type="checkbox"
-                      checked={selectedProducts.length === products?.length}
-                      onChange={toggleSelectAll}
-                      className="checkbox"
-                    />
-                    <span>Product</span>
-                  </div>
-                </th>
-                <th className=" px-4 py-2 text-left">SKU</th>
-                <th className=" px-4 py-2 text-left">Category</th>
-                <th className=" px-4 py-2 text-left">Stock</th>
-                <th className=" px-4 py-2 text-left">Price</th>
-                <th className=" px-4 py-2 text-left">Status</th>
-                <th className=" px-4 py-2 text-left">Added</th>
-                <th className=" px-4 py-2 text-left">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {products?.allProducts?.map((product: any) => (
-                <tr key={product?._id} className="text-gray-800 text-base">
-                  {/* Checkbox */}
+            <TableHeader
+              columns={productTableHead}
+              input={true}
+              oncheck={
+                selectedProducts.length === productData?.allProducts?.length
+              }
+              onchange={toggleSelectAll}
+            />
+            <TableBody
+              columnsData={productData?.allProducts}
+              renderItem={(item) => {
+                return (
+                  <tr key={item?._id} className="text-gray-800 text-base">
+                    {/* Checkbox */}
 
-                  {/* Product Name */}
-                  <td className=" px-4 py-2">
-                    <div className="flex gap-2 items-center">
-                      <input
-                        type="checkbox"
-                        checked={selectedProducts.includes(product?._id)}
-                        onChange={() => toggleSelectProduct(product?._id)}
-                        className="checkbox"
-                      />
-                      <div className="flex space-x-3">
-                        <div className="avatar">
-                          <div className="w-12 rounded-full">
-                            <img
-                              src={
-                                product?.firstVariant?.images?.[0]?.url ||
-                                "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
-                              }
-                              alt="Tailwind-CSS-Avatar-component"
-                            />
+                    {/* Product Name */}
+                    <TableCell>
+                      <div className="flex gap-2 items-center">
+                        <input
+                          type="checkbox"
+                          checked={selectedProducts.includes(item?._id)}
+                          onChange={() => toggleSelectProduct(item?._id)}
+                          className="checkbox"
+                        />
+                        <div className="flex space-x-3">
+                          <div className="avatar">
+                            <div className="w-12 rounded-full">
+                              <img
+                                src={
+                                  item?.firstVariant?.images?.[0]?.url ||
+                                  "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
+                                }
+                                alt="Tailwind-CSS-Avatar-component"
+                              />
+                            </div>
                           </div>
+                          <p className="inline-flex flex-col">
+                            <span className="capitalize text-sm md:text-base text-gray-800 font-medium">
+                              {item?.name}
+                            </span>
+                            <span className="text-sm text-gray-400">
+                              {item?.totalVariants} variants
+                            </span>
+                          </p>
                         </div>
-                        <p className="inline-flex flex-col">
-                          <span className="capitalize text-sm md:text-base text-gray-800 font-medium">
-                            {product?.name}
-                          </span>
-                          <span className="text-sm text-gray-400">
-                            {product?.totalVariants} variants
-                          </span>
-                        </p>
                       </div>
-                    </div>
-                  </td>
+                    </TableCell>
 
-                  {/* SKU */}
-                  <td className=" px-4 py-2">{product?.sku}</td>
+                    {/* SKU */}
+                    <TableCell>{item?.sku}</TableCell>
 
-                  {/* Category */}
-                  <td className=" px-4 py-2">
-                    {product?.categoryDetails?.[0]?.categoryName || "category"}
-                  </td>
+                    {/* Category */}
+                    <TableCell>
+                      {item?.categoryDetails?.[0]?.categoryName || "category"}
+                    </TableCell>
 
-                  {/* Stock */}
-                  <td className=" px-4 py-2">{product?.totalStock}</td>
+                    {/* Stock */}
+                    <TableCell>{item?.totalStock}</TableCell>
 
-                  {/* Price */}
-                  <td className=" px-4 py-2">
-                    ${product?.firstVariant?.sellPrice || 300}
-                  </td>
+                    {/* Price */}
+                    <TableCell>
+                      ${item?.firstVariant?.sellPrice || 300}
+                    </TableCell>
 
-                  {/* Status */}
-                  <td className=" px-4 py-2">
-                    {product?.totalStock < 10 ? (
-                      <span
-                        className={`px-2 py-1 rounded text-sm ${"bg-red-100 text-red-800"}`}
-                      >
-                        Low Stock
-                      </span>
-                    ) : (
-                      <span
-                        className={`px-2 py-1 rounded text-sm ${" bg-gray-400"}`}
-                      >
-                        normal
-                      </span>
-                    )}
-                  </td>
-
-                  {/* Added Date */}
-                  <td className=" px-4 py-2">
-                    {new Date(product.createdAt).toLocaleDateString("en-GB")}
-                  </td>
-
-                  {/* Actions */}
-                  <td className=" px-4 py-2">
-                    <DropDown>
-                      <li>
-                        <Link
-                          to={`${product?._id}`}
-                          className="hover:bg-gray-500 text-start font-medium"
+                    {/* Status */}
+                    <TableCell>
+                      {item?.totalStock < 10 ? (
+                        <span
+                          className={`px-2 py-1 rounded text-sm ${"bg-red-100 text-red-800"}`}
                         >
-                          <IoEye />
-                          View
-                        </Link>
-                      </li>
-                      <li>
-                        <button className="hover:bg-gray-500 text-start font-medium">
-                          <MdModeEdit />
-                          Edit
-                        </button>
-                      </li>
-                      <li>
-                        <button
-                          className="hover:bg-gray-500 text-start font-medium"
-                          onClick={() => {
-                            if (modalRef?.current) {
-                              setDeleteSelect(product?._id);
-                              modalRef.current?.showModal();
-                            }
-                          }}
+                          Low Stock
+                        </span>
+                      ) : (
+                        <span
+                          className={`px-2 py-1 rounded text-sm ${" bg-gray-400"}`}
                         >
-                          <FaRegTrashAlt />
-                          Delete
-                        </button>
-                      </li>
-                    </DropDown>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
+                          normal
+                        </span>
+                      )}
+                    </TableCell>
+
+                    {/* Added Date */}
+                    <TableCell>
+                      {new Date(item.createdAt).toLocaleDateString("en-GB")}
+                    </TableCell>
+
+                    {/* Actions */}
+                    <TableCell>
+                      <DropDown>
+                        <li>
+                          <Link
+                            to={`${item?._id}`}
+                            className="hover:bg-gray-500 text-start font-medium"
+                          >
+                            <IoEye />
+                            View
+                          </Link>
+                        </li>
+                        <li>
+                          <button className="hover:bg-gray-500 text-start font-medium">
+                            <MdModeEdit />
+                            Edit
+                          </button>
+                        </li>
+                        <li>
+                          <button
+                            className="hover:bg-gray-500 text-start font-medium"
+                            onClick={() => {
+                              if (modalRef?.current) {
+                                setDeleteSelect(item?._id);
+                                modalRef.current?.showModal();
+                              }
+                            }}
+                          >
+                            <FaRegTrashAlt />
+                            Delete
+                          </button>
+                        </li>
+                      </DropDown>
+                    </TableCell>
+                  </tr>
+                );
+              }}
+            />
           </table>
         </div>
         <AdminPagination
-          totalPage={Math.ceil(products?.totalProductsLen / itemsPerPage)}
+          totalPage={Math.ceil(productData?.totalProductsLen / itemsPerPage)}
           currentPage={currentPage}
           setPage={setCurrentPage}
+          itemperPage={itemsPerPage}
+          totalLen={productData?.totalProductsLen}
         />
       </div>
       {/* modal */}
-      <Modal modalRef={modalRef}>
-        <div className="card flex justify-center flex-col gap-3 items-center">
-          <div className="flex justify-center border-spacing-1 bg-red-400 w-20 rounded-full p-5">
-            <span>
-              <FaRegTrashCan size={30} color="white" />
-            </span>
-          </div>
-
-          <div className="flex flex-col items-center">
-            <h3 className="font-bold text-xl">Delete Product and Variants!!</h3>
-            <p className="py-4">Press Delete or Cancel !!</p>
-          </div>
-
-          <div className="btn-group w-full px-5 flex justify-between">
-            <button
-              className="btn btn-outline text-lg font-medium"
-              onClick={() => {
-                if (modalRef?.current) {
-                  modalRef.current?.close();
-                }
-              }}
-            >
-              Cancel
-            </button>
-            <button
-              className="btn btn-error text-lg font-medium"
-              onClick={handleDelete}
-            >
-              Delete
-            </button>
-          </div>
-        </div>
-      </Modal>
+      <DeleteModal modalRef={modalRef} func={handleDelete} />
     </>
   );
 };

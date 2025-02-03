@@ -84,8 +84,9 @@ const CategoryProduct = () => {
               {/* view productlist */}
               <List
                 data={allProducts}
-                renderItem={(item) => <ProductCard product={item} />}
-            
+                renderItem={(item) => (
+                  <ProductCard product={item} style="!size-full" />
+                )}
               />
               {/* {allProducts?.map((ele) => (
                   <ProductCard

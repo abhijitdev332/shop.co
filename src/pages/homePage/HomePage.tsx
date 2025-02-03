@@ -1,12 +1,4 @@
-import { useMemo } from "react";
-import {
-  Category,
-  Hero,
-  List,
-  ProductCard,
-  ProductList,
-  ReviewCard,
-} from "../../components/component";
+import { Category, Hero, List, ProductCard } from "../../components/component";
 import { useSelector } from "react-redux";
 
 const HomePage = () => {
@@ -20,12 +12,7 @@ const HomePage = () => {
             title="New Arrivals"
             exstyle="flex justify-center"
             data={products?.arivalsProducts}
-            renderItem={(product) => (
-              <ProductCard
-                product={product}
-                imgStyle={"max-h-[20rem] max-w-[20rem]"}
-              />
-            )}
+            renderItem={(product) => <ProductCard product={product} />}
             viewLink="/product/slug?query=arrival"
           />
 
@@ -34,12 +21,7 @@ const HomePage = () => {
             title="TOP SELLING"
             exstyle="flex justify-center"
             data={products?.topProducts}
-            renderItem={(item) => (
-              <ProductCard
-                product={item}
-                imgStyle={"max-h-[20rem] max-w-[20rem]"}
-              />
-            )}
+            renderItem={(item) => <ProductCard product={item} />}
             viewLink="/product/slug?query=top"
           />
           {/* browse by category */}
