@@ -25,12 +25,6 @@ const InitialData = () => {
   const { data: arivalProduct, isLoading: arivalLoading } = useNewArivals();
   const { data: topProduct, isLoading: topLoading } = useTopSelling();
   const updateCartMutaion = UpdateCartMutation();
-  // window.addEventListener("contextmenu", () => {
-  //   updateCartMutaion.mutate({
-  //     userId: userData?._id,
-  //     data: { cartTotal: cart?.totalAmount, products: cart?.products },
-  //   });
-  // });
   //   product effect
   useEffect(() => {
     if (arivalLoading || topLoading) {

@@ -23,11 +23,11 @@ createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <ThemeProvider>
       <Provider store={store}>
-        <PersistGate loading={null} persistor={persisStore}>
-          <QueryClientProvider client={queryClient}>
-            <App />
-          </QueryClientProvider>
-        </PersistGate>
+        {/* <PersistGate loading={null} persistor={persisStore}> */}
+        <QueryClientProvider client={queryClient}>
+          <App />
+        </QueryClientProvider>
+        {/* </PersistGate> */}
       </Provider>
     </ThemeProvider>
   </StrictMode>

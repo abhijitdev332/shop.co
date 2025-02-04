@@ -10,7 +10,7 @@ import storage from "redux-persist/lib/storage";
 const persisteConfig = {
   key: "root",
   storage,
-  blacklist: ["loader", "user"],
+  // blacklist: ["loader", "user"],
 };
 // combine all reducers to one
 const combinedReducers = combineReducers({

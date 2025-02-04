@@ -10,6 +10,7 @@ import { useDispatch } from "react-redux";
 import { setUser } from "../../services/store/user/userSlice";
 import { loginSchema } from "./schema";
 import { useEffect } from "react";
+import { getInitalCart } from "../../services/store/cart/cartSlice";
 
 // Define validation schema using Zod
 type LoginFormInputs = z.infer<typeof loginSchema>;
@@ -32,6 +33,7 @@ const LoginPage: React.FC = () => {
   useEffect(() => {
     if (loginMutaion.isSuccess) {
       toast.success("Login SuccessFull");
+      dispatch(getInitalCart(loginMutaion?.data?._id));
       dispatch(setUser(loginMutaion?.data));
       setTimeout(() => {
         navigate("/");
