@@ -1,33 +1,16 @@
-import { useQuery } from "@tanstack/react-query";
-import React from "react";
+import React, { useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { getUser } from "../../../querys/userQuery";
 import { ImageLetter } from "../../../utils/utils";
-
-interface UserProfile {
-  displayName: string;
-  email: string;
-  phoneNumber: string;
-  role: string;
-  profileImage: string; // URL of the profile image
-}
-
+import { useGetUserById } from "../../../querys/user/userQuery";
+import { LoaderBtn } from "../../../components/component";
 const UserProfilePage = () => {
   const { id } = useParams();
-  const { data, error } = useQuery({
-    queryKey: ["adminviewUser", id],
-    queryFn: () => getUser(id),
-  });
-  let user = { ...data?.data?.data } || {};
-  // Example user data (can be replaced with API data)
-  // const user: UserProfile = {
-  //   displayName: "John Doe",
-  //   email: "john.doe@example.com",
-  //   phoneNumber: "1234567890",
-  //   role: "User",
-  //   profileImage: "https://via.placeholder.com/150", // Placeholder image
-  // };
-  console.log(user);
+  const { data: user } = useGetUserById(id);
+  const options = ["USER", "ADMIN", "MODERATOR"];
+  const [currentRole, setCurrentRole] = useState("");
+  const handleUserUpdate = () => {
+    console.log(currentRole);
+  };
   return (
     <>
       <div className="p-6 bg-white rounded-lg shadow-md">
@@ -47,11 +30,6 @@ const UserProfilePage = () => {
               </ul>
             </div>
           </div>
-          {/* <div className=" ms-auto flex">
-            <Link to={"add"}>
-              <button className="btn btn-primary">Add User</button>
-            </Link>
-          </div> */}
         </div>
 
         {/* main */}
@@ -61,7 +39,7 @@ const UserProfilePage = () => {
           <div className=" p-2">
             {/* Profile Image */}
             <div className="flex items-center mb-6">
-              <div className="w-16 h-16 rounded-full overflow-hidden border">
+              <div className="w-24 h-24 rounded-full overflow-hidden border">
                 {user?.imgUrl ? (
                   <img src={user?.imgUrl} />
                 ) : (
@@ -69,8 +47,8 @@ const UserProfilePage = () => {
                 )}
               </div>
               <div className="ml-6">
-                <h3 className="text-xl font-semibold text-gray-800">
-                  {user?.username}
+                <h3 className="text-xl capitalize font-semibold text-gray-800">
+                  Username:{user?.username}
                 </h3>
                 {user?.roles?.map((role) => (
                   <p className="text-white badge badge-primary">{role}</p>
@@ -94,7 +72,7 @@ const UserProfilePage = () => {
                   Email
                 </label>
                 <p className="mt-1 text-gray-800 px-4 py-2 bg-gray-100 rounded-lg">
-                  {user.email}
+                  {user?.email}
                 </p>
               </div>
 
@@ -103,7 +81,7 @@ const UserProfilePage = () => {
                   Phone Number
                 </label>
                 <p className="mt-1 text-gray-800 px-4 py-2 bg-gray-100 rounded-lg">
-                  {user.phoneNumber}
+                  {user?.phoneNumber}
                 </p>
               </div>
 
@@ -111,10 +89,27 @@ const UserProfilePage = () => {
                 <label className="block text-sm font-medium text-gray-700">
                   Role
                 </label>
-                <p className="mt-1 text-gray-800 px-4 py-2 bg-gray-100 rounded-lg">
-                  {user.roles?.[0]}
-                </p>
+                <select
+                  className="select select-bordered w-full bg-gray-700"
+                  name=""
+                  id=""
+                  onChange={(e) => setCurrentRole(e.target.value)}
+                >
+                  {options?.map((opti) => (
+                    <option
+                      value={opti}
+                      defaultChecked={opti == user?.roles?.[0]}
+                    >
+                      {opti}
+                    </option>
+                  ))}
+                </select>
               </div>
+            </div>
+            <div className="flex justify-center py-5">
+              <LoaderBtn handleClick={handleUserUpdate} style="text-white">
+                Update
+              </LoaderBtn>
             </div>
           </div>
         </div>

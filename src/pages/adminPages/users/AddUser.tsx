@@ -1,37 +1,18 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { object, z } from "zod";
+import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, useNavigate } from "react-router-dom";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { register as registerquery } from "../../../querys/authQuery";
+import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
-import { createUser } from "../../../querys/userQuery";
 import { LoaderBtn } from "../../../components/component";
+import { userSchema } from "./userSchema";
+import { CreateUserMutaion } from "../../../querys/user/userQuery";
 
 // Validation schema using Zod
-const userSchema = z.object({
-  displayName: z.string().min(5, "Display name must be at least 2 characters."),
-  email: z.string().email("Invalid email address."),
-  phoneNumber: z
-    .string()
-    .regex(/^\d{10}$/, "Phone number must be exactly 10 digits."),
-  role: z.enum(["User", "Admin", "Moderator"], {
-    invalid_type_error: "Please select a valid role.",
-  }),
-  password: z.string().min(6, "Password must be at least 6 characters."),
-  profileImage: z
-    .union([z.instanceof(FileList), z.null()])
-    .optional()
-    .refine(
-      (files) => !files || files.length === 0 || files.length === 1,
-      "Please upload exactly one profile image or leave it empty."
-    ),
-});
-
 type UserFormInputs = z.infer<typeof userSchema>;
-
 const UserAddPage = () => {
+  const newUserMutation = CreateUserMutaion();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [imagePreview, setImagePreview] = useState<string>("");
@@ -56,39 +37,21 @@ const UserAddPage = () => {
       setValue("profileImage", files[0]); // Update form value for profileImage
     }
   };
-  const { mutate, isPending } = useMutation({
-    mutationKey: ["user", "new"],
-    mutationFn: (data) => createUser(data),
-    onSuccess: (data) => {
-      toast.success(data?.data?.message);
-      queryClient.invalidateQueries("adminUsers");
-      navigate(-1);
-    },
-  });
-
   const onSubmit = (data: UserFormInputs) => {
-    // console.log({
-    //   displayName: data.displayName,
-    //   email: data.email,
-    //   phoneNumber: data.phoneNumber,
-    //   role: data.role,
-    //   password: data.password,
-    //   profileImage: data.profileImage[0], // Access the uploaded file
-    // });
     let spread = structuredClone(data);
     delete spread.profileImage;
-
     let formData = new FormData();
     formData.append("image", profileImage);
     formData.append("data", JSON.stringify(spread));
-    // formData.append("password", JSON.stringify(data?.password));
-    // formData.append("role", JSON.stringify(data?.role));
-    // formData.append("phone", JSON.stringify(data?.phoneNumber));
-    // formData.append("name", JSON.stringify(data?.displayName));
-    // formData.append("email", JSON.stringify(data?.email));
-
-    mutate(formData);
+    newUserMutation.mutate(formData);
   };
+  useEffect(() => {
+    if (newUserMutation.isSuccess) {
+      toast.success(newUserMutation.data?.message);
+      queryClient.invalidateQueries("adminUsers");
+      navigate(-1);
+    }
+  }, [newUserMutation.isSuccess]);
 
   return (
     <div className="p-6 bg-white rounded-lg shadow-md">
@@ -265,7 +228,7 @@ const UserAddPage = () => {
 
           {/* Submit Button */}
           <LoaderBtn
-            pending={isPending}
+            pending={newUserMutation.isPending}
             style="mt-6 btn  btn-netural transition"
             type="submit"
           >

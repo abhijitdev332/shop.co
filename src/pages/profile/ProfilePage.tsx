@@ -1,11 +1,11 @@
-import React, { useId, useRef, useState } from "react";
+import React, { useEffect, useId, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useDispatch, useSelector } from "react-redux";
-import { updateUser } from "../../querys/userQuery";
+import { updateUser } from "../../querys/userApi";
 import {
   createAddress,
   deleteAddress,
@@ -18,20 +18,9 @@ import { toast } from "react-toastify";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import cl from "classnames";
 import { setUser } from "../../services/store/user/userSlice";
-const profileSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters"),
-  email: z.string().email("Invalid email address"),
-  image: z.instanceof(FileList).optional(),
-});
-const addressSchema = z.object({
-  landMark: z.string().min(1, "land mark is required"),
-  houseNo: z.string().optional(),
-  city: z.string().min(1, "city is required"),
-  district: z.string().optional(),
-  state: z.string().min(1, "state is required"),
-  country: z.string().min(1, "country is required"),
-  pin: z.string().min(6, "pincode should 6 digits"),
-});
+import { addressSchema, profileSchema } from "./profileSchema";
+import { UpdateUserMutaion } from "../../querys/user/userQuery";
+
 const addressObject = {
   landMark: "",
   houseNo: "",
@@ -41,7 +30,6 @@ const addressObject = {
   country: "",
   pin: "",
 };
-
 type ProfileFormInputs = z.infer<typeof profileSchema>;
 type AddressFormInputs = z.infer<typeof addressSchema>;
 const imageUrl =
@@ -49,6 +37,7 @@ const imageUrl =
 
 const ProfilePage = () => {
   const dispatch = useDispatch();
+  const updateMutation = UpdateUserMutaion();
   const { userDetails } = useSelector((store) => store.user);
   const userId = userDetails?._id;
   const { data, error } = useQuery({
@@ -75,17 +64,6 @@ const ProfilePage = () => {
     },
   });
   let profileImage = watch("image");
-  // Update user details mutation
-  const { mutate: updateMutation, isPending: updatePending } = useMutation({
-    mutationKey: ["updateProfile", userId],
-    mutationFn: ({ id, data }) => updateUser({ id, data }),
-    onSuccess: (data) => {
-      toast.success(data?.data?.message);
-      dispatch(setUser(data?.data?.data));
-      //setuser details
-    },
-  });
-  // Handle form submission
   const updateSubmit = async (data: ProfileFormInputs) => {
     const formData = new FormData();
     formData.append("name", data.name);
@@ -93,7 +71,7 @@ const ProfilePage = () => {
     if (profileImage && profileImage[0]) {
       formData.append("image", profileImage[0]);
     }
-    updateMutation({ id: userId, data: formData });
+    updateMutation.mutate({ id: userId, data: formData });
   };
 
   // address valdiation
@@ -142,7 +120,12 @@ const ProfilePage = () => {
       setPreviewImage(URL.createObjectURL(file));
     }
   };
-
+  useEffect(() => {
+    if (updateMutation.isSuccess) {
+      toast.success(updateMutation?.data?.message);
+      dispatch(setUser(updateMutation?.data?.data));
+    }
+  }, [updateMutation.isSuccess]);
   return (
     <>
       <section>

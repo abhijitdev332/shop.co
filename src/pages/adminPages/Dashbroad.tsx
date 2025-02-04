@@ -4,6 +4,7 @@ import {
   Area,
   AreaChart,
   CartesianGrid,
+  Cell,
   Legend,
   Pie,
   PieChart,
@@ -347,7 +348,7 @@ function ExpenseChart({ orderStatus = {} }) {
     { name: "Delivered", value: orderStatus?.delivered || 0 },
     { name: "Shipped", value: orderStatus?.shipped || 0 },
   ];
-
+  const COLORS = ["#FF6384", "#36A2EB", "#FFCE56"];
   if (!orderData) {
     return <div className="w-52 h-52 skeleton"></div>;
   }
@@ -370,7 +371,14 @@ function ExpenseChart({ orderStatus = {} }) {
             outerRadius={80}
             fill="#8884d8"
             label
-          />
+          >
+            {orderData.map((entry, index) => (
+              <Cell
+                key={`cell-${index}`}
+                fill={COLORS[index % COLORS.length]}
+              />
+            ))}
+          </Pie>
           <Tooltip key={"name"} />
           <Legend verticalAlign="top" height={36} />
         </PieChart>

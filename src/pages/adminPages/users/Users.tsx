@@ -1,13 +1,10 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import React, { useRef, useState } from "react";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { IoEye } from "react-icons/io5";
-import { MdModeEdit } from "react-icons/md";
 import { Link } from "react-router-dom";
 import { useAdminAllUser } from "../../../querys/admin/adminQuery";
 import { FaRegTrashCan } from "react-icons/fa6";
-import { deleteUser } from "../../../querys/userQuery";
-import { toast } from "react-toastify";
 import {
   DropDown,
   Modal,
@@ -16,8 +13,10 @@ import {
   TableHeader,
 } from "../../../components/component";
 import { AdminPagination } from "../adminPages";
+import { DeleteUserMutation } from "../../../querys/user/userQuery";
 
 const UsersTable = () => {
+  const deleteMutation = DeleteUserMutation();
   const itemsperpage = 5;
   const [currentPage, setCurrentPage] = useState(1);
   const { data, isLoading } = useAdminAllUser(currentPage, itemsperpage);
@@ -40,19 +39,18 @@ const UsersTable = () => {
       setSelectedProducts(data?.allUsers?.map((user) => user?._id));
     }
   };
-  const { mutate: deleteMutation } = useMutation({
-    mutationKey: ["deleteUser"],
-    mutationFn: (id) => deleteUser(id),
-    onSuccess: (data) => {
-      toast.success(data?.data?.message);
-      modalRef.current?.close();
-      queryClient.invalidateQueries("adminUsers");
-    },
-  });
+  // const { mutate: deleteMutation } = useMutation({
+  //   mutationKey: ["deleteUser"],
+  //   mutationFn: (id) => deleteUser(id),
+  //   onSuccess: (data) => {
+  //     toast.success(data?.data?.message);
+  //     modalRef.current?.close();
+  //     queryClient.invalidateQueries("adminUsers");
+  //   },
+  // });
   const handleDelete = () => {
     // deleteSelect
-    deleteMutation(deleteSelect);
-    // setuse((prev) => prev.filter((product) => product.id !== id));
+    deleteMutation.mutate(deleteSelect);
   };
   const ImageLetter = ({ name = "" }) => {
     return (

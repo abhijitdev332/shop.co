@@ -4,16 +4,16 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import authImg from "../../assets/svgs/auth/frame.svg";
 import { Link, useNavigate } from "react-router-dom";
-import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
-import { createUser } from "../../querys/userQuery";
 import { registrationSchema } from "./schema";
+import { CreateUserMutaion } from "../../querys/user/userQuery";
 // Validation schema with Zod
 
 type RegistrationFormInputs = z.infer<typeof registrationSchema>;
 
 const RegistrationPage: React.FC = () => {
   const navigate = useNavigate();
+  const newUserMutaion = CreateUserMutaion();
   const {
     register,
     handleSubmit,
@@ -22,15 +22,6 @@ const RegistrationPage: React.FC = () => {
   } = useForm<RegistrationFormInputs>({
     resolver: zodResolver(registrationSchema),
   });
-  const { mutate, isError, isPending, error } = useMutation({
-    mutationFn: (data) => createUser(data),
-    onSuccess: () => {
-      reset();
-      toast.info("Please login");
-      navigate("/auth");
-    },
-  });
-
   const onSubmit = (data: RegistrationFormInputs) => {
     let formdata = new FormData();
     let userData = {
@@ -39,16 +30,16 @@ const RegistrationPage: React.FC = () => {
       password: data.password,
       phoneNumber: data.phone,
     };
-
     formdata.append("data", JSON.stringify(userData));
-    mutate(formdata);
+    newUserMutaion.mutate(formdata);
   };
-
   useEffect(() => {
-    if (isError) {
-      toast.error(error?.response?.data?.message);
+    if (newUserMutaion.isSuccess) {
+      reset();
+      toast.info("Please login");
+      navigate("/auth");
     }
-  }, [isError]);
+  }, [newUserMutaion.isSuccess]);
   return (
     <div className="flex h-screen items-center justify-center bg-gray-100">
       <div className="flex flex-col sm:flex-row w-full max-w-4xl bg-white shadow-lg rounded-lg overflow-hidden">
