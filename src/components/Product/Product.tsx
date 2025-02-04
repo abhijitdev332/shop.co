@@ -57,6 +57,7 @@ const Product = () => {
       color: currentProductColor,
       size: selectedProductSize,
       imgurl: currentProductImage,
+      stock: currentProductVariant?.stock,
     };
     if (userDetails?._id) {
       updateCartMutaion.mutate({

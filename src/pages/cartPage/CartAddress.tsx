@@ -90,22 +90,36 @@ const CartAddress = () => {
     sessionId: string,
     checkoutWindow: Window | null
   ) => {
-    const interval = setInterval(async () => {
-      try {
-        let res = await verifyMutaion(sessionId);
+    const timeoutDuration = 60 * 1000; // 2 minutes
+    const pollingInterval = 3000; // Poll every 3 seconds
+    let interval;
+    // Auto-close after 2 minutes
+    const timeout = setTimeout(() => {
+      console.warn("Payment verification timed out.");
+      if (checkoutWindow) checkoutWindow.close();
+      clearInterval(interval);
+      navigate("/declined");
+      toast.error("Payment verification timed out. Please try again.");
+    }, timeoutDuration);
 
-        if (!res || res.status !== 200) {
-          clearInterval(interval);
-          navigate("/declined");
-          return toast.error("Payment verification failed. Please try again.");
-        }
-
+    interval = setInterval(async () => {
+      let res = await verifyMutaion(sessionId);
+      if (
+        checkoutWindow?.closed ||
+        checkoutWindow.location.href.includes("/declined")
+      ) {
+        checkoutWindow?.close();
+        clearInterval(interval);
+        clearTimeout(timeout);
+        navigate("/declined");
+        toast.error("Payment verification Failed. Please try again.");
+      }
+      if (res.status == 200) {
         const paymentStatus = res.data?.data?.payment_status;
-
         if (paymentStatus === "paid") {
           clearInterval(interval);
+          clearTimeout(timeout);
           if (checkoutWindow) checkoutWindow.close();
-
           let paymentDetails = res.data?.data;
           let orderData = {
             products: cart?.products?.map((prod) => ({
@@ -130,6 +144,7 @@ const CartAddress = () => {
           }
         } else if (paymentStatus === "unpaid" || paymentStatus === "canceled") {
           clearInterval(interval);
+          clearTimeout(timeout);
           if (checkoutWindow) checkoutWindow.close();
           navigate("/declined");
           toast.error(
@@ -138,15 +153,9 @@ const CartAddress = () => {
               : "Payment failed. Please try again."
           );
         }
-      } catch (error) {
-        clearInterval(interval);
-        console.error("Error polling payment status:", error);
-        navigate("/declined");
-        toast.error("An error occurred while verifying payment.");
       }
-    }, 3000); // runs every 3 seconds
+    }, pollingInterval); // runs every 3 seconds
   };
-
   //   chekcout func
   const handleCheckout = async () => {
     if (selectedAddress == "") {

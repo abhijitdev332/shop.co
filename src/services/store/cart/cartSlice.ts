@@ -29,13 +29,24 @@ const cartSlice = createSlice({
         imgurl,
         size,
         color,
+        stock,
       } = action.payload;
       if (!Array.isArray(state.products)) {
         state.products = [];
       }
       const updatedProducts = [
         ...state.products,
-        { productId, variantId, name, price, quantity, imgurl, size, color },
+        {
+          productId,
+          variantId,
+          name,
+          price,
+          quantity,
+          imgurl,
+          size,
+          color,
+          stock,
+        },
       ];
       let totalAmount = updatedProducts?.reduce((prev, curr) => {
         return prev + curr.price * curr.quantity;

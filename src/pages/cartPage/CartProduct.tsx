@@ -10,6 +10,7 @@ import {
 } from "../../services/store/cart/cartSlice";
 import cl from "classnames";
 import { RemoveFromCartMutaion } from "../../querys/cart/cartQuery";
+import { toast } from "react-toastify";
 
 const CartProduct = ({ product }) => {
   const { userDetails } = useSelector((store) => store.user);
@@ -17,6 +18,9 @@ const CartProduct = ({ product }) => {
   const [quantity, setQuantity] = useState<number>(product?.quantity || 1);
   const dispatch = useDispatch();
   const addQuantityClick = () => {
+    if (quantity >= product?.stock) {
+      return toast.info(`Only ${product?.stock} stock Available!!`);
+    }
     setQuantity((prev) => prev + 1);
     dispatch(addQuantity(product?.productId));
   };
