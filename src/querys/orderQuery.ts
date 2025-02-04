@@ -1,8 +1,12 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { PrivateAxios } from "../services/api/api";
+import { getOrderDeatils } from "./order/ordersApi";
 
-const getOrderDeatils = async (id) => {
-  return await PrivateAxios.get(`/order/${id}`);
+export const useGetOrderDetails = (orderId) => {
+  return useQuery({
+    queryKey: ["getorder", orderId],
+    queryFn: () => getOrderDeatils(orderId),
+  });
 };
 const newOrder = async (data) => {
   return await PrivateAxios.post("/order/new", data);

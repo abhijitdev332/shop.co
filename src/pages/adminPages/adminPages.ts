@@ -1,6 +1,7 @@
 import Dashbroad from "./Dashbroad";
 import AllProducts from "./products/Products";
 import ProductDetails from "./products/ProductDetails";
+import ProductEdit from "./products/ProductEdit.tsx";
 import AddProduct from "./products/AddProduct";
 import AllOrders from "./orders/Orders";
 import ViewOrder from "./orders/ViewOrder";
@@ -29,4 +30,5 @@ export {
   AdminPagination,
   AddSubCategory,
   SubCategoryProducts,
+  ProductEdit,
 };

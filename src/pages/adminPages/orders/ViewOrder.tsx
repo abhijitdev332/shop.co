@@ -1,34 +1,28 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { getOrderDeatils, updateOrderStatus } from "../../../querys/orderQuery";
-import { toast } from "react-toastify";
-import { LoaderBtn } from "../../../components/component";
-import { getadminOrdersKey } from "../../../querys/admin/adminApi";
+import {
+  UpdateOrderStausMutaion,
+  useGetOrderDetails,
+} from "../../../querys/orderQuery";
+
+import {
+  LoaderBtn,
+  TableBody,
+  TableCell,
+  TableHeader,
+} from "../../../components/component";
 const ordersStatus = ["pending", "shipped", "delivered"];
 const OrderDetailsPage = () => {
   const { id } = useParams();
-  const { data, isPending, isError, error } = useQuery({
-    queryKey: ["orders", { id }],
-    queryFn: () => getOrderDeatils(id),
-  });
+  const { data: order } = useGetOrderDetails(id);
+  const orderUpdateMutaion = UpdateOrderStausMutaion();
+  const orderAddress = order?.address;
   const queryClient = useQueryClient();
-  // const [order, setOrder] = useState({ ...data?.data?.data } || {});
-  const order = { ...data?.data?.data } || {};
-  const orderAddress = { ...order?.address } || {};
   const [currentOrderStatus, setorderStatus] = useState(order?.status || "");
 
-  // update order status
-  const updateOrderMutaion = useMutation({
-    mutationKey: ["updateOrderStaus"],
-    mutationFn: (data) => updateOrderStatus(id, data),
-    onSuccess: (data) => {
-      toast.success(data?.data?.message);
-      queryClient.invalidateQueries(["orders", id, getadminOrdersKey]);
-    },
-  });
   const handleStatusChange = () => {
-    updateOrderMutaion.mutate({ status: currentOrderStatus });
+    orderUpdateMutaion.mutate({ id: id, data: { status: currentOrderStatus } });
   };
 
   return (
@@ -49,50 +43,45 @@ const OrderDetailsPage = () => {
           </div>
         </div>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 overflow-x-hidden">
         {/* Left Section - Main Card */}
-        <div className="md:col-span-2 bg-white p-6 rounded-lg shadow-md text-black">
+        <div className="md:col-span-2 bg-white overflow-auto p-6 rounded-lg shadow-md text-black">
           <h3 className="text-xl font-semibold mb-4">Products</h3>
           <table className="w-full">
-            <thead className="bg-gray-100">
-              <tr>
-                <th className=" px-4 py-2 text-left">Product</th>
-                <th className=" px-4 py-2 text-left">SKU</th>
-                <th className=" px-4 py-2 text-left">Quantity</th>
-                <th className=" px-4 py-2 text-left">Price</th>
-                <th className=" px-4 py-2 text-left">Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              {order?.products?.map((product) => (
-                <tr key={product?.productId?._id}>
-                  <td className=" px-4 py-2">
-                    <div className="flex gap-2">
-                      <div className="avatar">
-                        <div className="w-12 rounded">
-                          <img
-                            src={product?.variantId?.images[0]?.url || ""}
-                            alt="products image"
-                          />
+            <TableHeader
+              columns={["Product", "SKU", "Quantity", "Price", "Total"]}
+            />
+            <TableBody
+              columnsData={order?.products}
+              renderItem={(product) => {
+                return (
+                  <tr key={product?.productId?._id}>
+                    <TableCell>
+                      <div className="flex gap-2">
+                        <div className="avatar">
+                          <div className="w-12 rounded">
+                            <img
+                              src={product?.variantId?.images[0]?.url || ""}
+                              alt="products image"
+                            />
+                          </div>
                         </div>
-                      </div>
 
-                      <p className="capitalize text-lg font-medium">
-                        {product?.productId?.name}
-                      </p>
-                    </div>
-                  </td>
-                  <td className=" px-4 py-2">{product?.productId?.sku}</td>
-                  <td className=" px-4 py-2">{product?.quantity}</td>
-                  <td className=" px-4 py-2">
-                    ${product?.variantId?.sellPrice}
-                  </td>
-                  <td className=" px-4 py-2">
-                    ${product?.variantId?.sellPrice * product.quantity}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
+                        <p className="capitalize text-sm sm:text-base font-medium">
+                          {product?.productId?.name}
+                        </p>
+                      </div>
+                    </TableCell>
+                    <TableCell>{product?.productId?.sku}</TableCell>
+                    <TableCell>{product?.quantity}</TableCell>
+                    <TableCell>${product?.variantId?.sellPrice}</TableCell>
+                    <TableCell>
+                      ${product?.variantId?.sellPrice * product.quantity}
+                    </TableCell>
+                  </tr>
+                );
+              }}
+            />
           </table>
 
           {/* Order Summary */}
@@ -149,7 +138,7 @@ const OrderDetailsPage = () => {
             </div>
 
             <LoaderBtn
-              pending={updateOrderMutaion.isPending}
+              pending={orderUpdateMutaion.isPending}
               className="btn btn-neutral btn-md w-fit mx-auto"
               handleClick={handleStatusChange}
             >
@@ -178,11 +167,17 @@ const OrderDetailsPage = () => {
           <div className="bg-white p-6 rounded-lg shadow-md">
             <h3 className="text-lg font-semibold mb-4">Billing Address</h3>
             <p className="text-gray-600 text-sm flex flex-wrap gap-1 capitalize">
-              <span>{orderAddress?.houseNo}</span>
-              <span>{orderAddress?.landMark}</span>
-              <span>{orderAddress?.city}</span>
-              <span>{orderAddress?.country}</span>
-              <span>{orderAddress?.pin}</span>
+              {order?.addressLine ? (
+                <span>{order?.addressLine}</span>
+              ) : (
+                <>
+                  <span>{orderAddress?.houseNo}</span>
+                  <span>{orderAddress?.landMark}</span>
+                  <span>{orderAddress?.city}</span>
+                  <span>{orderAddress?.country}</span>
+                  <span>{orderAddress?.pin}</span>
+                </>
+              )}
             </p>
           </div>
         </div>

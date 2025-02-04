@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { PrivateAxios } from "../../services/api/api";
 import {
   getNewArivals,
@@ -7,6 +7,7 @@ import {
   getRelativeProducts,
   getShopAllProducts,
   getTopSelling,
+  updateProduct,
 } from "./productApi";
 
 export const useNewArivals = (currentPage = 1, itemsperpage = 5) => {
@@ -98,18 +99,22 @@ let useRelativeProducts = (id = "", limit = 5, skip = 0) => {
     queryFn: () => getRelativeProducts(id, limit, skip),
   });
 };
-
-export const userGetProductById = (id = "") => {
+export const getProductByIdKey = "getproductbyid";
+export const useGetProductById = (id = "") => {
   return useQuery({
-    queryKey: ["getproductbyid", id],
+    queryKey: [getProductByIdKey, id],
     queryFn: () => getProductById(id),
+  });
+};
+export const UpdateProductMutation = () => {
+  return useMutation({
+    mutationKey: ["updateProduct"],
+    mutationFn: ({ id, data }) => updateProduct(id, data),
   });
 };
 
 export {
   useAllProducts,
-  newArivals,
-  topSelling,
   getProduct,
   getAllproducts,
   getProductByCategory,

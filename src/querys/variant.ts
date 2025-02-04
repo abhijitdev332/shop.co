@@ -16,4 +16,15 @@ const multipleNewVariant = async (variantData) => {
   });
 };
 
+export const deleteVariant = async (variantid) => {
+  let { data } = await PrivateAxios.delete(
+    `/product/variant/remove/${variantid}`
+  );
+  return data;
+};
+export const updateVarint = async (body = "") => {
+  let { data } = await PrivateAxios.put("/product/variant/update/many", body);
+  return data;
+};
+
 export { newVariant, uploadImages, multipleNewVariant };

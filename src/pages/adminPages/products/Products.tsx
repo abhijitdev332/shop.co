@@ -202,10 +202,13 @@ const AllProductsTable = () => {
                           </Link>
                         </li>
                         <li>
-                          <button className="hover:bg-gray-500 text-start font-medium">
+                          <Link
+                            to={`edit/${item?._id}`}
+                            className="hover:bg-gray-500 text-start font-medium"
+                          >
                             <MdModeEdit />
                             Edit
-                          </button>
+                          </Link>
                         </li>
                         <li>
                           <button

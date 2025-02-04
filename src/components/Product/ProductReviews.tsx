@@ -76,7 +76,7 @@ export function ProductReviews({
               <h3 className="flex space-x-1 items-center">
                 <span className="font-bold text-lg">All Reviews</span>
                 <span className="text-sm text-gray-rounded-badge ">
-                  ({totalReviews})
+                  {totalReviews}
                 </span>
               </h3>
               {/* fillter and write review */}

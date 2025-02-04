@@ -21,6 +21,7 @@ const ProductAddPage = () => {
     genderFor: "",
     category: "",
     subCategory: "",
+    returnPolicy: 10,
     brand: "",
   });
   const [productAboutDetails, setProductAboutDetails] = useState({});
@@ -314,6 +315,18 @@ const ProductAddPage = () => {
                     className="mt-2 bg-transparent input input-bordered w-full max-w-xs"
                   />
                 </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Return Policy
+                  </label>
+                  <input
+                    type="number"
+                    value={productDetailsState.returnPolicy}
+                    name="returnPolicy"
+                    onChange={handleProductDetailsChange}
+                    className="mt-2 bg-transparent input input-bordered w-full max-w-xs"
+                  />
+                </div>
               </div>
             </div>
 
@@ -541,7 +554,11 @@ const ProductAddPage = () => {
   );
 };
 
-function DetailsModal({ detailsModalRef, productMoreData }) {
+export function DetailsModal({
+  productData = null,
+  detailsModalRef,
+  productMoreData,
+}) {
   const productDetails = {
     packOf: "1",
     styleCode: "",
@@ -555,16 +572,22 @@ function DetailsModal({ detailsModalRef, productMoreData }) {
   };
   const dressStyle = ["casual", "formal", "party", "gym"];
   const [dressStyleState, setDressStyleState] = useState("casual");
-  const [inputStates, setInputsStates] = useState({
-    packOf: "1",
-    styleCode: "casual every day",
-    fabric: "cotton",
-    fabricCare: "gentle wash",
-    pattern: "solid",
-    pockets: "1",
-    sleeve: "full sleeve",
-    SuitableFor: "everyday",
-    fit: "slim",
+  const [inputStates, setInputsStates] = useState(() => {
+    if (productData) {
+      return { ...productData };
+    } else {
+      return {
+        packOf: "1",
+        styleCode: "casual every day",
+        fabric: "cotton",
+        fabricCare: "gentle wash",
+        pattern: "solid",
+        pockets: "1",
+        sleeve: "full sleeve",
+        SuitableFor: "everyday",
+        fit: "slim",
+      };
+    }
   });
   const handleChange = (ev) => {
     setInputsStates((prev) => ({
@@ -588,6 +611,12 @@ function DetailsModal({ detailsModalRef, productMoreData }) {
   useEffect(() => {
     productMoreData({ ...inputStates, style: dressStyleState });
   }, []);
+
+  useEffect(() => {
+    if (productData) {
+      setInputsStates({ ...productData });
+    }
+  }, [productData]);
   return (
     <>
       <dialog id="my_modal_2" className="modal" ref={detailsModalRef}>

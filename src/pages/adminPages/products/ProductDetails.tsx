@@ -19,7 +19,7 @@ import { UpdateOrderStausMutaion } from "../../../querys/orderQuery";
 import { getadminOrdersKey } from "../../../querys/admin/adminApi";
 import {
   useProductOrderDetails,
-  userGetProductById,
+  useGetProductById,
 } from "../../../querys/product/productQuery";
 // default img url
 const imgUrl =
@@ -127,7 +127,7 @@ const ProductDetailsTabGroup = () => {
 // product details
 const ProductDetails = ({ setVariant, setReview }) => {
   const { id } = useParams();
-  const { data } = userGetProductById(id);
+  const { data } = useGetProductById(id);
   const [productData, setProductData] = useState(null);
   const [allVariants, setAllVariants] = useState([]);
   const [currentProductVariant, setCurrentProductVariant] = useState({});

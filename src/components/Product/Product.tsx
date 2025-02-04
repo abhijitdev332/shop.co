@@ -10,7 +10,7 @@ import RealativeProducts from "./RealativeProducts";
 import ProductReviews from "./ProductReviews";
 import ProductDetails from "./ProductDetails";
 import { toast } from "react-toastify";
-import { userGetProductById } from "../../querys/product/productQuery";
+import { useGetProductById } from "../../querys/product/productQuery";
 import { AddToCartMutaion } from "../../querys/cart/cartQuery";
 
 // default img url
@@ -19,7 +19,7 @@ const imgUrl =
 const Product = () => {
   const { id } = useParams();
   const { userDetails } = useSelector((store) => store.user);
-  const { data } = userGetProductById(id);
+  const { data } = useGetProductById(id);
   const updateCartMutaion = AddToCartMutaion();
   const dispatch = useDispatch();
   const cart = useSelector((store) => store.cart);
@@ -224,15 +224,21 @@ const Product = () => {
                   <span className="text-gray-500  text-sm line-through">
                     ${currentProductVariant?.basePrice}
                   </span>
-                  {currentProductVariant?.discount && (
+                  {currentProductVariant?.discount &&
+                  +currentProductVariant?.discount > 0 ? (
                     <span className="badge p-3 border-none text-red-700 bg-red-200">
                       -{currentProductVariant?.discount}
                     </span>
+                  ) : (
+                    ""
                   )}
                 </div>
                 <div className="dsc py-2">
                   <p className="text-gray-500 font-medium">
                     {productData?.description}
+                  </p>
+                  <p className="text-gray-500 text-sm capitalize">
+                    {productData?.returnPolicy} Days return policy
                   </p>
                 </div>
                 <div className="outline outline-1 outline-slate-300"></div>

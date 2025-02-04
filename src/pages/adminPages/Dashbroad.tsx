@@ -31,6 +31,7 @@ import {
 } from "../../querys/admin/adminQuery";
 import { Link } from "react-router-dom";
 import { TableBody, TableCell, TableHeader } from "../../components/component";
+import { useTopSelling } from "../../querys/product/productQuery";
 const Dashbroad = () => {
   const times = ["7d", "1m", "1y"];
   const [selectedTime, setSelectedTime] = useState("7d");
@@ -97,21 +98,6 @@ const Dashbroad = () => {
                 {tab}
               </a>
             ))}
-
-            {/* <a
-              role="tab"
-              className={cl("tab text-black")}
-              onClick={handleTabClick}
-            >
-              Tab 2
-            </a>
-            <a
-              role="tab"
-              className={cl("tab text-black")}
-              onClick={handleTabClick}
-            >
-              Tab 3
-            </a> */}
           </div>
           <Card style={"w-full h-full"}>
             <SalesChart orderStats={orderStats} />
@@ -195,81 +181,6 @@ function Card({ style = "", children }) {
   );
 }
 function SalesChart({ orderStats }) {
-  // const data = [
-  //   {
-  //     name: "Jan",
-  //     uv: 4000,
-  //     pv: 2400,
-  //     amt: 2400,
-  //   },
-  //   {
-  //     name: "Feb",
-  //     uv: 3000,
-  //     pv: 1398,
-  //     amt: 2210,
-  //   },
-  //   {
-  //     name: "Mar",
-  //     uv: 2000,
-  //     pv: 9800,
-  //     amt: 2290,
-  //   },
-  //   {
-  //     name: "Apr",
-  //     uv: 2780,
-  //     pv: 3908,
-  //     amt: 2000,
-  //   },
-  //   {
-  //     name: "May",
-  //     uv: 1890,
-  //     pv: 4800,
-  //     amt: 2181,
-  //   },
-  //   {
-  //     name: "June",
-  //     uv: 2390,
-  //     pv: 3800,
-  //     amt: 2500,
-  //   },
-  //   {
-  //     name: "July",
-  //     uv: 3490,
-  //     pv: 4300,
-  //     amt: 2100,
-  //   },
-  //   {
-  //     name: "Aug",
-  //     uv: 4590,
-  //     pv: 8000,
-  //     amt: 2100,
-  //   },
-  //   {
-  //     name: "Sep",
-  //     uv: 4300,
-  //     pv: 3950,
-  //     amt: 2100,
-  //   },
-  //   {
-  //     name: "Oct",
-  //     uv: 3390,
-  //     pv: 4100,
-  //     amt: 2000,
-  //   },
-  //   {
-  //     name: "Nov",
-  //     uv: 4050,
-  //     pv: 5000,
-  //     amt: 2700,
-  //   },
-  //   {
-  //     name: "Dec",
-  //     uv: 3430,
-  //     pv: 4150,
-  //     amt: 2150,
-  //   },
-  // ];
-
   return (
     <div className="wrapper w-full h-full">
       <ResponsiveContainer width="100%" height={300}>
@@ -307,25 +218,11 @@ function SalesChart({ orderStats }) {
   );
 }
 function TopProduct() {
-  const { data, error } = useQuery({
-    queryKey: ["products", "top"],
-    queryFn: topSelling,
-  });
-  let products = data?.data?.data || [];
-  // let products = [
-  //   {
-  //     img: "",
-  //     productName: "product 1",
-  //     subCategory: "sub 1",
-  //     SaleAmount: 23507,
-  //   },
-  //   {
-  //     img: "",
-  //     productName: "product 2",
-  //     subCategory: "sub 2",
-  //     SaleAmount: 23507,
-  //   },
-  // ];
+  // const { data, error } = useQuery({
+  //   queryKey: ["products", "top"],
+  //   queryFn: topSelling,
+  // });
+  const { data: products } = useTopSelling();
 
   return (
     <div className="p-3">

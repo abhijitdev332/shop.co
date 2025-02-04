@@ -83,3 +83,7 @@ export let getRelativeProducts = async (id = "", limit = 5, skip = 0) => {
   );
   return data?.data;
 };
+export const updateProduct = async (productId = "", body = "") => {
+  let { data } = await PrivateAxios.put(`/product/update/${productId}`, body);
+  return data;
+};

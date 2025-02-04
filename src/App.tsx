@@ -39,6 +39,7 @@ import {
   CategoryProducts,
   AddSubCategory,
   SubCategoryProducts,
+  ProductEdit,
 } from "./pages/adminPages/adminPages";
 import InitialData from "./initalData/InitialData";
 
@@ -86,6 +87,7 @@ const router = createBrowserRouter(
         <Route index element={<Dashbroad />} />
         <Route path="products" element={<AllProducts />} />
         <Route path="products/add" element={<AddProduct />} />
+        <Route path="products/edit/:id" element={<ProductEdit />} />
         <Route path="products/:id" element={<ProductDetails />} />
         <Route path="orders" element={<AllOrders />} />
         <Route path="orders/:id" element={<ViewOrder />} />

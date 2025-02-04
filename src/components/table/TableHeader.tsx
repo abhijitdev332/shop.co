@@ -9,7 +9,7 @@ const TableHeader = ({
 }) => {
   return (
     <>
-      <thead className={cl("sticky top-0 bg-gray-200 p-2 z-10", style)}>
+      <thead className={cl("sticky top-0 bg-gray-200 p-2 z-[2]", style)}>
         {columns?.map((td, ind) => {
           if (input && ind + 1 == 1) {
             return (

@@ -103,10 +103,9 @@ const CartAddress = () => {
     }, timeoutDuration);
 
     interval = setInterval(async () => {
-      let res = await verifyMutaion(sessionId);
       if (
         checkoutWindow?.closed ||
-        checkoutWindow.location.href.includes("/declined")
+        checkoutWindow?.location?.href?.includes("/declined")
       ) {
         checkoutWindow?.close();
         clearInterval(interval);
@@ -114,6 +113,8 @@ const CartAddress = () => {
         navigate("/declined");
         toast.error("Payment verification Failed. Please try again.");
       }
+
+      let res = await verifyMutaion(sessionId);
       if (res.status == 200) {
         const paymentStatus = res.data?.data?.payment_status;
         if (paymentStatus === "paid") {

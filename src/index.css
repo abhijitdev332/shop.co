@@ -28,10 +28,13 @@ button {
   font-optical-sizing: auto;
 }
 label,
-input {
+input,
+textarea,
+select {
   font-family: "Roboto", serif;
   font-optical-sizing: auto;
   color: inherit;
+  background: transparent !important;
 }
 
 .robo {

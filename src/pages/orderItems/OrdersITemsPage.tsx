@@ -1,27 +1,13 @@
-import { useQuery } from "@tanstack/react-query";
 import React from "react";
 import { Link, ScrollRestoration, useParams } from "react-router-dom"; // Assuming React Router is used
-import { getOrderDeatils } from "../../querys/orderQuery";
-
-interface Order {
-  id: string;
-  date: string;
-  items: { name: string; quantity: number; price: number; image: string }[];
-  totalAmount: number;
-  status: string;
-}
+import { useGetOrderDetails } from "../../querys/orderQuery";
 
 const imageUrl =
   "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
 
 const OrderDetails: React.FC = () => {
   const { id } = useParams();
-  const { data, error } = useQuery({
-    queryKey: ["orderDetails", id],
-    queryFn: () => getOrderDeatils(id),
-  });
-
-  let orderDetails = data?.data?.data;
+  const { data: orderDetails } = useGetOrderDetails(id);
 
   return (
     <section>
