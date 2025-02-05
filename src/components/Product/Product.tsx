@@ -227,7 +227,7 @@ const Product = () => {
                   {currentProductVariant?.discount &&
                   +currentProductVariant?.discount > 0 ? (
                     <span className="badge p-3 border-none text-red-700 bg-red-200">
-                      -{currentProductVariant?.discount}
+                      -{currentProductVariant?.discount}%
                     </span>
                   ) : (
                     ""

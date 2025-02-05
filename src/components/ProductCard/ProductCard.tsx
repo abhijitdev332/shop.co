@@ -71,10 +71,13 @@ const ProductCard = ({ product = {}, style = "", size = "", imgStyle }) => {
         <p className="flex gap-2 text-xs md:text-2xl font-bold">
           {/* <span>${product?.price}</span> */}
           <span>${product?.firstVariantSellPrice}</span>
-          {product?.firstVariantDiscount && (
+          {product?.firstVariantDiscount &&
+          product?.firstVariantDiscount > 0 ? (
             <span className="badge font-normal border-none text-red-500 bg-red-100">
-              {product?.firstVariantDiscount}
+              -{product?.firstVariantDiscount}%
             </span>
+          ) : (
+            ""
           )}
         </p>
       </div>

@@ -83,7 +83,7 @@ const ProductEdit = () => {
           color: variant?.color,
           size: variant?.size,
           stock: variant?.stock,
-          discount: variant?.discount,
+          // discount: variant?.discount,
           basePrice: variant?.basePrice,
           sellPrice: variant?.sellPrice,
         },
@@ -288,38 +288,6 @@ const ProductEdit = () => {
                 </div>
               </div>
 
-              {/* Stock & Discount */}
-              <div className="grid grid-cols-2 gap-4 mt-2">
-                <div>
-                  <label className="block text-sm font-medium">Stock</label>
-                  <input
-                    type="number"
-                    value={variant.stock}
-                    onChange={(e) =>
-                      handleVariantChange(
-                        index,
-                        "stock",
-                        Number(e.target.value)
-                      )
-                    }
-                    className="input input-bordered w-full"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium">
-                    Discount (%)
-                  </label>
-                  <input
-                    type="text"
-                    value={variant.discount || 0}
-                    onChange={(e) =>
-                      handleVariantChange(index, "discount", e.target.value)
-                    }
-                    className="input input-bordered w-full"
-                  />
-                </div>
-              </div>
-
               {/* Base Price & Sell Price */}
               <div className="grid grid-cols-2 gap-4 mt-2">
                 <div>
@@ -357,6 +325,38 @@ const ProductEdit = () => {
                   />
                 </div>
               </div>
+              {/* Stock & Discount */}
+              <div className="grid grid-cols-2 gap-4 mt-2">
+                <div>
+                  <label className="block text-sm font-medium">Stock</label>
+                  <input
+                    type="number"
+                    value={variant.stock}
+                    onChange={(e) =>
+                      handleVariantChange(
+                        index,
+                        "stock",
+                        Number(e.target.value)
+                      )
+                    }
+                    className="input input-bordered w-full"
+                  />
+                </div>
+                {/* <div>
+                  <label className="block text-sm font-medium">
+                    Discount (%)
+                  </label>
+                  <input
+                    type="text"
+                    value={variant.discount || 0}
+                    onChange={(e) =>
+                      handleVariantChange(index, "discount", e.target.value)
+                    }
+                    className="input input-bordered w-full"
+                  />
+                </div> */}
+              </div>
+
               {/* Image Upload */}
               {/* <div className="mt-4">
                 <label className="block text-sm font-medium">Add Image</label>

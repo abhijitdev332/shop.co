@@ -8,10 +8,10 @@ const categorySlice = createSlice({
   initialState: inital,
   reducers: {
     setCategory: (state, action) => {
-      return (state = { ...state, category: action.payload?.data });
+      state.category = [...action.payload];
     },
     setSubCategory: (state, action) => {
-      return (state = { ...state, subCategory: action.payload?.data });
+      state.subCategory = [...action.payload];
     },
   },
 });

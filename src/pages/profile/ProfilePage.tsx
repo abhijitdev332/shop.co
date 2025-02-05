@@ -5,7 +5,6 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useDispatch, useSelector } from "react-redux";
-import { updateUser } from "../../querys/userApi";
 import {
   createAddress,
   deleteAddress,
@@ -40,10 +39,9 @@ const ProfilePage = () => {
   const updateMutation = UpdateUserMutaion();
   const { userDetails } = useSelector((store) => store.user);
   const userId = userDetails?._id;
-  const { data, error } = useQuery({
+  const { data } = useQuery({
     queryKey: ["userAddress", userId],
     queryFn: () => getUserAddress(userId),
-    refetchOnWindowFocus: true,
   });
   let userAddress = data?.data?.data || [];
   const queryClient = useQueryClient();
@@ -73,7 +71,6 @@ const ProfilePage = () => {
     }
     updateMutation.mutate({ id: userId, data: formData });
   };
-
   // address valdiation
   const {
     register: addressReg,
@@ -237,9 +234,9 @@ const ProfilePage = () => {
                 <button
                   type="submit"
                   className="w-full px-4 py-2 btn btn-neutral transition duration-200"
-                  disabled={updatePending}
+                  disabled={updateMutation.isPending}
                 >
-                  {updatePending ? "Updating..." : "Update Profile"}
+                  {updateMutation.isPending ? "Updating..." : "Update Profile"}
                 </button>
               </form>
             </div>
