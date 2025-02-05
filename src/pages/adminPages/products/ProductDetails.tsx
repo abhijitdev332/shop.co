@@ -67,11 +67,6 @@ const ProductDetailsTabGroup = () => {
               </ul>
             </div>
           </div>
-          <div className=" ms-auto flex">
-            <Link to={"add"}>
-              <button className="btn btn-primary">Add Product</button>
-            </Link>
-          </div>
         </div>
         {/* bread end */}
         {/* tab group */}
@@ -236,7 +231,7 @@ const ProductDetails = ({ setVariant, setReview }) => {
               </span>
               {currentProductVariant?.discount && (
                 <span className="badge p-3 border-none text-red-700 bg-red-200">
-                  {currentProductVariant?.discount}
+                  -{currentProductVariant?.discount}%
                 </span>
               )}
             </div>

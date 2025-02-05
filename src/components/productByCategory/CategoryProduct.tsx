@@ -1,37 +1,45 @@
-import { Link, ScrollRestoration, useParams } from "react-router-dom";
-import { List, Pagintaion, ProductCard } from "../component";
-import { MdKeyboardArrowRight, MdKeyboardArrowUp } from "react-icons/md";
-import { RiFilter3Line } from "react-icons/ri";
-import { useState } from "react";
-import cl from "classnames";
-import { useQuery } from "@tanstack/react-query";
 import {
-  getProductByCategory,
-  getShopAllProducts,
-} from "../../querys/productQuery";
+  Link,
+  ScrollRestoration,
+  useParams,
+  useSearchParams,
+} from "react-router-dom";
+import { List, Pagintaion, ProductCard } from "../component";
+import {
+  MdKeyboardArrowRight,
+  MdKeyboardArrowUp,
+  MdSort,
+} from "react-icons/md";
+import { RiFilter3Line } from "react-icons/ri";
+import { useRef, useState } from "react";
+import cl from "classnames";
+import {
+  useGetProductByCategory,
+  useShopGetAllProducts,
+} from "../../querys/product/productQuery";
+import { useSelector } from "react-redux";
 const CategoryProduct = () => {
   const { id } = useParams();
+  const [params] = useSearchParams();
   let itemsperpage = 10;
   const [currentPage, setCurrenPage] = useState(1);
-  const { data: categoryProducts, error } = useQuery({
-    queryKey: ["category", id, currentPage],
-    queryFn: () => {
-      if (id) {
-        return getProductByCategory(id);
-      }
-      return getShopAllProducts(
-        currentPage * itemsperpage,
-        (currentPage - 1) * itemsperpage
-      );
-    },
-  });
-  let allProducts =
-    categoryProducts?.data?.data?.products || categoryProducts?.data?.data;
-  let productsLength = categoryProducts?.data?.data?.totalLength;
-
-  const [fillterShow, setFillterShow] = useState<boolean>(false);
-  const [products, setProducts] = useState([]);
-
+  const queryObject = Object.fromEntries(params.entries());
+  const { data: shop } = useShopGetAllProducts(
+    currentPage * itemsperpage,
+    (currentPage - 1) * itemsperpage,
+    queryObject
+  );
+  const { data: cate } = useGetProductByCategory(id);
+  const ifCataExisted = (query = "", catedata, shopdata) => {
+    if (query !== "") {
+      return catedata;
+    } else {
+      return shopdata;
+    }
+  };
+  let allProducts = ifCataExisted(id, cate?.products, shop?.products);
+  let productsLength = ifCataExisted(id, cate?.totalLength, shop?.totalLength);
+  const [fillterShow, setFillterShow] = useState(false);
   return (
     <main>
       <ScrollRestoration />
@@ -49,7 +57,7 @@ const CategoryProduct = () => {
             </ul>
           </div>
           <div className="flex w-full md:gap-10">
-            <div className="wrapper h-full overflow-y-auto">
+            <div className="wrapper h-full">
               <FillterCard show={fillterShow} setShow={setFillterShow} />
             </div>
 
@@ -58,9 +66,13 @@ const CategoryProduct = () => {
                 <h2 className="font-bold text-2xl capitalize">{id}</h2>
                 <div className="flex gap-4 items-center">
                   <p>
-                    Showing {itemsperpage} of {productsLength}
+                    Showing {(currentPage - 1) * itemsperpage}-
+                    {currentPage * itemsperpage > productsLength
+                      ? productsLength
+                      : currentPage * itemsperpage}
+                    of {productsLength}
                   </p>
-                  <div className="flex items-center">
+                  {/* <div className="flex items-center">
                     <span
                       onClick={() => {
                         setFillterShow((prev) => !prev);
@@ -78,7 +90,15 @@ const CategoryProduct = () => {
                       <option>Lisa</option>
                       <option>Maggie</option>
                     </select>
-                  </div>
+                  </div> */}
+
+                  <button
+                    onClick={() => {
+                      setFillterShow((prev) => !prev);
+                    }}
+                  >
+                    <MdSort color="black" size={30} />
+                  </button>
                 </div>
               </div>
               {/* view productlist */}
@@ -88,13 +108,6 @@ const CategoryProduct = () => {
                   <ProductCard product={item} style="!size-full" />
                 )}
               />
-              {/* {allProducts?.map((ele) => (
-                  <ProductCard
-                    product={ele}
-                    style="md:!w-64 w-full"
-                    imgStyle={"h-44 md:!w-64 w-full"}
-                  />
-                ))} */}
 
               <Pagintaion
                 currentPage={currentPage}
@@ -110,53 +123,83 @@ const CategoryProduct = () => {
 };
 
 function FillterCard({ show, setShow }) {
-  const subCate = ["shirt", "T-shirt", "shorts", "hoddie", "jeans"];
-  const variant = ["red", "green", "black"];
-  const sizes = ["small", "medium", "large", "x-large"];
-  const category = ["casual", "formal", "gym", "party"];
+  const [params, setSearchParams] = useSearchParams();
+  const { category, subCategory } = useSelector((store) => store.category);
+  const colors = ["yellow", "black", "blue"];
+  const sizes = ["S", "M", "L", "XL", "XXL"];
+  const categoryRef = useRef(null);
+  const subCategoryRef = useRef(null);
+  const sizeRef = useRef(null);
+  const colorsRef = useRef(null);
   const [fillters, setFillters] = useState([]);
-  const handleFillterAdd = (ev) => {
-    if (fillters.includes(ev)) {
-      setFillters((prev) => {
-        return prev.filter((ele) => ele !== ev);
-      });
-    } else {
-      setFillters((prev) => [...prev, ev]);
-    }
+  const handleFillterAdd = (key: string, value: string) => {
+    setFillters((prev) => {
+      const existingIndex = prev.findIndex((ele) => ele.key === key);
+      if (existingIndex !== -1) {
+        // Update existing filter value
+        return prev.map((ele, index) =>
+          index === existingIndex ? { ...ele, value } : ele
+        );
+      } else {
+        // Add new filter
+        return [...prev, { key, value }];
+      }
+    });
+  };
+  const handleFillterDelete = (key) => {
+    setFillters((prev) => prev.filter((ele) => ele.key !== key));
+  };
+  const handleFillterClick = () => {
+    const updatedParams = { ...params };
+    fillters.forEach((ele) => {
+      updatedParams[ele.key] = ele.value;
+    });
+    setSearchParams(updatedParams);
+    setShow(!show);
   };
   return (
     <section
       className={cl(
-        "fixed md:static left-0  w-full md:w-fit bg-white z-[5] duration-200",
-        show ? "top-[5rem]" : "top-[100%]"
+        "fixed md:static left-0 w-full md:w-fit bg-white z-[10] duration-200",
+        show ? "top-[5rem]" : "top-[100%]",
+        "h-screen md:h-auto", // Make it full-screen height on small screens
+        "overflow-y-auto" // Enable scrolling inside the drawer
       )}
+      style={{ maxHeight: "90vh" }} // Limit height for better usability
+      onWheel={(e) => e.stopPropagation()}
     >
-      <div className="wrapper">
+      <div className="wrapper h-full">
         <div className="card border border-gray-400 p-5 rounded-xl">
           <div className="flex flex-wrap gap-3">
-            {fillters.map((ele) => (
-              <>
-                <div
-                  className="badge badge-neutral p-2  gap-2 cursor-pointer"
-                  onClick={() => handleFillterAdd(ele)}
-                >
-                  <span className="text-white capitalize">{ele}</span>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    className="inline-block h-4 w-4 stroke-current"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M6 18L18 6M6 6l12 12"
-                    ></path>
-                  </svg>
-                </div>
-              </>
-            ))}
+            {fillters.map((ele, inx) => {
+              if (inx >= 5) {
+                return;
+              } else {
+                return (
+                  <>
+                    <div
+                      className="badge badge-neutral p-2  gap-2 cursor-pointer"
+                      onClick={() => handleFillterDelete(ele.key)}
+                    >
+                      <span className="text-white capitalize">{ele.value}</span>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        className="inline-block h-4 w-4 stroke-current"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M6 18L18 6M6 6l12 12"
+                        ></path>
+                      </svg>
+                    </div>
+                  </>
+                );
+              }
+            })}
           </div>
           <div className="flex flex-col gap-3">
             {/* heading */}
@@ -172,20 +215,39 @@ function FillterCard({ show, setShow }) {
             </div>
             <div className="outline outline-1 outline-slate-300"></div>
             {/*sub category  */}
-            <div className="flex flex-col gap-2">
-              {subCate.map((ele) => (
-                <div
-                  className="flex justify-between items-center cursor-pointer"
-                  onClick={() => handleFillterAdd(ele)}
+            <div className="flex flex-col gap-3">
+              <div className="flex justify-between items-center">
+                <p className="font-medium text-lg">Style</p>
+                <span
+                  onClick={() => {
+                    subCategoryRef.current?.classList?.toggle("h-0");
+                  }}
                 >
-                  <span className="capitalize">{ele}</span>
-                  <span>{<MdKeyboardArrowRight fontSize={20} />}</span>
-                </div>
-              ))}
+                  <MdKeyboardArrowUp fontSize={25} />
+                </span>
+              </div>
+              <div
+                className="flex flex-col gap-2 overflow-hidden"
+                ref={subCategoryRef}
+              >
+                {subCategory.map((ele) => (
+                  <div
+                    className={cl(
+                      "flex justify-between items-center cursor-pointer"
+                    )}
+                    onClick={() =>
+                      handleFillterAdd("subcategory", ele?.SubCategoryName)
+                    }
+                  >
+                    <span className="capitalize">{ele?.SubCategoryName}</span>
+                    <span>{<MdKeyboardArrowRight fontSize={20} />}</span>
+                  </div>
+                ))}
+              </div>
             </div>
             <div className="outline outline-1 outline-slate-300"></div>
             {/* price fillter */}
-            <div className="flex flex-col gap-3">
+            {/* <div className="flex flex-col gap-3">
               <div className="flex justify-between">
                 <p className="font-medium text-lg">Price</p>
                 <span>
@@ -199,21 +261,26 @@ function FillterCard({ show, setShow }) {
                 // value="40"
                 className="range range-xs"
               />
-            </div>
-            <div className="outline outline-1 outline-slate-300"></div>
-            {/* coloors */}
+            </div> */}
+            {/* <div className="outline outline-1 outline-slate-300"></div> */}
+            {/* colors */}
             <div className="flex flex-col gap-3">
               <div className="flex justify-between items-center">
                 <p className="font-medium text-lg">Colors</p>
-                <span>
+                <span
+                  onClick={() => {
+                    colorsRef.current?.classList?.toggle("h-0");
+                  }}
+                >
                   <MdKeyboardArrowUp fontSize={25} />
                 </span>
               </div>
-              <div className="flex space-x-3">
-                {variant.map((ele) => (
+              <div className="flex space-x-3 overflow-hidden" ref={colorsRef}>
+                {colors.map((ele) => (
                   <button
                     style={{ background: ele }}
                     className={` rounded-full p-4`}
+                    onClick={() => handleFillterAdd("color", ele)}
                   ></button>
                 ))}
               </div>
@@ -223,13 +290,25 @@ function FillterCard({ show, setShow }) {
             <div className="flex flex-col gap-3">
               <div className="flex justify-between items-center">
                 <p className="font-medium text-lg">Size</p>
-                <span>
+                <span
+                  onClick={() => {
+                    sizeRef.current?.classList?.toggle("h-0");
+                  }}
+                >
                   <MdKeyboardArrowUp fontSize={25} />
                 </span>
               </div>
-              <div className="flex  flex-wrap gap-4">
+              <div
+                className="flex  flex-wrap gap-4 overflow-hidden"
+                ref={sizeRef}
+              >
                 {sizes.map((ele) => (
-                  <button className="px-3 py-2 whitespace-nowrap rounded-badge  bg-gray-200 capitalize">
+                  <button
+                    className="px-3 py-2 whitespace-nowrap rounded-badge  bg-gray-200 uppercase"
+                    onClick={() => {
+                      handleFillterAdd("size", ele);
+                    }}
+                  >
                     {ele}
                   </button>
                 ))}
@@ -239,27 +318,39 @@ function FillterCard({ show, setShow }) {
             {/* category */}
             <div className="flex flex-col gap-3">
               <p className="font-medium text-lg flex justify-between">
-                <span>Dress Styles</span>
-                <span>
+                <span>Category</span>
+                <span
+                  onClick={() => {
+                    categoryRef.current?.classList?.toggle("h-0");
+                  }}
+                >
                   <MdKeyboardArrowUp fontSize={25} />
                 </span>
               </p>
 
-              <div className="flex flex-col gap-2">
+              <div
+                className="flex flex-col gap-2 overflow-hidden"
+                ref={categoryRef}
+              >
                 {category.map((ele) => (
                   <div
-                    className="flex justify-between items-center"
-                    onClick={() => handleFillterAdd(ele)}
+                    className="flex justify-between items-center cursor-pointer"
+                    onClick={() =>
+                      handleFillterAdd("category", ele?.categoryName)
+                    }
                   >
-                    <span className="capitalize">{ele}</span>
+                    <span className="capitalize">{ele?.categoryName}</span>
                     <span>{<MdKeyboardArrowRight fontSize={20} />}</span>
                   </div>
                 ))}
               </div>
             </div>
             {/* button apply */}
-            <button className=" btn btn-active dark:btn-ghost dark:text-black text-white rounded-badge">
-              Apply Fillter
+            <button
+              className=" btn btn-active dark:btn-ghost dark:text-black text-white rounded-badge"
+              onClick={handleFillterClick}
+            >
+              Apply Fillters
             </button>
           </div>
         </div>

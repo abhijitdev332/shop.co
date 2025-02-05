@@ -1,7 +1,7 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import React, { useRef, useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useRef, useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
-import { getProductsBySubCategory } from "../../../querys/categoryQuery";
+import { useGetSubCategoryProducts } from "../../../querys/categoryQuery";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { IoEye } from "react-icons/io5";
 import { MdModeEdit } from "react-icons/md";
@@ -18,11 +18,8 @@ const SubCategoryProducts = () => {
   const [params] = useSearchParams();
   const { id } = useParams();
   let param = params.get("query");
-  const { data } = useQuery({
-    queryKey: ["adminSubCategoryProducts", id],
-    queryFn: () => getProductsBySubCategory(param),
-  });
-  const products = data?.data?.data;
+  const { data } = useGetSubCategoryProducts(param);
+  const products = data?.products;
   const queryClient = useQueryClient();
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
   const [deleteSelect, setDeleteSelect] = useState("");
@@ -56,7 +53,7 @@ const SubCategoryProducts = () => {
     deleteMutation(deleteSelect);
     // setProducts((prev) => prev.filter((product) => product.id !== id));
   };
-
+  console.log(products);
   return (
     <>
       <div className="p-6 bg-white rounded-lg shadow-md">

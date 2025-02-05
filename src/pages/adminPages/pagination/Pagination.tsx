@@ -37,7 +37,7 @@ const Pagination = ({
       <div className="wrapper px-3 py-2">
         <div className="flex w-full justify-between">
           {/* <p>Showing 1-5 0f 100 Items</p> */}
-          <p>
+          <p className="text-xs">
             <span>
               Showing &nbsp;
               {(currentPage - 1) * itemperPage}-

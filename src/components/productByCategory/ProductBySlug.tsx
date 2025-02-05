@@ -1,10 +1,8 @@
-import { useQuery } from "@tanstack/react-query";
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, ScrollRestoration, useSearchParams } from "react-router-dom";
 import Pagination from "../pagination/Pagination";
-import { getProductsByslug } from "../../querys/productQuery";
-import { List, ProductCard, ProductList } from "../component";
-import { current } from "@reduxjs/toolkit";
+import { List, ProductCard } from "../component";
+import { useGetProductBySlug } from "../../querys/product/productQuery";
 
 const ProductBySlug = () => {
   const [params] = useSearchParams();
@@ -12,17 +10,19 @@ const ProductBySlug = () => {
   let itemsPerPage = 5;
   const [currentpage, setCurrentPage] = useState(1);
   const [totalPage, setTotalPage] = useState(5);
-  const { data, isPending, error } = useQuery({
-    queryKey: ["products", query, currentpage],
-    queryFn: () =>
-      getProductsByslug({
-        query,
-        limit: itemsPerPage * currentpage,
-        skip: itemsPerPage * (currentpage - 1),
-      }),
-  });
-  let products = data?.data?.data;
+  const { data } = useGetProductBySlug(
+    query,
+    itemsPerPage * currentpage,
+    itemsPerPage * (currentpage - 1)
+  );
+  let products = data?.products;
+  let totalLength = data?.totalLength;
 
+  useEffect(() => {
+    if (totalLength) {
+      setTotalPage(itemsPerPage / totalLength);
+    }
+  }, [totalLength]);
   return (
     <>
       <main>
@@ -47,7 +47,6 @@ const ProductBySlug = () => {
               title={`${query} Products`}
               renderItem={(item) => <ProductCard product={item} />}
             />
-         
 
             <Pagination
               currentPage={currentpage}

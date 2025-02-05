@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { BsTrashFill } from "react-icons/bs";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { DetailsModal } from "./AddProduct";
 import {
   getProductByIdKey,
@@ -128,8 +128,23 @@ const ProductEdit = () => {
   return (
     <section>
       <div className="p-6">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold text-gray-800">Edit Product</h2>
+        <div className="flex">
+          <div className=" mb-6">
+            <p className="text-gray-800 text-2xl font-bold">Product Edit</p>
+            <div className="breadcrumbs text-sm">
+              <ul>
+                <li>
+                  <Link to={"/Admin"}>Admin</Link>
+                </li>
+                <li>
+                  <Link to={-1}>Products</Link>
+                </li>
+                <li>Edit</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div className="flex justify-end items-center mb-6">
           <div className="flex justify-end">
             <button
               className="btn btn-neutral"

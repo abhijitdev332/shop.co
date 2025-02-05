@@ -3,7 +3,13 @@ import { IoIosArrowRoundBack, IoIosArrowRoundForward } from "react-icons/io";
 import { toast } from "react-toastify";
 import cl from "classnames";
 
-const Pagination = ({ setPage = "", currentPage = "", totalPage = "" }) => {
+const Pagination = ({
+  setPage = "",
+  currentPage = "",
+  totalPage = "",
+  itemsperpage = 0,
+  totalLen = 0,
+}) => {
   const handlePrevious = () => {
     if (currentPage <= 1) {
       toast.info("you are at starting postion");

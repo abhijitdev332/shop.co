@@ -1,7 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import React, { useRef, useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
-import { getProductsByCategory } from "../../../querys/categoryQuery";
+import {
+  getProductsByCategory,
+  useGetCategoryProducts,
+} from "../../../querys/categoryQuery";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { IoEye } from "react-icons/io5";
 import { MdModeEdit } from "react-icons/md";
@@ -18,13 +21,9 @@ const CategoryProducts = () => {
   const [params] = useSearchParams();
   const { id } = useParams();
   let param = params.get("query");
-  const { data } = useQuery({
-    queryKey: ["adminCategoryProducts", id],
-    queryFn: () => getProductsByCategory(param),
-  });
-  const products = data?.data?.data;
+  const { data } = useGetCategoryProducts(param);
+  const products = data?.products;
   const queryClient = useQueryClient();
-
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
   const [deleteSelect, setDeleteSelect] = useState("");
   const modalRef = useRef(null);

@@ -2,8 +2,10 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { PrivateAxios } from "../../services/api/api";
 import {
   getNewArivals,
+  getProductByCategory,
   getProductById,
   getProductOrderDetails,
+  getProductsByslug,
   getRelativeProducts,
   getShopAllProducts,
   getTopSelling,
@@ -44,41 +46,12 @@ const getProduct = async (id: string) => {
 const getAllproducts = async () => {
   return await PrivateAxios.get("/admin/products");
 };
-let getProductByCategory = async (query = "") => {
-  switch (query) {
-    case "male":
-      return await PrivateAxios.get(`/product?gender=${query}`);
-
-    case "female":
-      return await PrivateAxios.get(`/product?gender=${query}`);
-
-    case "sale":
-      return await PrivateAxios.get(`/product/sale`);
-
-    case "new arrivel":
-      return await PrivateAxios.get(`/product/arival`);
-
-    default:
-      return await PrivateAxios.get(
-        `/product/category?query=${query.toLowerCase()}`
-      );
-  }
-};
 
 let newProduct = async (productData) => {
   return await PrivateAxios.post("/product/create", productData);
 };
 let deleteProduct = async (id) => {
   return await PrivateAxios.delete(`/product/remove/${id}`);
-};
-
-let getProductsByslug = async ({ query = "", limit, skip }) => {
-  switch (query.toLowerCase()) {
-    case "top":
-      return topSelling({ limit, skip });
-    case "arrival":
-      return newArivals({ limit, skip });
-  }
 };
 let useProductOrderDetails = (productId = "", color = "") => {
   return useQuery({
@@ -112,12 +85,29 @@ export const UpdateProductMutation = () => {
     mutationFn: ({ id, data }) => updateProduct(id, data),
   });
 };
+export const useShopGetAllProducts = (limit, skip, query) => {
+  return useQuery({
+    queryKey: ["shopallproducts", limit, skip, { ...query }],
+    queryFn: () => getShopAllProducts(limit, skip, query),
+  });
+};
+export const useGetProductByCategory = (query = "") => {
+  return useQuery({
+    queryKey: ["categoryProducts", query],
+    queryFn: () => getProductByCategory(query),
+  });
+};
+export const useGetProductBySlug = (query = "", limit, skip) => {
+  return useQuery({
+    queryKey: ["getproductbyslug", query, limit, skip],
+    queryFn: () => getProductsByslug(query, limit, skip),
+  });
+};
 
 export {
   useAllProducts,
   getProduct,
   getAllproducts,
-  getProductByCategory,
   newProduct,
   deleteReview,
   deleteProduct,

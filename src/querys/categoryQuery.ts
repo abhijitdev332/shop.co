@@ -7,9 +7,11 @@ import {
 } from "./categories/categoryApi";
 import {
   deleteSubCategory,
+  getProductsBySubCategory,
   getSubCategory,
   updateSubCategory,
 } from "./subcategory/subCategoryapi";
+import { getProductByCategory } from "./product/productApi";
 
 export const useGetAllCategory = (currentPage = 0, itemsperPage = 0) => {
   return useQuery({
@@ -21,18 +23,7 @@ export const useGetAllCategory = (currentPage = 0, itemsperPage = 0) => {
       ),
   });
 };
-
-const getProductsByCategory = async (query = "") => {
-  return await PrivateAxios.get(
-    `/product/category?query=${query.toLowerCase()}`
-  );
-};
-const getProductsBySubCategory = async (query = "") => {
-  return await PrivateAxios.get(
-    `/product/subCategory?query=${query.toLowerCase()}`
-  );
-};
-
+// create new
 const createCategory = async (data) => {
   return await PrivateAxios.post("/category/create", data, {
     headers: {
@@ -47,21 +38,25 @@ const createSubCategory = async (data) => {
     },
   });
 };
-
+// category
+export const useGetCategoryProducts = (query, limit = 5, skip = 0) => {
+  return useQuery({
+    queryKey: ["getcategoryproducts", query, limit, skip],
+    queryFn: () => getProductByCategory(query, limit, skip),
+  });
+};
 export const DeleteCategoryMutaion = () => {
   return useMutation({
     mutationKey: ["deleteCategory"],
     mutationFn: (id) => deleteCategory(id),
   });
 };
-
 export const UpdateCategoryMutaion = () => {
   return useMutation({
     mutationKey: ["updatecategory"],
     mutationFn: ({ id, data }) => updateCategory(id, data),
   });
 };
-
 // subCategory
 export const useGetSubCategory = (currentPage = 0, itemsperPage = 0) => {
   return useQuery({
@@ -71,6 +66,12 @@ export const useGetSubCategory = (currentPage = 0, itemsperPage = 0) => {
         currentPage * itemsperPage,
         (currentPage - 1) * itemsperPage
       ),
+  });
+};
+export const useGetSubCategoryProducts = (query = "", limit = 5, skip = 0) => {
+  return useQuery({
+    queryKey: ["getsubcategoryproducts", query, limit, skip],
+    queryFn: () => getProductsBySubCategory(query, limit, skip),
   });
 };
 export const DeleteSubCategoryMutaion = () => {
@@ -86,11 +87,4 @@ export const UpdateSubCategoryMutaion = () => {
     mutationFn: ({ id, data }) => updateSubCategory(id, data),
   });
 };
-export {
-  getAllCategory,
-  createCategory,
-  createSubCategory,
-  deleteCategory,
-  getProductsByCategory,
-  getProductsBySubCategory,
-};
+export { getAllCategory, createCategory, createSubCategory, deleteCategory };

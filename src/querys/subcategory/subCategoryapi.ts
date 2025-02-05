@@ -5,6 +5,12 @@ export const getSubCategory = async (limit = 0, skip = 0) => {
   );
   return data?.data;
 };
+export const getProductsBySubCategory = async (query = "", limit, skip) => {
+  let { data } = await PrivateAxios.get(
+    `/product/subCategory?query=${query.toLowerCase()}`
+  );
+  return data?.data;
+};
 export const deleteSubCategory = async (id) => {
   let { data } = await PrivateAxios.delete(`/subcategory/remove/${id}`);
   return data;

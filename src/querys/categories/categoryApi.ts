@@ -5,6 +5,12 @@ export const getAllCategory = async (limit = 0, skip = 0) => {
   );
   return data?.data;
 };
+export const getProductByCategory = async (query, limit = 5, skip = 0) => {
+  let { data } = await PrivateAxios.get(
+    `/product/category?query=${query.toLowerCase()}`
+  );
+  return data?.data;
+};
 export const updateCategory = async (id, body) => {
   let { data } = await PrivateAxios.put(`/category/update/${id}`, body, {
     headers: {

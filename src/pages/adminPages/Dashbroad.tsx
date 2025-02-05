@@ -219,10 +219,6 @@ function SalesChart({ orderStats }) {
   );
 }
 function TopProduct() {
-  // const { data, error } = useQuery({
-  //   queryKey: ["products", "top"],
-  //   queryFn: topSelling,
-  // });
   const { data: products } = useTopSelling();
 
   return (
@@ -232,7 +228,7 @@ function TopProduct() {
         {/* <p>Lorem ipsum dolor sit amet consectetur.</p> */}
       </div>
       <div className="flex flex-col gap-3 overflow-y-auto overflow-x-hidden py-2">
-        {products.map((ele) => (
+        {products?.products.map((ele) => (
           <>
             <div className="flex text-gray-800 text-sm md:text-base">
               <img

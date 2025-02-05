@@ -32,21 +32,28 @@ export const getAllproducts = async () => {
 export let getProductByCategory = async (query = "") => {
   switch (query) {
     case "male":
-      return await PrivateAxios.get(`/product?gender=${query}`);
+      let { data: genderdata } = await PrivateAxios.get(
+        `/product?gender=${query}`
+      );
+      return genderdata?.data;
 
     case "female":
-      return await PrivateAxios.get(`/product?gender=${query}`);
+      let { data: female } = await PrivateAxios.get(`/product?gender=${query}`);
+      return female?.data;
 
     case "sale":
-      return await PrivateAxios.get(`/product/sale`);
+      let { data: saledata } = await PrivateAxios.get(`/product/sale`);
+      return saledata?.data;
 
     case "new arrivel":
-      return await PrivateAxios.get(`/product/arival`);
+      let { data: arrival } = await PrivateAxios.get(`/product/arival`);
+      return arrival?.data;
 
     default:
-      return await PrivateAxios.get(
+      let { data: categoryData } = await PrivateAxios.get(
         `/product/category?query=${query.toLowerCase()}`
       );
+      return categoryData?.data;
   }
 };
 
@@ -56,13 +63,12 @@ export let newProduct = async (productData) => {
 export let deleteProduct = async (id) => {
   return await PrivateAxios.delete(`/product/remove/${id}`);
 };
-
-export let getProductsByslug = async ({ query = "", limit, skip }) => {
+export let getProductsByslug = async (query = "", limit = 5, skip = 0) => {
   switch (query.toLowerCase()) {
     case "top":
-      return topSelling({ limit, skip });
+      return getTopSelling(limit, skip);
     case "arrival":
-      return newArivals({ limit, skip });
+      return getNewArivals(limit, skip);
   }
 };
 export let getProductOrderDetails = async (productId, color) => {
@@ -71,10 +77,15 @@ export let getProductOrderDetails = async (productId, color) => {
   );
   return data?.data;
 };
-export let getShopAllProducts = async (limit = 5, skip = 0) => {
-  let { data } = await PrivateAxios.get(
-    `/product/shop?limit=${limit}&skip=${skip}`
-  );
+export let getShopAllProducts = async (limit = 5, skip = 0, query = {}) => {
+  const queryParams = new URLSearchParams({
+    limit: limit.toString(),
+    skip: skip.toString(),
+    ...Object.fromEntries(
+      Object.entries(query).map(([key, value]) => [key, String(value)])
+    ),
+  });
+  let { data } = await PrivateAxios.get(`/product/shop?${queryParams}`);
   return data?.data;
 };
 export let getRelativeProducts = async (id = "", limit = 5, skip = 0) => {

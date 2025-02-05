@@ -237,9 +237,6 @@ const Product = () => {
                   <p className="text-gray-500 font-medium">
                     {productData?.description}
                   </p>
-                  <p className="text-gray-500 text-sm capitalize">
-                    {productData?.returnPolicy} Days return policy
-                  </p>
                 </div>
                 <div className="outline outline-1 outline-slate-300"></div>
                 {/* color */}
@@ -286,6 +283,9 @@ const Product = () => {
                   </div>
                 </div>
                 <div className="outline outline-1 outline-slate-300"></div>
+                <p className="text-gray-500 text-sm capitalize">
+                  {productData?.returnPolicy} Days return policy
+                </p>
                 {/* quantity and cart */}
                 <div className="flex gap-2 py-3 w-full">
                   <div className="btn btn-ghost shadow bg-gray-200 flex gap-4 py-2 w-32  rounded-badge">

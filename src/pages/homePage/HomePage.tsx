@@ -11,7 +11,7 @@ const HomePage = () => {
           <List
             title="New Arrivals"
             exstyle="flex justify-center"
-            data={products?.arivalsProducts}
+            data={products?.arivalsProducts?.products}
             renderItem={(product) => <ProductCard product={product} />}
             viewLink="/product/slug?query=arrival"
           />
@@ -20,7 +20,7 @@ const HomePage = () => {
           <List
             title="TOP SELLING"
             exstyle="flex justify-center"
-            data={products?.topProducts}
+            data={products?.topProducts?.products}
             renderItem={(item) => <ProductCard product={item} />}
             viewLink="/product/slug?query=top"
           />
