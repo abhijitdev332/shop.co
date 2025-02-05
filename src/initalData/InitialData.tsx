@@ -7,6 +7,7 @@ import {
 } from "../services/store/products/productSlice";
 import {
   setCategory,
+  setCategoryData,
   setSubCategory,
 } from "../services/store/category/categorySlice";
 import { removeLoading, setLoading } from "../services/store/loader/loader";
@@ -41,9 +42,8 @@ const InitialData = () => {
     if (categoryLoading || subLoading) {
       dispatch(setLoading());
     }
-    if (category || subCategory) {
-      dispatch(setCategory(category));
-      dispatch(setSubCategory(subCategory));
+    if (!categoryLoading && !subLoading && category && subCategory) {
+      dispatch(setCategoryData({ category, subCategory }));
       dispatch(removeLoading());
     }
   }, [category, subCategory]);
