@@ -9,7 +9,7 @@ export function RealativeProducts({
 
   return (
     <section>
-      <div className="wrapper py-10 px-5">
+      <div className="wrapper py-5 px-1 md:py-10 md:px-5">
         <div className="flex flex-col">
           <h2 className="font-extrabold py-10 text-center uppercase text-3xl">
             {title}

@@ -42,6 +42,11 @@ import {
   ProductEdit,
 } from "./pages/adminPages/adminPages";
 import InitialData from "./initalData/InitialData";
+import {
+  AdminProtected,
+  GuestProtected,
+  UserProtected,
+} from "./utils/ProtectedRoute";
 
 // lazy loadings
 const HomeLayout = lazy(() => import("./layouts/Home"));
@@ -66,15 +71,36 @@ const router = createBrowserRouter(
       <Route path="/" element={<HomeLayout />}>
         <Route index element={<HomePage />} />
         <Route path="cart" element={<CartPage />} />
-        <Route path="cart/order" element={<CartAddress />} />
+        <Route
+          path="cart/order"
+          element={
+            <GuestProtected>
+              <CartAddress />
+            </GuestProtected>
+          }
+        />
       </Route>
-      <Route path="/user" element={<UserLayout />}>
+      <Route
+        path="/user"
+        element={
+          <GuestProtected>
+            <UserLayout />
+          </GuestProtected>
+        }
+      >
         <Route index element={<ProfilePage />} />
         <Route path="orders" element={<OrdersPage />} />
         <Route path="orders/:id" element={<OrdersItemPage />} />
       </Route>
 
-      <Route path="/auth" element={<AuthLayout />}>
+      <Route
+        path="/auth"
+        element={
+          <UserProtected>
+            <AuthLayout />
+          </UserProtected>
+        }
+      >
         <Route index element={<Login />} />
         <Route path="signup" element={<Register />} />
       </Route>
@@ -83,7 +109,14 @@ const router = createBrowserRouter(
         <Route path="category/:id?" element={<CategoryProduct />} />
         <Route path="slug" element={<ProductsBySlug />} />
       </Route>
-      <Route path="/admin" element={<AdminLayout />}>
+      <Route
+        path="/admin"
+        element={
+          <AdminProtected>
+            <AdminLayout />
+          </AdminProtected>
+        }
+      >
         <Route index element={<Dashbroad />} />
         <Route path="products" element={<AllProducts />} />
         <Route path="products/add" element={<AddProduct />} />
@@ -100,8 +133,22 @@ const router = createBrowserRouter(
         <Route path="subcategory/add" element={<AddSubCategory />} />
         <Route path="subcategory/:id" element={<SubCategoryProducts />} />
       </Route>
-      <Route path="/success" element={<SuccessPage />} />
-      <Route path="/declined" element={<DeclinedPage />} />
+      <Route
+        path="/success"
+        element={
+          <GuestProtected>
+            <SuccessPage />
+          </GuestProtected>
+        }
+      />
+      <Route
+        path="/declined"
+        element={
+          <GuestProtected>
+            <DeclinedPage />
+          </GuestProtected>
+        }
+      />
       <Route path="/*" element={<ErrorLayout />} />
     </Route>
   )

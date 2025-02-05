@@ -19,7 +19,7 @@ const Review = ({
     handleDelete(id);
   };
   return (
-    <div className="outline outline-1 rounded-2xl p-3 w-fit sm:w-[20rem]">
+    <div className="outline outline-1 rounded-2xl p-3 w-[10rem] sm:w-[20rem]">
       <div className="wrapper text-black relative">
         {isAdmin && (
           <span

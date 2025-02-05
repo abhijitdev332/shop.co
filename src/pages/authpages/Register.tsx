@@ -11,7 +11,7 @@ import { CreateUserMutaion } from "../../querys/user/userQuery";
 
 type RegistrationFormInputs = z.infer<typeof registrationSchema>;
 
-const RegistrationPage: React.FC = () => {
+const RegistrationPage = () => {
   const navigate = useNavigate();
   const newUserMutaion = CreateUserMutaion();
   const {
@@ -31,7 +31,7 @@ const RegistrationPage: React.FC = () => {
       phoneNumber: data.phone,
     };
     formdata.append("data", JSON.stringify(userData));
-    newUserMutaion.mutate(formdata);
+    newUserMutaion.mutate(formdata as any);
   };
   useEffect(() => {
     if (newUserMutaion.isSuccess) {
@@ -158,7 +158,7 @@ const RegistrationPage: React.FC = () => {
               type="submit"
               className="w-full flex gap-1 px-4 py-2 btn btn-md transition duration-200"
             >
-              {isPending && (
+              {newUserMutaion.isPending && (
                 <span className="loading loading-spinner text-white loading-md"></span>
               )}
               Register

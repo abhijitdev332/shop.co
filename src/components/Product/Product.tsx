@@ -151,7 +151,7 @@ const Product = () => {
     <>
       <ScrollRestoration />
       <section className="bg-white overflow-hidden">
-        <div className="lg:container lg:mx-auto px-20">
+        <div className="lg:container lg:mx-auto px-5 md:px-20">
           <div className="divider m-0 w-full"></div>
           <div className="py-3">
             {/* bread crumbs */}
@@ -167,10 +167,10 @@ const Product = () => {
               </ul>
             </div>
             {/* bradcrumbs end */}
-            <div className="flex py-2 space-x-5">
-              <div className="imgCon gap-5 flex basis-1/2">
+            <div className="flex flex-col md:flex-row py-2 space-x-5">
+              <div className="imgCon gap-5 flex flex-col md:flex-row basis-1/2 overflow-clip">
                 {/* map all images */}
-                <div className="flex flex-col gap-6">
+                <div className="flex order-2 md:order-1 md:flex-col gap-6">
                   {productImages?.map((img) => (
                     <img
                       src={img?.url || imgUrl}
@@ -186,7 +186,7 @@ const Product = () => {
                   ))}
                 </div>
                 {/* show current image */}
-                <div className="box  w-full h-full overflow-hidden">
+                <div className="box order-1 md:order-2  w-full h-full overflow-hidden">
                   <img
                     src={currentProductImage || imgUrl}
                     alt="product image"
@@ -194,7 +194,7 @@ const Product = () => {
                   />
                 </div>
               </div>
-              <div className="product-dsc basis-1/2 flex flex-col py-2">
+              <div className="product-dsc m-0 md:m-2  basis-1/2 flex flex-col py-2">
                 <div className="title">
                   <h2 className="text-3xl font-extrabold uppercase leading-tight">
                     {productData?.name}
@@ -339,7 +339,7 @@ const Product = () => {
                 )}
                 aria-label="Product Details"
               />
-              <div role="tabpanel" className="tab-content p-10">
+              <div role="tabpanel" className="tab-content p-2 md:p-10">
                 <ProductDetails details={productData?.productDetails} />
               </div>
 
@@ -353,7 +353,7 @@ const Product = () => {
                 aria-label="Rating & Reviews"
                 defaultChecked
               />
-              <div role="tabpanel" className="tab-content p-10">
+              <div role="tabpanel" className="tab-content p-2 md:p-10">
                 <ProductReviews
                   reviews={productData?.reviews}
                   totalReviews={productData?.reviews?.length}
