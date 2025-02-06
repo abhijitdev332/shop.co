@@ -77,7 +77,7 @@ const PaymentPage = () => {
           };
           // process new order
           let orderRes = await newOrderMutation.mutateAsync(orderData);
-          if (orderRes.status === 201) {
+          if (orderRes.status == 201) {
             dispatch(resetCart());
             setPaymentStatus("success");
             toast.success("Order successful!");

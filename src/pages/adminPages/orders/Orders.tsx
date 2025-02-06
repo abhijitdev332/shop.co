@@ -197,7 +197,7 @@ const Orders = () => {
                       </li>
                       <li>
                         <select
-                          className="select  w-full bg-white !text-black"
+                          className="select select-bordered  w-full bg-white !text-black"
                           onChange={(ev) => {
                             setSelectedOrder(order?._id);
                             setOrdersStatus(ev.target.value);
