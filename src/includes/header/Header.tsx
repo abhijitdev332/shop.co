@@ -24,22 +24,25 @@ const Header = () => {
   const cartProduct = useSelector((state) => state.cart);
   const { status } = useSelector((store) => store.user);
   const [inputState, setInputState] = useState("");
-  const [query, setQuery] = useState("");
-  const searchRef = useRef();
-  const handleQuery = (ev) => {
-    setQuery(ev);
+  const [query, setQuery] = useState<string | null>(null);
+  const searchRef = useRef<HTMLDialogElement>(null);
+
+  const handleQuery = (ev: string) => {
+    setQuery(ev?.trim());
   };
-  const { data, isLoading } = useQueryItems(query);
+  const { data, isLoading } = useQueryItems(query ?? "");
   useEffect(() => {
     let timer;
-    if (inputState.trim() !== "" && searchRef.current) {
-      searchRef?.current?.showModal();
+    if (inputState?.trim() !== "") {
+      searchRef.current?.showModal(); // Show modal when user types
       timer = setTimeout(() => {
-        handleQuery(inputState);
+        handleQuery(inputState); // Update query after debounce
       }, 500);
     }
+
     return () => clearTimeout(timer);
   }, [inputState]);
+
   return (
     <>
       <header className="bg-white z-[10] sticky top-0">
@@ -53,7 +56,6 @@ const Header = () => {
                     type="checkbox"
                     id="my-drawer"
                     className="drawer-toggle"
-                    onChange={handleQuery}
                   ></input>
                   <span className="drawer-content">
                     <label
@@ -267,7 +269,7 @@ const Header = () => {
           <span className="loading loading-spinner loading-lg"></span>
         )}
         <List
-          data={data?.products}
+          data={data?.products || []}
           exstyle="flex flex-nowrap flex-col !gap-2"
           renderItem={(item) => <SearchProductCard product={item} />}
         />

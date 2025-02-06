@@ -104,10 +104,11 @@ export const useGetProductBySlug = (query = "", limit, skip) => {
     queryFn: () => getProductsByslug(query, limit, skip),
   });
 };
-export const useQueryItems = (query = "") => {
+export const useQueryItems = (query: string) => {
   return useQuery({
-    queryKey: ["getqueryitems", query],
+    queryKey: ["getqueryitems", query || ""], // Ensure it's always a string
     queryFn: () => getQueryItems(query),
+    enabled: Boolean(query), // Prevent execution on empty query
   });
 };
 
