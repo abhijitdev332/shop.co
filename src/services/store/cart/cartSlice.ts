@@ -99,8 +99,8 @@ const cartSlice = createSlice({
       }, 0);
       state.totalAmount = totalAmount;
     },
-    resetCart: () => {
-      return inital;
+    resetCart: (state) => {
+      state = inital;
     },
   },
   extraReducers: (builder) =>

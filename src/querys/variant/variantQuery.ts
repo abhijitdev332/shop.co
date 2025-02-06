@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { deleteVariant, updateVarint } from "../variant";
+import { deleteVariant, updateVarint } from "./variant";
 
 export const UpdateVariantMutation = () => {
   return useMutation({

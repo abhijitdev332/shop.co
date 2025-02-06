@@ -6,7 +6,10 @@ import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { newProduct } from "../../../querys/productQuery";
-import { multipleNewVariant, uploadImages } from "../../../querys/variant";
+import {
+  multipleNewVariant,
+  uploadImages,
+} from "../../../querys/variant/variant";
 import { RiLoopLeftLine } from "react-icons/ri";
 import { LoaderBtn } from "../../../components/component";
 

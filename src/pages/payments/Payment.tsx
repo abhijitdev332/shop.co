@@ -126,8 +126,22 @@ const PaymentPage = () => {
             <ul className="steps">
               <li className="step step-primary">Shop</li>
               <li className="step step-primary">Address</li>
-              <li className="step step-primary">Payment Done</li>
-              <li className={cl("step step-primary")}>Ordered</li>
+              <li
+                className={cl(
+                  "step ",
+                  paymentStatus == "success" ? "step-primary" : ""
+                )}
+              >
+                Payment Done
+              </li>
+              <li
+                className={cl(
+                  "step",
+                  newOrderMutation.isSuccess && "step-primary"
+                )}
+              >
+                Ordered
+              </li>
             </ul>
           </div>
           <div className="flex h-full w-full justify-center">

@@ -233,7 +233,7 @@ const Header = () => {
       {/* search modal */}
       <Modal
         modalRef={searchRef}
-        style="bg-white space-y-3 text-center max-w-md mx-auto"
+        style="bg-white space-y-3 text-center max-w-lg mx-auto"
         className="modal modal-top z-50 "
       >
         <label className="input input-bordered flex items-center bg-transparent gap-2">
