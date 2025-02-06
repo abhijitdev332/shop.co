@@ -1,38 +1,19 @@
-import React from "react";
 import { Link } from "react-router-dom";
 import { HiOutlineViewGridAdd } from "react-icons/hi";
-import { useQuery } from "@tanstack/react-query";
 import { useSelector } from "react-redux";
-import { userOrders } from "../../querys/orderQuery";
-const data = [
-  {
-    id: "123456",
-    date: "2025-01-01T10:00:00Z",
-    items: [
-      { name: "Product A", quantity: 2 },
-      { name: "Product B", quantity: 1 },
-    ],
-    totalAmount: 500,
-    status: "delivered",
-  },
-  {
-    id: "123457",
-    date: "2024-12-25T15:30:00Z",
-    items: [{ name: "Product C", quantity: 3 }],
-    totalAmount: 300,
-    status: "pending",
-  },
-];
+import { useGetUserOrders } from "../../querys/order/orderQuery";
+
 const imageUrl =
   "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
 const OrdersPage = () => {
   const { userDetails } = useSelector((store) => store.user);
   const userId = userDetails?._id;
-  const { data, error } = useQuery({
-    queryKey: ["userOrders", userId],
-    queryFn: () => userOrders(userId),
-  });
-  let products = data?.data?.data;
+  const { data: products } = useGetUserOrders(userId);
+  // const { data, error } = useQuery({
+  //   queryKey: ["userOrders", userId],
+  //   queryFn: () => userOrders(userId),
+  // });
+  // let products = data?.data?.data;
   return (
     <section>
       <div className="wrapper md:px-20">

@@ -1,11 +1,11 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import authImg from "../../assets/svgs/auth/frame.svg";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { registrationSchema } from "./schema";
+import { registrationSchema } from "./authSchema";
 import { CreateUserMutaion } from "../../querys/user/userQuery";
 // Validation schema with Zod
 

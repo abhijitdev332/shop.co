@@ -15,12 +15,12 @@ import style from "./style.module.scss";
 import { IoEye } from "react-icons/io5";
 import { MdModeEdit } from "react-icons/md";
 import { toast } from "react-toastify";
-import { UpdateOrderStausMutaion } from "../../../querys/orderQuery";
 import { getadminOrdersKey } from "../../../querys/admin/adminApi";
 import {
   useProductOrderDetails,
   useGetProductById,
 } from "../../../querys/product/productQuery";
+import { UpdateOrderStausMutaion } from "../../../querys/order/orderQuery";
 // default img url
 const imgUrl =
   "https://images.pexels.com/photos/769733/pexels-photo-769733.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1";

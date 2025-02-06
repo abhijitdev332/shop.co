@@ -11,12 +11,14 @@ import {
 import cl from "classnames";
 import { RemoveFromCartMutaion } from "../../querys/cart/cartQuery";
 import { toast } from "react-toastify";
+import { LoaderBtn } from "../../components/component";
 
 const CartProduct = ({ product }) => {
+  const dispatch = useDispatch();
   const { userDetails } = useSelector((store) => store.user);
   const removeProductMutaion = RemoveFromCartMutaion();
-  const [quantity, setQuantity] = useState<number>(product?.quantity || 1);
-  const dispatch = useDispatch();
+  const [quantity, setQuantity] = useState(product?.quantity || 1);
+  // handlers
   const addQuantityClick = () => {
     if (quantity >= product?.stock) {
       return toast.info(`Only ${product?.stock} stock Available!!`);
@@ -81,14 +83,15 @@ const CartProduct = ({ product }) => {
             </p>
           </div>
           <div className="flex sm:flex-col gap-3 justify-between ms-auto">
-            <button
+            <LoaderBtn
+              pending={removeProductMutaion.isPending}
+              handleClick={handleProductRemove}
               className="sm:self-end order-2 sm:order-1 btn btn-ghost rounded-full hover:bg-gray-200"
-              onClick={handleProductRemove}
             >
               <span>
                 <RiDeleteBin6Fill color="red" fontSize={"1.3rem"} />
               </span>
-            </button>
+            </LoaderBtn>
 
             <div className="btn btn-ghost shadow bg-gray-200 flex gap-4 py-2 w-32  rounded-badge">
               <button onClick={minusQuantityClick}>

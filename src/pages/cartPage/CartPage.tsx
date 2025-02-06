@@ -1,10 +1,9 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { PiCurrencyDollarBold } from "react-icons/pi";
 import { useSelector } from "react-redux";
 import CartProduct from "./CartProduct";
 import { IoArrowForward } from "react-icons/io5";
 import { Link, useNavigate } from "react-router-dom";
-import { PrivateAxios } from "../../services/api/api";
 
 const CartPage = () => {
   const { products, totalAmount } = useSelector((state) => state.cart);
@@ -46,38 +45,10 @@ const CartPage = () => {
 
 function CartCheckOut({ subTotal }) {
   const navigate = useNavigate();
-  const { products } = useSelector((store) => store.cart);
   const [discount, setDiscount] = useState<number>(0);
   const [delhivery, setDelivery] = useState<number>(50);
   const [totalAmount, setTotalAmount] = useState(0);
 
-  const handleCheckout = async () => {
-    let productData = products?.map((ele) => ({
-      name: ele?.name,
-      image: ele?.imgurl,
-      price: ele?.price,
-      quantity: ele?.quantity,
-    }));
-    let delivery = {
-      name: "Delihivery Fees",
-      price: delhivery,
-      quantity: 1,
-    };
-    let discountCode = {
-      code: "Discount10",
-      price: discount,
-      percent: 10,
-    };
-
-    let res = await PrivateAxios.post("/payment/checkout", {
-      productData,
-      delivery,
-      discountCode,
-    });
-    if (res.status == 200) {
-      window.location.href = res.data?.data?.paymentUrl;
-    }
-  };
   useEffect(() => {
     setDiscount(() => {
       let dis = (subTotal * 10) / 100;
@@ -142,9 +113,9 @@ function CartEmpty() {
   return (
     <>
       <div className="flex flex-col gap-4 justify-center items-center">
-        <p className="text-xl font-bold">Cart Empty</p>
+        <p className="text-xl font-bold">Cart Empty!!</p>
         <p>Please add Some Products</p>
-        <button className="btn btn-info text-lg">
+        <button className="btn btn-neutral text-lg">
           <Link to={"/"}>Shop</Link>
         </button>
       </div>

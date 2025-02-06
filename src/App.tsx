@@ -17,6 +17,7 @@ import {
   OrdersItemPage,
   CartAddress,
   LoaderScreen,
+  PaymentPage,
 } from "./pages/page";
 import { HomePage } from "./pages/page";
 import {
@@ -76,6 +77,14 @@ const router = createBrowserRouter(
           element={
             <GuestProtected>
               <CartAddress />
+            </GuestProtected>
+          }
+        />
+        <Route
+          path="payment"
+          element={
+            <GuestProtected>
+              <PaymentPage />
             </GuestProtected>
           }
         />

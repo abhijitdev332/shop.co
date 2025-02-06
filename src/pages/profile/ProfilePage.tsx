@@ -1,15 +1,14 @@
-import React, { useEffect, useId, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  createAddress,
-  deleteAddress,
-  getUserAddress,
-} from "../../querys/addressQuery";
+  CreateAddressMutaion,
+  useGetUserAddress,
+} from "../../querys/address/addressQuery";
 import { IoMdAdd } from "react-icons/io";
 import { LoaderBtn, Modal } from "../../components/component";
 import { FaLocationArrow } from "react-icons/fa";
@@ -37,13 +36,10 @@ const imageUrl =
 const ProfilePage = () => {
   const dispatch = useDispatch();
   const updateMutation = UpdateUserMutaion();
+  const addressAddMutation = CreateAddressMutaion();
   const { userDetails } = useSelector((store) => store.user);
   const userId = userDetails?._id;
-  const { data } = useQuery({
-    queryKey: ["userAddress", userId],
-    queryFn: () => getUserAddress(userId),
-  });
-  let userAddress = data?.data?.data || [];
+  const { data: userAddress } = useGetUserAddress(userId);
   const queryClient = useQueryClient();
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const modalRef = useRef(null);
@@ -80,22 +76,9 @@ const ProfilePage = () => {
   } = useForm<AddressFormInputs>({
     resolver: zodResolver(addressSchema),
   });
-  const { mutate: addressAddMutation, isPending: addresAddPending } =
-    useMutation({
-      mutationKey: ["addAddress", { useId }],
-      mutationFn: (data) => createAddress(data),
-      onSuccess: (data) => {
-        if (modalRef?.current) {
-          modalRef.current?.close();
-        }
-        reset();
-        toast.success(data.data?.message);
-        queryClient.invalidateQueries(["userAddress", userId]);
-      },
-    });
+
   const handleAddressSubmit = async (data: AddressFormInputs) => {
-    // addressAddMutation
-    addressAddMutation({ userId: userId, ...data });
+    addressAddMutation.mutate({ userId: userId, ...data });
   };
   const { mutate: addressDelMutaion, isPending: addressDelPending } =
     useMutation({
@@ -123,6 +106,15 @@ const ProfilePage = () => {
       dispatch(setUser(updateMutation?.data?.data));
     }
   }, [updateMutation.isSuccess]);
+
+  useEffect(() => {
+    if (addressAddMutation.isSuccess) {
+      modalRef.current?.close();
+      reset();
+      toast.success(addressAddMutation.data?.message);
+      queryClient.invalidateQueries(["userAddress", userId]);
+    }
+  }, [addressAddMutation.isSuccess]);
   return (
     <>
       <section>
@@ -336,7 +328,7 @@ const ProfilePage = () => {
             ))}
             <div className="flex justify-center py-2">
               <LoaderBtn
-                pending={addresAddPending}
+                pending={addressAddMutation.isPending}
                 type="submit"
                 style="!flex gap-1 !text-white"
               >

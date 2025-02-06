@@ -1,10 +1,13 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useDispatch, useSelector } from "react-redux";
-import { createAddress, getUserAddress } from "../../querys/addressQuery";
+import { useQueryClient } from "@tanstack/react-query";
+import { useSelector } from "react-redux";
+import {
+  CreateAddressMutaion,
+  useGetUserAddress,
+} from "../../querys/address/addressQuery";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { IoMdAdd } from "react-icons/io";
 import { LoaderBtn, Modal } from "../../components/component";
@@ -12,156 +15,26 @@ import { FaLocationArrow } from "react-icons/fa";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import cl from "classnames";
 import { IoArrowForward } from "react-icons/io5";
-import { newPayment, verifyPayment } from "../../querys/payments";
-import { newOrder } from "../../querys/orderQuery";
-import { resetCart } from "../../services/store/cart/cartSlice";
-const addressSchema = z.object({
-  landMark: z.string().min(1, "land mark is required"),
-  houseNo: z.string().optional(),
-  city: z.string().min(1, "city is required"),
-  district: z.string().optional(),
-  state: z.string().min(1, "state is required"),
-  country: z.string().min(1, "country is required"),
-  pin: z.string().min(6, "pincode should 6 digits"),
-});
-const addressObject = {
-  landMark: "",
-  houseNo: "",
-  city: "",
-  district: "",
-  state: "",
-  country: "",
-  pin: "",
-};
+import { addressObject, addressSchema } from "../../schema/user/addressSchema";
 
 type AddressFormInputs = z.infer<typeof addressSchema>;
 const CartAddress = () => {
   const navigate = useNavigate();
-  const { userDetails } = useSelector((store) => store.user);
-  const { products } = useSelector((store) => store.cart);
-  const dispatch = useDispatch();
-  const cart = useSelector((store) => store.cart);
   const { state } = useLocation();
   const queryClient = useQueryClient();
+  const { userDetails } = useSelector((store) => store.user);
+  const { products } = useSelector((store) => store.cart);
   const userId = userDetails?._id || "";
-  const { data } = useQuery({
-    queryKey: ["userAddress", userId],
-    queryFn: () => getUserAddress(userId),
-    refetchOnWindowFocus: true,
-  });
-  let userAddress = data?.data?.data || [];
+  const addressAddMutation = CreateAddressMutaion();
+  const { data: userAddress } = useGetUserAddress(userId);
   const [selectedAddress, setSelectedAddress] = useState("");
-  const [checkoutUrl, setCheckoutUrl] = useState("");
   const modalRef = useRef(null);
-  const { mutate } = useMutation({
-    mutationKey: ["newpayment"],
-    mutationFn: (data) => newPayment(data),
-    onSuccess: async (data) => {
-      setCheckoutUrl(data?.data?.data?.paymentUrl);
-      let checkoutUrl = data?.data?.data?.paymentUrl;
-      const checkoutWindow = window.open(
-        checkoutUrl,
-        "_blank",
-        "width=600,height=700"
-      );
-
-      if (checkoutWindow) {
-        const sessionId = data?.data?.data?.sessionId;
-        pollPaymentStatus(sessionId, checkoutWindow);
-      }
-    },
-  });
-  const { mutateAsync: verifyMutaion } = useMutation({
-    mutationKey: ["verify-payment", checkoutUrl],
-    mutationFn: (session) => verifyPayment(session),
-    // onSuccess: (data) => {
-    //   toast.success(data?.data?.message);
-    // },
-  });
-  const { mutateAsync: orderMutation } = useMutation({
-    mutationKey: ["newOrder", checkoutUrl],
-    mutationFn: (data) => newOrder(data),
-    onSuccess: () => {
-      dispatch(resetCart());
-    },
-  });
-
-  const pollPaymentStatus = (
-    sessionId: string,
-    checkoutWindow: Window | null
-  ) => {
-    const timeoutDuration = 60 * 1000; // 2 minutes
-    const pollingInterval = 3000; // Poll every 3 seconds
-    let interval;
-    // Auto-close after 2 minutes
-    const timeout = setTimeout(() => {
-      console.warn("Payment verification timed out.");
-      if (checkoutWindow) checkoutWindow.close();
-      clearInterval(interval);
-      navigate("/declined");
-      toast.error("Payment verification timed out. Please try again.");
-    }, timeoutDuration);
-
-    interval = setInterval(async () => {
-      if (
-        checkoutWindow?.closed ||
-        checkoutWindow?.location?.href?.includes("/declined")
-      ) {
-        checkoutWindow?.close();
-        clearInterval(interval);
-        clearTimeout(timeout);
-        navigate("/declined");
-        toast.error("Payment verification Failed. Please try again.");
-      }
-
-      let res = await verifyMutaion(sessionId);
-      if (res.status == 200) {
-        const paymentStatus = res.data?.data?.payment_status;
-        if (paymentStatus === "paid") {
-          clearInterval(interval);
-          clearTimeout(timeout);
-          if (checkoutWindow) checkoutWindow.close();
-          let paymentDetails = res.data?.data;
-          let orderData = {
-            products: cart?.products?.map((prod) => ({
-              productId: prod?.productId,
-              variantId: prod?.variantId,
-              quantity: prod?.quantity,
-            })),
-            address: paymentDetails?.metadata?.address,
-            userId: paymentDetails?.metadata?.userId,
-            transactionId: paymentDetails?.payment_intent,
-            totalAmount:
-              cart?.totalAmount +
-              paymentDetails?.total_details?.amount_shipping / 100 -
-              paymentDetails?.total_details?.amount_discount / 100,
-            discount: paymentDetails?.total_details?.amount_discount / 100,
-          };
-
-          let orderRes = await orderMutation(orderData);
-          if (orderRes.status === 201) {
-            navigate("/success");
-            toast.success("Order successful!");
-          }
-        } else if (paymentStatus === "unpaid" || paymentStatus === "canceled") {
-          clearInterval(interval);
-          clearTimeout(timeout);
-          if (checkoutWindow) checkoutWindow.close();
-          navigate("/declined");
-          toast.error(
-            paymentStatus === "canceled"
-              ? "Payment was canceled by the user."
-              : "Payment failed. Please try again."
-          );
-        }
-      }
-    }, pollingInterval); // runs every 3 seconds
-  };
   //   chekcout func
   const handleCheckout = async () => {
     if (selectedAddress == "") {
       return toast.info("Please select an address");
     }
+    // make the data
     let productData = products?.map((ele) => ({
       name: ele?.name,
       image: ele?.imgurl,
@@ -185,7 +58,7 @@ const CartAddress = () => {
       addressId: selectedAddress,
       userId: userId,
     };
-    mutate(data);
+    navigate("/payment", { state: data });
   };
   const {
     register: addressReg,
@@ -195,23 +68,17 @@ const CartAddress = () => {
   } = useForm<AddressFormInputs>({
     resolver: zodResolver(addressSchema),
   });
-  const { mutate: addressAddMutation, isPending: addresAddPending } =
-    useMutation({
-      mutationKey: ["addAddress", { userId }],
-      mutationFn: (data) => createAddress(data),
-      onSuccess: (data) => {
-        if (modalRef?.current) {
-          modalRef.current?.close();
-        }
-        reset();
-        toast.success(data.data?.message);
-        queryClient.invalidateQueries(["userAddress", userId]);
-      },
-    });
   const handleAddressSubmit = async (data: AddressFormInputs) => {
-    // addressAddMutation
-    addressAddMutation({ userId: userId, ...data });
+    addressAddMutation.mutate({ userId: userId, ...data });
   };
+  useEffect(() => {
+    if (addressAddMutation.isSuccess) {
+      modalRef.current?.close();
+      reset();
+      toast.success(addressAddMutation.data?.message);
+      queryClient.invalidateQueries(["userAddress", userId]);
+    }
+  }, [addressAddMutation.isSuccess]);
 
   return (
     <>
@@ -238,7 +105,6 @@ const CartAddress = () => {
               <li className="step"></li>
             </ul>
           </div>
-
           {/* addres cards */}
           <div>
             <h2 className="text-xl font-bold py-4">Please Select An Address</h2>
@@ -258,11 +124,12 @@ const CartAddress = () => {
                     <span>{addr?.city},</span>
                     <span>{addr?.state},</span>
                     <span>{addr?.country},</span>
+                    <span>{addr?.mobile},</span>
                     <span>{addr?.pin}</span>
                   </p>
                 </div>
               ))}
-
+              {/* new address modal */}
               <div className="w-60 h-fit sm:h-40 flex justify-center items-center p-5 bg-white shadow-lg rounded-lg my-4">
                 <button
                   onClick={() => {
@@ -290,6 +157,7 @@ const CartAddress = () => {
               <IoArrowForward />
             </button>
           </div>
+          {/* modal add adress */}
           <Modal modalRef={modalRef}>
             <div className="wrapper">
               <div className="flex flex-col gap-2 p-2">
@@ -315,26 +183,20 @@ const CartAddress = () => {
                   ))}
                   <div className="flex justify-center py-2">
                     <LoaderBtn
-                      pending={addresAddPending}
+                      pending={addressAddMutation.isPending}
                       type="submit"
                       style="!flex gap-1 !btn-primary"
                     >
-                      <FaLocationArrow />
-                      <span>Save Address</span>
+                      <>
+                        <FaLocationArrow />
+                        <span>Save Address</span>
+                      </>
                     </LoaderBtn>
                   </div>
                 </form>
               </div>
             </div>
           </Modal>
-          {/* <dialog id="my_modal_2" className="modal" ref={modalRef}>
-            <div className="modal-box bg-white w-lg">
-            
-            </div>
-            <form method="dialog" className="modal-backdrop">
-              <button>close</button>
-            </form>
-          </dialog> */}
         </div>
       </section>
     </>

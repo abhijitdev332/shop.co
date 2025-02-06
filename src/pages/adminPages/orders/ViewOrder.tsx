@@ -1,10 +1,6 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import {
-  UpdateOrderStausMutaion,
-  useGetOrderDetails,
-} from "../../../querys/orderQuery";
 
 import {
   LoaderBtn,
@@ -12,6 +8,10 @@ import {
   TableCell,
   TableHeader,
 } from "../../../components/component";
+import {
+  UpdateOrderStausMutaion,
+  useGetOrderDetails,
+} from "../../../querys/order/orderQuery";
 const ordersStatus = ["pending", "shipped", "delivered"];
 const OrderDetailsPage = () => {
   const { id } = useParams();

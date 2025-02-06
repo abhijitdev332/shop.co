@@ -10,16 +10,17 @@ import {
   TableHeader,
 } from "../../../components/component";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { updateOrderStatus } from "../../../querys/orderQuery";
 import { toast } from "react-toastify";
 import { getadminOrdersKey } from "../../../querys/admin/adminApi";
 import { AdminPagination } from "../adminPages";
+import { UpdateOrderStausMutaion } from "../../../querys/order/orderQuery";
 const ordersStatus = ["pending", "shipped", "delivered"];
 const Orders = () => {
   const itemsPerPage = 5;
   const [currentPage, setCurrentPage] = useState(1);
   const { data, isLoading } = useAdminOrders(currentPage, itemsPerPage);
   const queryClient = useQueryClient();
+  const updateOrderMutaion = UpdateOrderStausMutaion();
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
   const [selectedOrder, setSelectedOrder] = useState({});
   const [orderStatusstate, setOrdersStatus] = useState("");
@@ -38,18 +39,18 @@ const Orders = () => {
     }
   };
   // update order status
-  const updateOrderMutaion = useMutation({
-    mutationKey: ["updateOrderStaus"],
-    mutationFn: (data) => updateOrderStatus(selectedOrder, data),
-    onSuccess: (data) => {
-      toast.success(data?.data?.message);
-      queryClient.invalidateQueries([
-        getadminOrdersKey,
-        "orders",
-        selectedOrder,
-      ]);
-    },
-  });
+  // const updateOrderMutaion = useMutation({
+  //   mutationKey: ["updateOrderStaus"],
+  //   mutationFn: (data) => updateOrderStatus(selectedOrder, data),
+  //   onSuccess: (data) => {
+  //     toast.success(data?.data?.message);
+  //     queryClient.invalidateQueries([
+  //       getadminOrdersKey,
+  //       "orders",
+  //       selectedOrder,
+  //     ]);
+  //   },
+  // });
   const handleUpdateOrderStatus = () => {
     if (orderStatusstate !== "") {
       updateOrderMutaion.mutate({ status: orderStatusstate });

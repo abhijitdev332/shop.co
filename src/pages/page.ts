@@ -9,6 +9,7 @@ import OrdersPage from "./orders/OrdersPage";
 import ProfilePage from "./profile/ProfilePage";
 import OrdersItemPage from "./orderItems/OrdersITemsPage";
 import CartAddress from "./cartPage/CartAddress";
+import PaymentPage from "./payments/Payment";
 
 export {
   LoaderScreen,
@@ -22,4 +23,5 @@ export {
   ProfilePage,
   OrdersItemPage,
   CartAddress,
+  PaymentPage,
 };

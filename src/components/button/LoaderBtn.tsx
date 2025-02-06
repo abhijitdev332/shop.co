@@ -1,10 +1,9 @@
-import React from "react";
 import cl from "classnames";
 const LoaderBtn = ({
   pending = false,
-  handleClick = () => null,
+  handleClick,
   style = "",
-  children = "",
+  children,
   ...others
 }) => {
   return (

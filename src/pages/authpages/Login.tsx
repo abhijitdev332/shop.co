@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 import { LoginMutaion } from "../../querys/authQuery";
 import { useDispatch } from "react-redux";
 import { setUser } from "../../services/store/user/userSlice";
-import { loginSchema } from "./schema";
+import { loginSchema } from "./authSchema";
 import { useEffect } from "react";
 import { getInitalCart } from "../../services/store/cart/cartSlice";
 
@@ -33,7 +33,7 @@ const LoginPage: React.FC = () => {
   useEffect(() => {
     if (loginMutaion.isSuccess) {
       toast.success("Login SuccessFull");
-      dispatch(getInitalCart(loginMutaion?.data?._id));
+      dispatch(getInitalCart(loginMutaion?.data?._id) as any);
       dispatch(setUser(loginMutaion?.data));
       setTimeout(() => {
         navigate("/");
@@ -50,7 +50,6 @@ const LoginPage: React.FC = () => {
           <p className="mt-2 text-sm text-gray-600">
             Welcome back! Please enter your credentials to continue.
           </p>
-
           <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-4">
             {/* Email Input */}
             <div>

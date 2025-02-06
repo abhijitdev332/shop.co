@@ -22,7 +22,6 @@ import { FaMoneyBill } from "react-icons/fa";
 import { AdminPagination } from "./adminPages";
 import { MdPendingActions } from "react-icons/md";
 import { useQuery } from "@tanstack/react-query";
-import { topSelling } from "../../querys/productQuery";
 import {
   adminTopCategories,
   useAdminOrders,
@@ -500,7 +499,7 @@ const OrdersByCountry = () => {
     <>
       <div className="p-3 h-fit">
         <div className="flex flex-col">
-          <h2 className="font-bold text-xl">Top Category</h2>
+          <h2 className="font-bold text-xl">Orders By Country</h2>
           {/* <p>Lorem ipsum dolor sit amet consectetur.</p> */}
         </div>
         <div className="flex flex-col gap-3 py-3 overflow-y-auto overflow-x-hidden">
