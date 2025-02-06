@@ -6,6 +6,7 @@ import {
   getProductById,
   getProductOrderDetails,
   getProductsByslug,
+  getQueryItems,
   getRelativeProducts,
   getShopAllProducts,
   getTopSelling,
@@ -101,6 +102,12 @@ export const useGetProductBySlug = (query = "", limit, skip) => {
   return useQuery({
     queryKey: ["getproductbyslug", query, limit, skip],
     queryFn: () => getProductsByslug(query, limit, skip),
+  });
+};
+export const useQueryItems = (query = "") => {
+  return useQuery({
+    queryKey: ["getqueryitems", query],
+    queryFn: () => getQueryItems(query),
   });
 };
 

@@ -1,5 +1,4 @@
 import { FC, SyntheticEvent, useState } from "react";
-import { product } from "../../types/product";
 import { useDispatch, useSelector } from "react-redux";
 import { addProduct, removeProduct } from "../../services/store/cart/cartSlice";
 import { Star } from "../component";

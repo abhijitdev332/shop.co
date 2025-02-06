@@ -2,6 +2,8 @@ import { Link } from "react-router-dom";
 import { HiOutlineViewGridAdd } from "react-icons/hi";
 import { useSelector } from "react-redux";
 import { useGetUserOrders } from "../../querys/order/orderQuery";
+import { DateFormat } from "../../utils/utils";
+import Badge from "../../components/button/Badge";
 
 const imageUrl =
   "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
@@ -9,11 +11,6 @@ const OrdersPage = () => {
   const { userDetails } = useSelector((store) => store.user);
   const userId = userDetails?._id;
   const { data: products } = useGetUserOrders(userId);
-  // const { data, error } = useQuery({
-  //   queryKey: ["userOrders", userId],
-  //   queryFn: () => userOrders(userId),
-  // });
-  // let products = data?.data?.data;
   return (
     <section>
       <div className="wrapper md:px-20">
@@ -61,31 +58,11 @@ const OrdersPage = () => {
                           Order ID: {order._id.slice(0, 8)}
                         </p>
                         <p className="text-sm text-gray-600">
-                          Date:{" "}
-                          {new Date(order.createdAt).toLocaleDateString(
-                            "en-GB"
-                          )}
+                          Date:
+                          {DateFormat(order.createdAt)}
                         </p>
                       </div>
-                      {order.status === "delivered" ? (
-                        <>
-                          <p
-                            className={
-                              "badge badge-success badge-lg capitalize"
-                            }
-                          >
-                            {order.status}
-                          </p>
-                        </>
-                      ) : (
-                        <>
-                          <p
-                            className={"badge badge-accent badge-lg capitalize"}
-                          >
-                            {order.status}
-                          </p>
-                        </>
-                      )}
+                      <Badge status={order?.status} style="p-0 !h-fit" />
                     </div>
 
                     <div className="mt-2 text-sm text-gray-700">

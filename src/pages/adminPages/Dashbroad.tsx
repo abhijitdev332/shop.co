@@ -32,6 +32,7 @@ import {
 import { Link } from "react-router-dom";
 import { TableBody, TableCell, TableHeader } from "../../components/component";
 import { useTopSelling } from "../../querys/product/productQuery";
+import Badge from "../../components/button/Badge";
 const Dashbroad = () => {
   const times = ["7d", "1m", "1y"];
   const [selectedTime, setSelectedTime] = useState("7d");
@@ -393,9 +394,9 @@ const RecentOrders = () => {
       <div className="flex  justify-between items-center mb-6">
         <h2 className="text-xl space-x-2 font-bold text-gray-800">
           <span>Recent Orders</span>
-          <span className="rounded-btn text-xs bg-green-200 px-2 py-1">
+          {/* <span className="rounded-btn text-xs bg-green-200 px-2 py-1">
             +20 Orders
-          </span>
+          </span> */}
         </h2>
         <div className="flex items-center space-x-4">
           <Link
@@ -456,15 +457,7 @@ const RecentOrders = () => {
                   </TableCell>
                   <TableCell>${ele?.totalAmount}</TableCell>
                   <TableCell>
-                    {ele?.status == "pending" ? (
-                      <span className="badge rounded-btn badge-md py-3 capitalize">
-                        {ele?.status}
-                      </span>
-                    ) : (
-                      <span className="badge badge-success capitalize rounded-btn badge-md py-3">
-                        {ele?.status}
-                      </span>
-                    )}
+                    <Badge status={ele?.status} />
                   </TableCell>
                   <TableCell>
                     <div className="flex gap-1">

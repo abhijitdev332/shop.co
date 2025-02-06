@@ -1,11 +1,13 @@
-import React from "react";
 import { Link, ScrollRestoration, useParams } from "react-router-dom"; // Assuming React Router is used
 import { useGetOrderDetails } from "../../querys/order/orderQuery";
+import { TableBody, TableCell, TableHeader } from "../../components/component";
+import { DateFormat } from "../../utils/utils";
+import Badge from "../../components/button/Badge";
 
 const imageUrl =
   "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
 
-const OrderDetails: React.FC = () => {
+const OrderDetails = () => {
   const { id } = useParams();
   const { data: orderDetails } = useGetOrderDetails(id);
   return (
@@ -40,57 +42,47 @@ const OrderDetails: React.FC = () => {
               </p>
               <p>
                 <span className="font-semibold my-3">Order Date:</span>
-                {new Date(orderDetails?.createdAt).toLocaleDateString()}
+                {DateFormat(orderDetails?.createdAt)}
               </p>
               <p>
                 <span className="font-semibold">Status:</span>
-                <span
-                  className={`px-2 py-1 rounded-btn capitalize ${
-                    orderDetails?.status === "delivered"
-                      ? "bg-green-100 text-green-800"
-                      : "bg-yellow-100 text-yellow-800"
-                  }`}
-                >
-                  {orderDetails?.status}
-                </span>
+                <Badge status={orderDetails?.status} />
               </p>
             </div>
-
             {/* Items Table */}
             <div className="overflow-x-auto shadow-lg bg-white rounded-xl p-2">
               <table className="w-full">
-                <thead className="">
-                  <tr>
-                    <th className=" px-4 py-2 text-left">Image</th>
-                    <th className=" px-4 py-2 text-left">Product Name</th>
-                    <th className=" px-4 py-2 text-left">Quantity</th>
-                    <th className=" px-4 py-2 text-left">Price</th>
-                    <th className=" px-4 py-2 text-left">Total</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {orderDetails?.products?.map((item, index) => (
-                    <tr key={index} className="text-black">
-                      <td className=" px-4 py-2">
-                        <img
-                          src={item?.variantId?.images?.[0]?.url}
-                          alt={item.productId?.name}
-                          className="w-16 h-16 object-cover rounded"
-                        />
-                      </td>
-                      <td className=" px-4 py-2 capitalize  ">
-                        {item?.productId?.name}
-                      </td>
-                      <td className=" px-4 py-2">{item?.quantity}</td>
-                      <td className=" px-4 py-2">
-                        ${item?.variantId?.sellPrice}
-                      </td>
-                      <td className=" px-4 py-2">
-                        ${item?.quantity * item?.variantId?.sellPrice}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
+                <TableHeader
+                  columns={[
+                    "Image",
+                    "Product Name",
+                    "Quantity",
+                    "Price",
+                    "Total",
+                  ]}
+                />
+                <TableBody
+                  columnsData={orderDetails?.products}
+                  renderItem={(item, index) => {
+                    return (
+                      <tr key={index} className="text-black">
+                        <TableCell>
+                          <img
+                            src={item?.variantId?.images?.[0]?.url}
+                            alt={item.productId?.name}
+                            className="w-16 h-16 object-cover rounded"
+                          />
+                        </TableCell>
+                        <TableCell>{item?.productId?.name}</TableCell>
+                        <TableCell>{item?.quantity}</TableCell>
+                        <TableCell>${item?.variantId?.sellPrice}</TableCell>
+                        <TableCell>
+                          ${item?.quantity * item?.variantId?.sellPrice}
+                        </TableCell>
+                      </tr>
+                    );
+                  }}
+                />
               </table>
             </div>
             {/* dicount  */}

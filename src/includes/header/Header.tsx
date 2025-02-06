@@ -11,17 +11,38 @@ import { IoIosArrowDown } from "react-icons/io";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { IoClose, IoLogOutSharp } from "react-icons/io5";
-import { Logout, Modal } from "../../components/component";
-import { useRef, useState } from "react";
+import {
+  List,
+  Logout,
+  Modal,
+  SearchProductCard,
+} from "../../components/component";
+import { useEffect, useRef, useState } from "react";
 import { MdOutlineStorage } from "react-icons/md";
+import { useQueryItems } from "../../querys/product/productQuery";
 const Header = () => {
   const cartProduct = useSelector((state) => state.cart);
   const { status } = useSelector((store) => store.user);
+  const [inputState, setInputState] = useState("");
+  const [query, setQuery] = useState("");
   const searchRef = useRef();
-
+  const handleQuery = (ev) => {
+    setQuery(ev);
+  };
+  const { data, isLoading } = useQueryItems(query);
+  useEffect(() => {
+    let timer;
+    if (inputState.trim() !== "" && searchRef.current) {
+      searchRef?.current?.showModal();
+      timer = setTimeout(() => {
+        handleQuery(inputState);
+      }, 500);
+    }
+    return () => clearTimeout(timer);
+  }, [inputState]);
   return (
     <>
-      <header className="bg-white z-10 sticky top-0">
+      <header className="bg-white z-[10] sticky top-0">
         <div className="lg:container mx-auto md:px-10">
           <div className="wrapper py-4 px-2 md:px-10">
             <div className="flex gap-1 sm:gap-3 items-center justify-between">
@@ -32,6 +53,7 @@ const Header = () => {
                     type="checkbox"
                     id="my-drawer"
                     className="drawer-toggle"
+                    onChange={handleQuery}
                   ></input>
                   <span className="drawer-content">
                     <label
@@ -64,16 +86,6 @@ const Header = () => {
                         <Link to={"/"}>Home</Link>
                       </li>
                       <li>
-                        {/* <button
-                          tabIndex={0}
-                          role="button"
-                          className="flex gap-1 items-center"
-                        >
-                          <span>Shop</span>
-                          <span>
-                            <IoIosArrowDown />
-                          </span>
-                        </button> */}
                         <div className="collapse bg-transparent w-fit h-fit">
                           <input type="checkbox" className="!h-[20px]" />
                           <div className="collapse-title text-center !h-[20px] p-0 flex justify-center items-center gap-1">
@@ -180,19 +192,9 @@ const Header = () => {
                 </ul>
               </div>
               {/* searchbar */}
-              <div className="flex h-full items-center justify-end md:justify-center basis-2/6">
-                <label className="hidden md:flex items-center rounded-badge px-2 py-2 bg-gray-200 ">
-                  <span>
-                    <RiSearch2Line />
-                  </span>
-                  <input
-                    id="search"
-                    type="text"
-                    className="bg-transparent px-2  hidden md:block text-black h-full w-full outline-none"
-                  />
-                </label>
+              <div className="flex h-full items-center justify-end  basis-2/6">
                 <label
-                  className="flex  md:hidden justify-center items-center rounded-badge px-2 py-2 bg-gray-200"
+                  className="flex   justify-end items-center rounded-badge px-2 py-2 bg-gray-200"
                   onClick={() => {
                     if (searchRef?.current) {
                       searchRef?.current?.showModal();
@@ -201,8 +203,9 @@ const Header = () => {
                     }
                   }}
                 >
-                  <span>
-                    <RiSearch2Line />
+                  <span className="flex gap-2 bg-gray-200 p-2 rounded-lg">
+                    <RiSearch2Line size={20} />
+                    Search
                   </span>
                 </label>
               </div>
@@ -221,43 +224,26 @@ const Header = () => {
                 </div>
 
                 {status ? <AuthProfile /> : <GuestProfile />}
-
-                {/* <div className="profile cursor-pointer dropdown dropdown-end">
-                <RiAccountCircleLine
-                  fontSize={"1.5rem"}
-                  role="button"
-                  className=""
-                  tabIndex={0}
-                />
-                <ul
-                  tabIndex={0}
-                  className="dropdown-content menu bg-slate-200 rounded-md z-[1] w-40 p-2 shadow"
-                >
-                  <li>
-                    <Link to={"/auth"}>Login</Link>
-                  </li>
-                  <li>
-                    <Link to={"/auth/signup"}>Sign Up</Link>
-                  </li>
-                </ul>
-              </div> */}
               </div>
             </div>
           </div>
         </div>
       </header>
-
       {/* sidebar drawer */}
-
       {/* search modal */}
-
       <Modal
         modalRef={searchRef}
-        style="bg-white space-y-3 text-center"
-        className="modal modal-top"
+        style="bg-white space-y-3 text-center max-w-md mx-auto"
+        className="modal modal-top z-50 "
       >
         <label className="input input-bordered flex items-center bg-transparent gap-2">
-          <input type="text" className="grow" placeholder="Search" />
+          <input
+            type="text"
+            className="grow"
+            value={inputState}
+            placeholder="Search"
+            onChange={(e) => setInputState(e.target.value)}
+          />
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 16 16"
@@ -271,9 +257,20 @@ const Header = () => {
             />
           </svg>
         </label>
-        <button className="btn btn-md btn-neutral my-3 text-white">
+        {/* <button
+          className="btn btn-md btn-neutral my-3 text-white"
+          onClick={() => setQuery(query)}
+        >
           Search
-        </button>
+        </button> */}
+        {isLoading && (
+          <span className="loading loading-spinner loading-lg"></span>
+        )}
+        <List
+          data={data?.products}
+          exstyle="flex flex-nowrap flex-col !gap-2"
+          renderItem={(item) => <SearchProductCard product={item} />}
+        />
       </Modal>
     </>
   );

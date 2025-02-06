@@ -24,6 +24,7 @@ const HomePage = () => {
             renderItem={(item) => <ProductCard product={item} />}
             viewLink="/product/slug?query=top"
           />
+          <div className="divider w-full"></div>
           {/* browse by category */}
           <Category />
           {/* customers review */}

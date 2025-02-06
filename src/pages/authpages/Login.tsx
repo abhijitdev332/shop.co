@@ -37,7 +37,7 @@ const LoginPage: React.FC = () => {
       dispatch(setUser(loginMutaion?.data));
       setTimeout(() => {
         navigate("/");
-      }, 1000);
+      }, 2000);
     }
   }, [loginMutaion.isSuccess]);
 

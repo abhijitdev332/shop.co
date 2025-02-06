@@ -1,5 +1,5 @@
 import { useQueryClient } from "@tanstack/react-query";
-import React, { useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { IoEye } from "react-icons/io5";
 import { Link } from "react-router-dom";
@@ -14,6 +14,8 @@ import {
 } from "../../../components/component";
 import { AdminPagination } from "../adminPages";
 import { DeleteUserMutation } from "../../../querys/user/userQuery";
+import { DateFormat } from "../../../utils/utils";
+import { AdminBadge } from "../../../components/button/btn";
 
 const UsersTable = () => {
   const deleteMutation = DeleteUserMutation();
@@ -30,7 +32,6 @@ const UsersTable = () => {
       prev.includes(id) ? prev.filter((pid) => pid !== id) : [...prev, id]
     );
   };
-
   // Select or deselect all products
   const toggleSelectAll = () => {
     if (selectedProducts.length === data?.allUsers?.length) {
@@ -39,17 +40,7 @@ const UsersTable = () => {
       setSelectedProducts(data?.allUsers?.map((user) => user?._id));
     }
   };
-  // const { mutate: deleteMutation } = useMutation({
-  //   mutationKey: ["deleteUser"],
-  //   mutationFn: (id) => deleteUser(id),
-  //   onSuccess: (data) => {
-  //     toast.success(data?.data?.message);
-  //     modalRef.current?.close();
-  //     queryClient.invalidateQueries("adminUsers");
-  //   },
-  // });
   const handleDelete = () => {
-    // deleteSelect
     deleteMutation.mutate(deleteSelect);
   };
   const ImageLetter = ({ name = "" }) => {
@@ -156,7 +147,7 @@ const UsersTable = () => {
                     <TableCell>
                       <div className="flex gap-2">
                         {eachUser?.roles?.map((role) => (
-                          <span className="badge  badge-primary">{role}</span>
+                          <AdminBadge status={role} />
                         ))}
                       </div>
                     </TableCell>
@@ -173,11 +164,7 @@ const UsersTable = () => {
                     </TableCell>
 
                     {/* added */}
-                    <TableCell>
-                      {new Date(eachUser?.createdAt).toLocaleDateString(
-                        "en-GB"
-                      )}
-                    </TableCell>
+                    <TableCell>{DateFormat(eachUser?.createdAt)}</TableCell>
 
                     {/* Price */}
 

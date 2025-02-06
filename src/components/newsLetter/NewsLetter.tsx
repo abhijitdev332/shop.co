@@ -11,14 +11,14 @@ function NewsLetter() {
           <div className="flex flex-col justify-center items-center gap-2 basis-1/3">
             <label
               htmlFor=""
-              className="flex items-center gap-2   bg-white w-[18rem] py-2 rounded-badge px-2  h-fit"
+              className="flex items-center gap-2   !bg-white w-[18rem] py-2 rounded-badge px-2  h-fit"
             >
               <span>
                 <FiMail />
               </span>
               <input
                 type="text"
-                className="bg-transparent outline-none px-2"
+                className="outline-none px-2"
                 placeholder="Enter Your Mail"
               />
             </label>

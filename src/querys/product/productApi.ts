@@ -56,7 +56,6 @@ export let getProductByCategory = async (query = "") => {
       return categoryData?.data;
   }
 };
-
 export let newProduct = async (productData) => {
   return await PrivateAxios.post("/product/create", productData);
 };
@@ -97,4 +96,8 @@ export let getRelativeProducts = async (id = "", limit = 5, skip = 0) => {
 export const updateProduct = async (productId = "", body = "") => {
   let { data } = await PrivateAxios.put(`/product/update/${productId}`, body);
   return data;
+};
+export const getQueryItems = async (query = "") => {
+  let { data } = await PrivateAxios.get(`/product/query?query=${query}`);
+  return data?.data;
 };

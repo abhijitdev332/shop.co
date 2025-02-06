@@ -116,7 +116,9 @@ function CartEmpty() {
         <p className="text-xl font-bold">Cart Empty!!</p>
         <p>Please add Some Products</p>
         <button className="btn btn-neutral text-lg">
-          <Link to={"/"}>Shop</Link>
+          <Link to={"/"} className="text-white">
+            Shop
+          </Link>
         </button>
       </div>
     </>

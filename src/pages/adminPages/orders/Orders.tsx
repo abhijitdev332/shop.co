@@ -9,11 +9,11 @@ import {
   TableCell,
   TableHeader,
 } from "../../../components/component";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast } from "react-toastify";
-import { getadminOrdersKey } from "../../../querys/admin/adminApi";
+import { useQueryClient } from "@tanstack/react-query";
 import { AdminPagination } from "../adminPages";
 import { UpdateOrderStausMutaion } from "../../../querys/order/orderQuery";
+import { DateFormat } from "../../../utils/utils";
+import Badge from "../../../components/button/Badge";
 const ordersStatus = ["pending", "shipped", "delivered"];
 const Orders = () => {
   const itemsPerPage = 5;
@@ -167,30 +167,20 @@ const Orders = () => {
                   </TableCell>
 
                   {/* date */}
-                  <TableCell>
-                    {new Date(order?.createdAt).toLocaleDateString("en-GB")}
-                  </TableCell>
+                  <TableCell>{DateFormat(order?.createdAt)}</TableCell>
 
                   {/* Category */}
                   <TableCell>{order?.userDetails?.username}</TableCell>
 
                   {/* Stock */}
-                  <TableCell>{order?.totalAmount}</TableCell>
+                  <TableCell>${order?.totalAmount}</TableCell>
 
                   {/* Price */}
                   <TableCell>{order?.paymentGateway}</TableCell>
 
                   {/* Status */}
                   <TableCell>
-                    {order?.status == "pending" ? (
-                      <span className="badge rounded-btn  !text-base !font-normal badge-md capitalize">
-                        {order?.status}
-                      </span>
-                    ) : (
-                      <span className="badge badge-success  !text-base !font-normal capitalize rounded-btn badge-md py-3">
-                        {order?.status}
-                      </span>
-                    )}
+                    <Badge status={order?.status} />
                   </TableCell>
 
                   {/* Actions */}

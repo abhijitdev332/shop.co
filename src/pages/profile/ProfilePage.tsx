@@ -1,12 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useDispatch, useSelector } from "react-redux";
 import {
   CreateAddressMutaion,
+  DeleteAddressMutaion,
   useGetUserAddress,
 } from "../../querys/address/addressQuery";
 import { IoMdAdd } from "react-icons/io";
@@ -16,34 +17,23 @@ import { toast } from "react-toastify";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import cl from "classnames";
 import { setUser } from "../../services/store/user/userSlice";
-import { addressSchema, profileSchema } from "./profileSchema";
 import { UpdateUserMutaion } from "../../querys/user/userQuery";
+import { addressObject, addressSchema } from "../../schema/user/addressSchema";
+import { profileSchema } from "../../schema/user/userSchema";
 
-const addressObject = {
-  landMark: "",
-  houseNo: "",
-  city: "",
-  district: "",
-  state: "",
-  country: "",
-  pin: "",
-};
 type ProfileFormInputs = z.infer<typeof profileSchema>;
 type AddressFormInputs = z.infer<typeof addressSchema>;
-const imageUrl =
-  "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
-
 const ProfilePage = () => {
   const dispatch = useDispatch();
   const updateMutation = UpdateUserMutaion();
   const addressAddMutation = CreateAddressMutaion();
+  const addressDelMutaion = DeleteAddressMutaion();
   const { userDetails } = useSelector((store) => store.user);
   const userId = userDetails?._id;
   const { data: userAddress } = useGetUserAddress(userId);
   const queryClient = useQueryClient();
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const modalRef = useRef(null);
-
   // user validation wiht hook form
   const {
     register,
@@ -80,19 +70,9 @@ const ProfilePage = () => {
   const handleAddressSubmit = async (data: AddressFormInputs) => {
     addressAddMutation.mutate({ userId: userId, ...data });
   };
-  const { mutate: addressDelMutaion, isPending: addressDelPending } =
-    useMutation({
-      mutationKey: ["deleteAddress"],
-      mutationFn: (id) => deleteAddress(id),
-      onSuccess: (data) => {
-        toast.success(data?.data?.message);
-        queryClient.invalidateQueries(["userAddress", userId]);
-      },
-    });
   const handleAddressdelete = async (id) => {
-    addressDelMutaion(id);
+    addressDelMutaion.mutate(id);
   };
-
   // Handle image preview
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -108,13 +88,15 @@ const ProfilePage = () => {
   }, [updateMutation.isSuccess]);
 
   useEffect(() => {
-    if (addressAddMutation.isSuccess) {
+    if (addressAddMutation.isSuccess || addressDelMutaion.isSuccess) {
       modalRef.current?.close();
       reset();
-      toast.success(addressAddMutation.data?.message);
-      queryClient.invalidateQueries(["userAddress", userId]);
+      toast.success(
+        addressAddMutation.data?.message || addressDelMutaion.data?.message
+      );
+      queryClient.invalidateQueries(["getuseraddress", userId]);
     }
-  }, [addressAddMutation.isSuccess]);
+  }, [addressAddMutation.isSuccess, addressDelMutaion.isSuccess]);
   return (
     <>
       <section>
@@ -137,7 +119,6 @@ const ProfilePage = () => {
               <h2 className="text-2xl font-bold text-gray-800 mb-6">
                 Your Profile
               </h2>
-
               <form onSubmit={handleSubmit(updateSubmit)} className="space-y-6">
                 {/* Profile Image */}
                 <div className="flex items-center space-x-6">
@@ -169,7 +150,6 @@ const ProfilePage = () => {
                     )}
                   </div>
                 </div>
-
                 {/* Name */}
                 <div>
                   <label
@@ -266,7 +246,7 @@ const ProfilePage = () => {
                   <button
                     className={cl(
                       "p-2 max-w-12  bg-red-600 hover:bg-red-800 rounded-badge",
-                      addressDelPending ? "animate-pulse" : ""
+                      addressDelMutaion.isPending ? "animate-pulse" : ""
                     )}
                     onClick={() => handleAddressdelete(addr?._id)}
                   >
@@ -278,7 +258,9 @@ const ProfilePage = () => {
                     <span>{addr?.city},</span>
                     <span>{addr?.state},</span>
                     <span>{addr?.country},</span>
-                    <span>{addr?.pin}</span>
+                    <span>{addr?.pin},</span>
+                    <br />
+                    <span>{addr?.mobile}</span>
                   </p>
                 </div>
               ))}

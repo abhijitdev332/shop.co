@@ -21,6 +21,8 @@ import {
   useGetProductById,
 } from "../../../querys/product/productQuery";
 import { UpdateOrderStausMutaion } from "../../../querys/order/orderQuery";
+import { DateFormat } from "../../../utils/utils";
+import { OrderBadge } from "../../../components/button/btn";
 // default img url
 const imgUrl =
   "https://images.pexels.com/photos/769733/pexels-photo-769733.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1";
@@ -130,6 +132,7 @@ const ProductDetails = ({ setVariant, setReview }) => {
   const [productImages, setProductImages] = useState([]);
   const [productColors, setProductsColors] = useState([]);
   const [currentProductColor, setCurrentProductColor] = useState("");
+  const [selectedProductSize, setSelectedProductSize] = useState("");
   const [sizes, setSizes] = useState([]);
 
   useEffect(() => {
@@ -145,6 +148,7 @@ const ProductDetails = ({ setVariant, setReview }) => {
       // Set default color and variant
       const defaultVariant = productVariants?.[0] || {};
       setCurrentProductColor(defaultVariant?.color || "");
+      setSelectedProductSize(defaultVariant?.size || "");
       setCurrentProductVariant(defaultVariant);
       setVariant(defaultVariant);
       setProductImages(defaultVariant?.images || []);
@@ -166,14 +170,25 @@ const ProductDetails = ({ setVariant, setReview }) => {
       setProductImages(filteredVariants[0]?.images || []);
       setCurrentProductImage(filteredVariants?.[0]?.images?.[0]?.url || "");
       setCurrentProductVariant(filteredVariants[0] || {});
+      setSelectedProductSize(filteredVariants[0]?.size || "");
       setVariant(filteredVariants[0] || {});
     }
   }, [currentProductColor, allVariants]);
+  // Update current variant when the selected size changes
+  useEffect(() => {
+    if (selectedProductSize) {
+      const variant = allVariants?.find(
+        (v) =>
+          v?.color === currentProductColor && v?.size === selectedProductSize
+      );
+      setCurrentProductVariant(variant || {});
+    }
+  }, [selectedProductSize, currentProductColor, allVariants]);
 
   return (
     <>
       <div className="p-1">
-        <div className="flex gap-4 overflow-auto p-2">
+        <div className="flex flex-col md:flex-row gap-4 overflow-auto p-2">
           <div className="imgCon gap-3 flex-col basis-1/3 p-2 bg-white shadow-lg rounded-xl">
             {/* show current image */}
             <div className="box h-fit">
@@ -220,7 +235,12 @@ const ProductDetails = ({ setVariant, setReview }) => {
               </p>
               <div className="divider divider-horizontal divider-neutral"></div>
               <p className="text-sm">
-                Stock: <span>{currentProductVariant?.stock}</span>
+                Stock: {""}
+                {currentProductVariant?.stock <= 0 ? (
+                  <span className="text-red-500">&nbsp; Out Of Stock</span>
+                ) : (
+                  <span>{currentProductVariant?.stock}</span>
+                )}
               </p>
             </div>
             {/* price */}
@@ -272,8 +292,12 @@ const ProductDetails = ({ setVariant, setReview }) => {
                 {sizes?.map((ele) => (
                   <button
                     className={cl(
-                      "px-3 py-2 rounded-badge  bg-gray-200 capitalize"
+                      "px-3 py-2 rounded-badge  bg-gray-200 capitalize",
+                      ele == selectedProductSize ? "bg-primary" : ""
                     )}
+                    onClick={() => {
+                      setSelectedProductSize(ele);
+                    }}
                   >
                     {ele}
                   </button>
@@ -287,7 +311,7 @@ const ProductDetails = ({ setVariant, setReview }) => {
               </p>
               <p>
                 Created At:
-                {new Date(productData?.createdAt).toLocaleDateString("en-GB")}
+                {DateFormat(productData?.createdAt)}
               </p>
             </div>
           </div>
@@ -395,9 +419,7 @@ function ProductOrders({ id = "", color = "" }) {
                     </TableCell>
 
                     {/* date */}
-                    <TableCell>
-                      {new Date(order?.createdAt).toLocaleDateString("en-GB")}
-                    </TableCell>
+                    <TableCell>{DateFormat(order?.createdAt)}</TableCell>
 
                     {/* Category */}
                     <TableCell>{order?.userDetails?.username}</TableCell>
@@ -410,15 +432,7 @@ function ProductOrders({ id = "", color = "" }) {
 
                     {/* Status */}
                     <TableCell>
-                      {order?.status == "pending" ? (
-                        <span className="badge rounded-btn badge-lg capitalize">
-                          {order?.status}
-                        </span>
-                      ) : (
-                        <span className="badge badge-success capitalize rounded-btn badge-lg">
-                          {order?.status}
-                        </span>
-                      )}
+                      <OrderBadge status={order?.status} />
                     </TableCell>
 
                     {/* Actions */}
@@ -441,9 +455,6 @@ function ProductOrders({ id = "", color = "" }) {
                               setOrdersStatus(ev.target.value);
                             }}
                           >
-                            {/* <option disabled selected className="text-black">
-                      Update Status
-                    </option> */}
                             {ordersStatus.map((ele) => (
                               <option
                                 className="capitalize text-black"

@@ -20,9 +20,11 @@ import DeleteModal from "./modal/DeleteModal";
 import TableHeader from "./table/TableHeader";
 import TableCell from "./table/TableCell";
 import TableBody from "./table/TableBody";
+import SearchProductCard from "./ProductCard/SearchProduct";
 
 // import NewProductDetails from "./Product/NewCodeProduct";
 export {
+  SearchProductCard,
   Hero,
   Product,
   ProductCard,

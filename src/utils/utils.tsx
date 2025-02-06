@@ -1,5 +1,5 @@
 import cl from "classnames";
-const ImageLetter = ({ name = "", style = "" }) => {
+export const ImageLetter = ({ name = "", style = "" }) => {
   return (
     <>
       <div className="avatar placeholder">
@@ -18,4 +18,10 @@ const ImageLetter = ({ name = "", style = "" }) => {
   );
 };
 
-export { ImageLetter };
+export const DateFormat = (date) => {
+  if (date) {
+    return new Date(date).toLocaleDateString("en-GB");
+  } else {
+    return "00";
+  }
+};

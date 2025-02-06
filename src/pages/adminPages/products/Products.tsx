@@ -18,6 +18,7 @@ import {
   TableHeader,
 } from "../../../components/component";
 import { AdminPagination } from "../adminPages";
+import { DateFormat } from "../../../utils/utils";
 
 const productTableHead = [
   "Product",
@@ -152,15 +153,27 @@ const AllProductsTable = () => {
                     </TableCell>
 
                     {/* SKU */}
-                    <TableCell>{item?.sku}</TableCell>
+                    <TableCell>#{item?.sku}</TableCell>
 
                     {/* Category */}
                     <TableCell>
-                      {item?.categoryDetails?.[0]?.categoryName || "category"}
+                      <span className="rounded p-1 capitalize  text-white bg-gray-700">
+                        {item?.categoryDetails?.[0]?.categoryName || "category"}
+                      </span>
                     </TableCell>
 
                     {/* Stock */}
-                    <TableCell>{item?.totalStock}</TableCell>
+                    <TableCell>
+                      {item?.totalStock > 10 ? (
+                        <span className="text-green-600 font-medium">
+                          {item?.totalStock}
+                        </span>
+                      ) : (
+                        <span className="text-red-500 font-medium">
+                          {item?.totalStock}
+                        </span>
+                      )}
+                    </TableCell>
 
                     {/* Price */}
                     <TableCell>
@@ -177,17 +190,15 @@ const AllProductsTable = () => {
                         </span>
                       ) : (
                         <span
-                          className={`px-2 py-1 rounded text-sm ${" bg-gray-400"}`}
+                          className={`px-2 py-1 rounded text-sm ${" bg-green-400"}`}
                         >
-                          normal
+                          Good
                         </span>
                       )}
                     </TableCell>
 
                     {/* Added Date */}
-                    <TableCell>
-                      {new Date(item.createdAt).toLocaleDateString("en-GB")}
-                    </TableCell>
+                    <TableCell>{DateFormat(item.createdAt)}</TableCell>
 
                     {/* Actions */}
                     <TableCell>
