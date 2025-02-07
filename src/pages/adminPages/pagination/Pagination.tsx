@@ -1,4 +1,3 @@
-import React from "react";
 import { IoIosArrowRoundBack, IoIosArrowRoundForward } from "react-icons/io";
 import cl from "classnames";
 import { toast } from "react-toastify";

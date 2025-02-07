@@ -3,11 +3,12 @@ import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
 import { store } from "./services/store/store.ts";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import ThemeProvider from "./services/providers/ThemeProvider.tsx";
 import App from "./App.tsx";
 // style
 import "./index.css";
 import "react-toastify/dist/ReactToastify.css";
-import ThemeProvider from "./services/providers/ThemeProvider.tsx";
+
 // new client
 const queryClient = new QueryClient({
   defaultOptions: {

@@ -1,7 +1,6 @@
 import Hero from "./hero/Hero";
 import Product from "./Product/Product";
 import ProductCard from "./ProductCard/ProductCard";
-import ProductList from "./productList/ProductList";
 import ReviewCard from "./review/Review";
 import Star from "./star/Star";
 import NewsLetter from "./newsLetter/NewsLetter";
@@ -12,7 +11,6 @@ import Logout from "./logout/Logout";
 import { LoaderBtn } from "./button/btn";
 import ProductsBySlug from "./productByCategory/ProductBySlug";
 import Modal from "./modal/Modal";
-import CheckOutModal from "./modal/CheckoutModal";
 import DropDown from "./dropdown/Dropdown";
 import Loader from "./dataLoader/DataLoader";
 import List from "./list/List";
@@ -29,7 +27,6 @@ export {
   Hero,
   Product,
   ProductCard,
-  ProductList,
   ReviewCard,
   Star,
   NewsLetter,
@@ -44,7 +41,6 @@ export {
   Loader,
   DropDown,
   DeleteModal,
-  CheckOutModal,
   List,
   TableHeader,
   TableCell,
