@@ -26,9 +26,7 @@ const UserAddPage = () => {
   } = useForm<UserFormInputs>({
     resolver: zodResolver(userSchema),
   });
-
   const profileImage = watch("profileImage");
-
   // Update image preview when a file is selected
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;

@@ -12,13 +12,13 @@ export const CreateOrderMutation = () => {
     mutationFn: (data) => createNewOrder(data),
   });
 };
-export const useGetUserOrders = (userid) => {
+export const useGetUserOrders = (userid: string) => {
   return useQuery({
     queryKey: ["userorders"],
     queryFn: () => getUserOrders(userid),
   });
 };
-export const useGetOrderDetails = (orderId) => {
+export const useGetOrderDetails = (orderId: string) => {
   return useQuery({
     queryKey: ["getorder", orderId],
     queryFn: () => getOrderDeatils(orderId),
@@ -27,6 +27,7 @@ export const useGetOrderDetails = (orderId) => {
 export const UpdateOrderStausMutaion = () => {
   return useMutation({
     mutationKey: ["updateorderstatus"],
-    mutationFn: ({ id, data }) => updateOrderStatus(id, data),
+    mutationFn: ({ id, data }: { id: string; data: {} }) =>
+      updateOrderStatus(id, data),
   });
 };

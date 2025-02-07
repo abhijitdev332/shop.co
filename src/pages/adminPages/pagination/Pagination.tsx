@@ -55,7 +55,7 @@ const Pagination = ({
               </span>
             </button>
             <div className="flex gap-3">
-              {Array.from({ length: totalPage }, (_, index) => {
+              {/* {Array.from({ length: totalPage }, (_, index) => {
                 if (index >= 5) {
                   return;
                 } else {
@@ -73,7 +73,10 @@ const Pagination = ({
                     </button>
                   );
                 }
-              })}
+              })} */}
+              <button className={cl("join-item  btn btn-xs sm:btn-sm")}>
+                {currentPage}
+              </button>
             </div>
             <button className="btn btn-sm btn-ghost" onClick={handleNext}>
               <span>

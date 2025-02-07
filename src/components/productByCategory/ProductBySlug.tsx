@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, ScrollRestoration, useSearchParams } from "react-router-dom";
 import Pagination from "../pagination/Pagination";
-import { List, ProductCard } from "../component";
+import { GridProductCard, List, ProductCard } from "../component";
 import { useGetProductBySlug } from "../../querys/product/productQuery";
 
 const ProductBySlug = () => {
@@ -27,7 +27,7 @@ const ProductBySlug = () => {
     <>
       <main>
         <ScrollRestoration />
-        <div className="wrapper px-5 md:px-20">
+        <div className="wrapper px-5 md:px-20 overflow-auto">
           <div className="outline outline-1 outline-slate-300"></div>
           <div className="py-3">
             {/* breadcrumbs */}
@@ -45,7 +45,7 @@ const ProductBySlug = () => {
             <List
               data={products}
               title={`${query} Products`}
-              renderItem={(item) => <ProductCard product={item} />}
+              renderItem={(item) => <GridProductCard product={item} />}
             />
 
             <Pagination

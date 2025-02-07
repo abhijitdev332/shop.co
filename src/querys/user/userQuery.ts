@@ -1,5 +1,11 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { createUser, deleteUser, getUser, updateUser } from "./userApi";
+import {
+  createUser,
+  deleteUser,
+  getUser,
+  updateUser,
+  updateUserRole,
+} from "./userApi";
 
 export const useGetUserById = (id) => {
   return useQuery({
@@ -17,8 +23,14 @@ export const CreateUserMutaion = () => {
 
 export const UpdateUserMutaion = () => {
   return useMutation({
-    mutationKey: ["updateuse"],
+    mutationKey: ["updateuser"],
     mutationFn: ({ id, data }) => updateUser(id, data),
+  });
+};
+export const UpdateUserRoleMutaion = () => {
+  return useMutation({
+    mutationKey: ["updateuserrole"],
+    mutationFn: ({ id, data }) => updateUserRole(id, data),
   });
 };
 export const DeleteUserMutation = () => {

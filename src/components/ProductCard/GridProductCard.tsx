@@ -1,14 +1,14 @@
-import { FC, SyntheticEvent, useState } from "react";
+import { SyntheticEvent, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addProduct, removeProduct } from "../../services/store/cart/cartSlice";
 import { Star } from "../component";
 import { Link } from "react-router-dom";
 import cl from "classnames";
 
-const ProductCard = ({ product = {}, style = "", imgStyle = "" }) => {
+const GridProductCard = ({ product = {}, style = "", imgStyle = "" }) => {
   const cartProduct = useSelector((state) => state.cart);
   const dispatch = useDispatch();
-  const [productSize, setProductSize] = useState<string>("large");
+  const [productSize, setProductSize] = useState<string>("l");
   const handleAddCart = () => {
     dispatch(
       addProduct({ productId: product?._id, size: productSize, quantity: 1 })
@@ -19,12 +19,17 @@ const ProductCard = ({ product = {}, style = "", imgStyle = "" }) => {
   };
 
   return (
-    <div className={cl("w-40 md:w-44 overflow-hidden", style)}>
-      <figure className={cl("h-full max-h-[12rem]", imgStyle)}>
-        <Link to={`/product/${product._id}`} className="w-full">
+    <div className={cl("h-fit overflow-hidden", style)}>
+      <figure
+        className={cl(
+          "h-[10rem]  w-auto sm:h-[12rem] lg:h-[15rem] overflow-hidden rounded-lg",
+          imgStyle
+        )}
+      >
+        <Link to={`/product/${product._id}`}>
           <img
             src={product?.imgurl || product?.firstVariantImages?.[0]?.url || ""}
-            className={cl("rounded-xl size-full")}
+            className={cl("size-full")}
             alt="cloth"
             onError={(e: SyntheticEvent<HTMLImageElement, ErrorEvent>) => {
               e.target.parentElement.parentElement.parentElement.style.display =
@@ -84,4 +89,4 @@ const ProductCard = ({ product = {}, style = "", imgStyle = "" }) => {
   );
 };
 
-export default ProductCard;
+export default GridProductCard;

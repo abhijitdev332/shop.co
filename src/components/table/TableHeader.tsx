@@ -1,7 +1,7 @@
 import cl from "classnames";
 
 const TableHeader = ({
-  columns = [],
+  columns = [String],
   style = "",
   input = false,
   oncheck,

@@ -1,17 +1,16 @@
-
 import { Link } from "react-router-dom";
 import cl from "classnames";
-import style from "./list.module.scss"
+import style from "./list.module.scss";
 const List = ({
   title = "",
   data = [],
   renderItem,
-  exstyle="",
+  exstyle = "",
   viewLink = "",
 }) => {
   return (
     <section>
-      <div className="wrapper py-10 px-5">
+      <div className="wrapper p-2 sm:py-10 sm:px-5">
         {title !== "" && (
           <h2 className="font-extrabold text-center capitalize py-10 text-center text-4xl">
             {title}
@@ -19,7 +18,13 @@ const List = ({
         )}
 
         {/* map the products */}
-        <div className={cl("flex gap-7 flex-wrap", exstyle==""?style.list:"",exstyle)}>
+        <div
+          className={cl(
+            "flex gap-5 flex-wrap",
+            exstyle == "" ? style.list : "",
+            exstyle
+          )}
+        >
           {data?.map((item) => renderItem(item))}
         </div>
         <div className="flex justify-center py-7">

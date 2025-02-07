@@ -131,6 +131,7 @@ const ProductEdit = () => {
         <div className="flex">
           <div className=" mb-6">
             <p className="text-gray-800 text-2xl font-bold">Product Edit</p>
+            {/* breadcrumbs */}
             <div className="breadcrumbs text-sm">
               <ul>
                 <li>

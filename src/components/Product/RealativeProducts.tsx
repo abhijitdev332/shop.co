@@ -1,4 +1,4 @@
-import { useRelativeProducts } from "../../querys/productQuery";
+import { useRelativeProducts } from "../../querys/product/productQuery";
 import { ProductCard } from "../component";
 
 export function RealativeProducts({
@@ -20,14 +20,6 @@ export function RealativeProducts({
               <ProductCard product={ele} />
             ))}
           </div>
-          {/* <div className="flex justify-center py-7">
-              <Link
-                to={viewLink}
-                className=" text-black px-7 btn btn-outline rounded-badge"
-              >
-                View All
-              </Link>
-            </div> */}
         </div>
       </div>
     </section>

@@ -8,13 +8,15 @@ export const getNewArivals = async (limit = 0, skip = 0) => {
   );
   return data?.data;
 };
-export const newReview = async ({ id, data }) => {
-  return await PrivateAxios.post(`/product/review/add/${id}`, data);
+export const newReview = async (id, body) => {
+  let { data } = await PrivateAxios.post(`/product/review/add/${id}`, body);
+  return data.data;
 };
 export const deleteReview = async (id, reviewId) => {
-  return await PrivateAxios.delete(
+  let { data } = await PrivateAxios.delete(
     `/product/review/remove/${id}?reviewId=${reviewId}`
   );
+  return data;
 };
 export const getTopSelling = async (limit = 0, skip = 0) => {
   let { data } = await PrivateAxios.get(
@@ -57,10 +59,12 @@ export let getProductByCategory = async (query = "") => {
   }
 };
 export let newProduct = async (productData) => {
-  return await PrivateAxios.post("/product/create", productData);
+  let { data } = await PrivateAxios.post("/product/create", productData);
+  return data?.data;
 };
 export let deleteProduct = async (id) => {
-  return await PrivateAxios.delete(`/product/remove/${id}`);
+  let { data } = await PrivateAxios.delete(`/product/remove/${id}`);
+  return data;
 };
 export let getProductsByslug = async (query = "", limit = 5, skip = 0) => {
   switch (query.toLowerCase()) {

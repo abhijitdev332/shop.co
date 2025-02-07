@@ -8,12 +8,10 @@ import {
 } from "react-router-dom";
 import {
   CartPage,
-  DeclinedPage,
   Login,
   OrdersPage,
   ProfilePage,
   Register,
-  SuccessPage,
   OrdersItemPage,
   CartAddress,
   LoaderScreen,
@@ -142,22 +140,6 @@ const router = createBrowserRouter(
         <Route path="subcategory/add" element={<AddSubCategory />} />
         <Route path="subcategory/:id" element={<SubCategoryProducts />} />
       </Route>
-      <Route
-        path="/success"
-        element={
-          <GuestProtected>
-            <SuccessPage />
-          </GuestProtected>
-        }
-      />
-      <Route
-        path="/declined"
-        element={
-          <GuestProtected>
-            <DeclinedPage />
-          </GuestProtected>
-        }
-      />
       <Route path="/*" element={<ErrorLayout />} />
     </Route>
   )

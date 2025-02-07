@@ -1,7 +1,6 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { deleteReview } from "../../../querys/productQuery";
 import cl from "classnames";
 import {
   DropDown,
@@ -19,13 +18,12 @@ import { getadminOrdersKey } from "../../../querys/admin/adminApi";
 import {
   useProductOrderDetails,
   useGetProductById,
+  DeleteReviewMutation,
 } from "../../../querys/product/productQuery";
 import { UpdateOrderStausMutaion } from "../../../querys/order/orderQuery";
 import { DateFormat } from "../../../utils/utils";
 import { OrderBadge } from "../../../components/button/btn";
 // default img url
-const imgUrl =
-  "https://images.pexels.com/photos/769733/pexels-photo-769733.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1";
 
 const OrderTableHeader = [
   "",
@@ -193,7 +191,7 @@ const ProductDetails = ({ setVariant, setReview }) => {
             {/* show current image */}
             <div className="box h-fit">
               <img
-                src={currentProductImage || imgUrl}
+                src={currentProductImage || ""}
                 alt="product image"
                 className={cl(style.product__img__hero)}
               />
@@ -202,7 +200,7 @@ const ProductDetails = ({ setVariant, setReview }) => {
             <div className="flex gap-5 mt-4">
               {productImages?.map((img) => (
                 <img
-                  src={img?.url || imgUrl}
+                  src={img?.url || ""}
                   alt="product image"
                   className={cl(
                     style.product__img__slide,
@@ -490,21 +488,20 @@ function ProductOrders({ id = "", color = "" }) {
 // product reviews
 function ProductReview({ reviews = [], productId = "" }) {
   const queryClient = useQueryClient();
-  const { mutate: reviewDeleteMutation } = useMutation({
-    mutationKey: ["deleteReview", productId],
-    mutationFn: (reviewId) => deleteReview(productId, reviewId),
-    onSuccess: (data) => {
-      toast.success(data?.data?.message);
-      queryClient.invalidateQueries(["product", productId]);
-    },
-  });
+  const reviewDeleteMutation = DeleteReviewMutation();
   const handleReviewDelete = async (reviewId) => {
-    reviewDeleteMutation(reviewId);
+    reviewDeleteMutation.mutate({ id: productId, reviewId });
   };
+  useEffect(() => {
+    if (reviewDeleteMutation.isSuccess) {
+      toast.success(reviewDeleteMutation.data?.message);
+      queryClient.invalidateQueries(["deletereview", productId]);
+    }
+  }, [reviewDeleteMutation.isSuccess]);
   return (
     <>
       <div className="p-3 bg-white rounded-lg shadow-md">
-        <div className="grid gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="flex flex-wrap gap-4">
           {reviews?.map((review) => (
             <ReviewCard
               id={review?._id}

@@ -99,8 +99,9 @@ const cartSlice = createSlice({
       }, 0);
       state.totalAmount = totalAmount;
     },
-    resetCart: () => {
-      return inital;
+    resetCart: (state) => {
+      state.products = [];
+      state.totalAmount = 0;
     },
   },
   extraReducers: (builder) =>
@@ -110,7 +111,8 @@ const cartSlice = createSlice({
         state.totalAmount = action.payload?.cartTotal;
       })
       .addCase(getInitalCart.rejected, (state, action) => {
-        state = inital;
+        state.products = [];
+        state.totalAmount = 0;
       }),
 });
 

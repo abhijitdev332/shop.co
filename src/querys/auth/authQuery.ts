@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { PrivateAxios } from "../services/api/api";
-import { login, logout, verifySession } from "./auth/authApi";
+import { PrivateAxios } from "../../services/api/api";
+import { login, logout, verifySession } from "./authApi";
 
 const useVerifySession = () => {
   return useQuery({

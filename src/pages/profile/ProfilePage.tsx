@@ -66,7 +66,7 @@ const ProfilePage = () => {
   } = useForm<AddressFormInputs>({
     resolver: zodResolver(addressSchema),
   });
-
+  // address add call
   const handleAddressSubmit = async (data: AddressFormInputs) => {
     addressAddMutation.mutate({ userId: userId, ...data });
   };
@@ -80,13 +80,14 @@ const ProfilePage = () => {
       setPreviewImage(URL.createObjectURL(file));
     }
   };
+  // effect to lister updation success
   useEffect(() => {
     if (updateMutation.isSuccess) {
       toast.success(updateMutation?.data?.message);
       dispatch(setUser(updateMutation?.data?.data));
     }
   }, [updateMutation.isSuccess]);
-
+  // effect to lister address success
   useEffect(() => {
     if (addressAddMutation.isSuccess || addressDelMutaion.isSuccess) {
       modalRef.current?.close();
@@ -264,7 +265,7 @@ const ProfilePage = () => {
                   </p>
                 </div>
               ))}
-
+              {/* add card */}
               <div className="w-60 h-40 flex justify-center items-center p-5 bg-white shadow-lg rounded-lg my-4">
                 <button
                   onClick={() => {

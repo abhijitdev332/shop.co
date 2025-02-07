@@ -21,6 +21,7 @@ import TableHeader from "./table/TableHeader";
 import TableCell from "./table/TableCell";
 import TableBody from "./table/TableBody";
 import SearchProductCard from "./ProductCard/SearchProduct";
+import GridProductCard from "./ProductCard/GridProductCard";
 
 // import NewProductDetails from "./Product/NewCodeProduct";
 export {
@@ -39,6 +40,7 @@ export {
   LoaderBtn,
   ProductsBySlug,
   Modal,
+  GridProductCard,
   Loader,
   DropDown,
   DeleteModal,

@@ -1,24 +1,22 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useRef, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { useEffect, useRef, useState } from "react";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { IoEye } from "react-icons/io5";
 import { MdModeEdit } from "react-icons/md";
 import { Link } from "react-router-dom";
 import { useAdminProduct } from "../../../querys/admin/adminQuery";
-import { deleteProduct } from "../../../querys/productQuery";
 import { toast } from "react-toastify";
-import { FaRegTrashCan } from "react-icons/fa6";
 import { getadminProductskey } from "../../../querys/admin/adminApi";
 import {
   DeleteModal,
   DropDown,
-  Modal,
   TableBody,
   TableCell,
   TableHeader,
 } from "../../../components/component";
 import { AdminPagination } from "../adminPages";
 import { DateFormat } from "../../../utils/utils";
+import { DeleteProductMutaion } from "../../../querys/product/productQuery";
 
 const productTableHead = [
   "Product",
@@ -37,6 +35,7 @@ const AllProductsTable = () => {
     currentPage * itemsPerPage,
     (currentPage - 1) * itemsPerPage
   );
+  const deleteMutation = DeleteProductMutaion();
   const queryClient = useQueryClient();
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
   const [deleteSelect, setDeleteSelect] = useState("");
@@ -57,21 +56,19 @@ const AllProductsTable = () => {
       );
     }
   };
-  const { mutate: deleteMutation } = useMutation({
-    mutationKey: ["deleteProduct"],
-    mutationFn: (id) => deleteProduct(id),
-    onSuccess: (data) => {
-      toast.success(data?.data?.message);
+  const handleDelete = () => {
+    deleteMutation.mutate(deleteSelect);
+  };
+  // listen to effect
+  useEffect(() => {
+    if (deleteMutation.isSuccess) {
+      toast.success("Delete Successfull!!");
       if (modalRef?.current) {
         modalRef.current?.close();
       }
       queryClient.invalidateQueries(getadminProductskey);
-    },
-  });
-  const handleDelete = () => {
-    deleteMutation(deleteSelect);
-  };
-
+    }
+  }, [deleteMutation.isSuccess]);
   return (
     <>
       <div className="p-6 bg-white rounded-lg shadow-md">
@@ -97,7 +94,6 @@ const AllProductsTable = () => {
             </Link>
           </div>
         </div>
-
         {/* Table */}
         <div className="overflow-x-auto">
           {isLoading && (

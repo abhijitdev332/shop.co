@@ -1,5 +1,5 @@
 .list {
   display: grid !important;
   justify-content: center;
-  grid-template-columns: repeat(auto-fit, minmax(auto, 150px)) !important;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)) !important;
 }

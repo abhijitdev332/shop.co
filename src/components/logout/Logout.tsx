@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import cl from "classnames";
-import { LogoutMutaion } from "../../querys/authQuery";
+import { LogoutMutaion } from "../../querys/auth/authQuery";
 import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import { removeUser } from "../../services/store/user/userSlice";

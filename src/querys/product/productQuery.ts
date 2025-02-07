@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { PrivateAxios } from "../../services/api/api";
 import {
+  deleteProduct,
+  deleteReview,
   getNewArivals,
   getProductByCategory,
   getProductById,
@@ -10,6 +11,8 @@ import {
   getRelativeProducts,
   getShopAllProducts,
   getTopSelling,
+  newProduct,
+  newReview,
   updateProduct,
 } from "./productApi";
 
@@ -23,14 +26,6 @@ export const useNewArivals = (currentPage = 1, itemsperpage = 5) => {
       ),
   });
 };
-const newReview = async ({ id, data }) => {
-  return await PrivateAxios.post(`/product/review/add/${id}`, data);
-};
-const deleteReview = async (id, reviewId) => {
-  return await PrivateAxios.delete(
-    `/product/review/remove/${id}?reviewId=${reviewId}`
-  );
-};
 export const useTopSelling = (currentPage = 1, itemsperpage = 5) => {
   return useQuery({
     queryKey: ["topselling"],
@@ -41,39 +36,32 @@ export const useTopSelling = (currentPage = 1, itemsperpage = 5) => {
       ),
   });
 };
-const getProduct = async (id: string) => {
-  return await PrivateAxios.get(`/product/${id}`);
-};
-const getAllproducts = async () => {
-  return await PrivateAxios.get("/admin/products");
-};
-
-let newProduct = async (productData) => {
-  return await PrivateAxios.post("/product/create", productData);
-};
-let deleteProduct = async (id) => {
-  return await PrivateAxios.delete(`/product/remove/${id}`);
-};
-let useProductOrderDetails = (productId = "", color = "") => {
+export let useProductOrderDetails = (productId = "", color = "") => {
   return useQuery({
     queryKey: ["productorders", productId, color],
     queryFn: () => getProductOrderDetails(productId, color),
   });
 };
-let useAllProducts = (limit, skip) => {
+export let useAllProducts = (limit, skip) => {
   return useQuery({
     queryKey: ["getallproducts"],
     queryFn: () => getShopAllProducts(limit, skip),
   });
 };
-
-let useRelativeProducts = (id = "", limit = 5, skip = 0) => {
+export let useRelativeProducts = (id = "", limit = 5, skip = 0) => {
   return useQuery({
     queryKey: ["relativeProducts", id],
     queryFn: () => getRelativeProducts(id, limit, skip),
   });
 };
 export const getProductByIdKey = "getproductbyid";
+// product crud
+export const CreateNewProduct = () => {
+  return useMutation({
+    mutationKey: ["newproduct"],
+    mutationFn: (data) => newProduct(data),
+  });
+};
 export const useGetProductById = (id = "") => {
   return useQuery({
     queryKey: [getProductByIdKey, id],
@@ -86,6 +74,13 @@ export const UpdateProductMutation = () => {
     mutationFn: ({ id, data }) => updateProduct(id, data),
   });
 };
+export const DeleteProductMutaion = () => {
+  return useMutation({
+    mutationKey: ["deleteProduct"],
+    mutationFn: (id) => deleteProduct(id),
+  });
+};
+// bulk products
 export const useShopGetAllProducts = (limit, skip, query) => {
   return useQuery({
     queryKey: ["shopallproducts", limit, skip, { ...query }],
@@ -111,18 +106,16 @@ export const useQueryItems = (query: string) => {
     enabled: Boolean(query), // Prevent execution on empty query
   });
 };
-
-export {
-  useAllProducts,
-  getProduct,
-  getAllproducts,
-  newProduct,
-  deleteReview,
-  deleteProduct,
-  getProductsByslug,
-  newReview,
-  getProductOrderDetails,
-  getShopAllProducts,
-  useRelativeProducts,
-  useProductOrderDetails,
+// reviews
+export const CreateNewReviewMutation = () => {
+  return useMutation({
+    mutationKey: ["newreview"],
+    mutationFn: ({ id, data }) => newReview(id, data),
+  });
+};
+export const DeleteReviewMutation = () => {
+  return useMutation({
+    mutationKey: ["deletereview"],
+    mutationFn: ({ id, reviewId }) => deleteReview(id, reviewId),
+  });
 };

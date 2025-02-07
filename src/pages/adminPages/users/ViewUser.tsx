@@ -1,16 +1,51 @@
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { ImageLetter } from "../../../utils/utils";
-import { useGetUserById } from "../../../querys/user/userQuery";
-import { LoaderBtn } from "../../../components/component";
+import { DateFormat, ImageLetter } from "../../../utils/utils";
+import {
+  UpdateUserRoleMutaion,
+  useGetUserById,
+} from "../../../querys/user/userQuery";
+import {
+  DropDown,
+  LoaderBtn,
+  TableBody,
+  TableCell,
+  TableHeader,
+} from "../../../components/component";
+import { toast } from "react-toastify";
+import { useQueryClient } from "@tanstack/react-query";
+import { useGetUserOrders } from "../../../querys/order/orderQuery";
+import { MdModeEdit } from "react-icons/md";
+import { IoEye } from "react-icons/io5";
+import Badge from "../../../components/button/Badge";
+const ordersStatus = ["pending", "shipped", "delivered"];
 const UserProfilePage = () => {
   const { id } = useParams();
   const { data: user } = useGetUserById(id);
+  const { data: orders } = useGetUserOrders(id);
+  const updateStatusMutaion = UpdateUserRoleMutaion();
+  const queryClient = useQueryClient();
   const options = ["USER", "ADMIN", "MODERATOR"];
   const [currentRole, setCurrentRole] = useState("");
+  const [selectedOrder, setSelectedOrder] = useState("");
+  const [selectedOrderStatus, setOrdersStatus] = useState("");
   const handleUserUpdate = () => {
-    console.log(currentRole);
+    if (currentRole == "") {
+      return toast.info("Please Select an Role!!.");
+    }
+    updateStatusMutaion.mutate({ id: id, data: { role: currentRole } });
+    setCurrentRole("");
   };
+
+  const handleUpdateOrderStatus = () => {};
+
+  useEffect(() => {
+    if (updateStatusMutaion.isSuccess) {
+      toast.success(updateStatusMutaion.data?.message);
+      queryClient.invalidateQueries(["getuser", id]);
+    }
+  }, [updateStatusMutaion.isSuccess]);
+
   return (
     <>
       <div className="p-6 bg-white rounded-lg shadow-md">
@@ -43,7 +78,7 @@ const UserProfilePage = () => {
                 {user?.imgUrl ? (
                   <img src={user?.imgUrl} />
                 ) : (
-                  <ImageLetter name={user?.username} />
+                  <ImageLetter name={user?.username} style="w-24" />
                 )}
               </div>
               <div className="ml-6">
@@ -91,17 +126,14 @@ const UserProfilePage = () => {
                 </label>
                 <select
                   className="select select-bordered w-full bg-gray-700"
-                  name=""
-                  id=""
                   onChange={(e) => setCurrentRole(e.target.value)}
                 >
+                  <option disabled selected>
+                    Select An Role
+                  </option>
+
                   {options?.map((opti) => (
-                    <option
-                      value={opti}
-                      defaultChecked={opti == user?.roles?.[0]}
-                    >
-                      {opti}
-                    </option>
+                    <option value={opti}>{opti}</option>
                   ))}
                 </select>
               </div>
@@ -110,6 +142,140 @@ const UserProfilePage = () => {
               <LoaderBtn handleClick={handleUserUpdate} style="text-white">
                 Update
               </LoaderBtn>
+            </div>
+          </div>
+        </div>
+
+        {/* orders */}
+        <div className="wrapper">
+          <div className="py-4">
+            <div className="flex flex-col">
+              <h2 className="text-xl font-bold text-center py-4">
+                Orders Of {user?.username}
+              </h2>
+
+              <div className="table__wrapper w-full">
+                <table className="w-full">
+                  <TableHeader
+                    columns={[
+                      "Order Id",
+                      "Products",
+                      "Total",
+                      "Dated",
+                      "Gateway",
+                      "Status",
+                      "Actions",
+                    ]}
+                  />
+                  <TableBody
+                    columnsData={orders}
+                    renderItem={(order) => {
+                      return (
+                        <tr key={order._id} className="text-gray-800 text-base">
+                          {/* Checkbox */}
+                          {/* <TableCell>
+                            <input
+                              type="checkbox"
+                              checked={selectedProducts.includes(order._id)}
+                              onChange={() => toggleSelectProduct(order._id)}
+                              className="checkbox"
+                            />
+                          </TableCell> */}
+                          <TableCell>
+                            <Link to={order._id} title={order?._id}>
+                              {order._id.slice(0, 8)}
+                            </Link>
+                          </TableCell>
+                          {/* Products Name */}
+                          <TableCell>
+                            <div className="flex gap-1">
+                              <div className="avatar">
+                                <div className="w-12 rounded">
+                                  <img
+                                    src={
+                                      order?.products?.[0]?.variantId?.images[0]
+                                        ?.url
+                                    }
+                                    alt="variant image"
+                                  />
+                                </div>
+                              </div>
+                              <div className="inline-flex flex-col capitalize">
+                                <span className="text-wrap capitalize text-sm md:text-base text-gray-800">
+                                  {order?.products?.[0]?.productId?.name ||
+                                    "product name"}
+                                </span>
+                                {order?.products?.length - 1 > 0 && (
+                                  <span className="text-sm text-gray-600">
+                                    +{order?.products?.length - 1} More Products
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </TableCell>
+                          {/* totalAmount */}
+                          <TableCell>${order?.totalAmount}</TableCell>
+                          {/* date */}
+                          <TableCell>{DateFormat(order?.createdAt)}</TableCell>
+
+                          {/* Stock */}
+
+                          {/* Price */}
+                          <TableCell>{order?.paymentGateway}</TableCell>
+
+                          {/* Status */}
+                          <TableCell>
+                            <Badge status={order?.status} />
+                          </TableCell>
+
+                          {/* Actions */}
+                          <TableCell>
+                            <DropDown>
+                              <li>
+                                <Link
+                                  to={`/admin/orders/${order?._id}`}
+                                  className="hover:bg-gray-300 font-medium"
+                                >
+                                  <IoEye />
+                                  View
+                                </Link>
+                              </li>
+                              <li>
+                                <select
+                                  className="select select-bordered  w-full bg-white !text-black"
+                                  onChange={(ev) => {
+                                    setSelectedOrder(order?._id);
+                                    setOrdersStatus(ev.target.value);
+                                  }}
+                                >
+                                  {ordersStatus.map((ele) => (
+                                    <option
+                                      className="capitalize text-black"
+                                      value={ele}
+                                      selected={order?.status == ele}
+                                    >
+                                      {ele}
+                                    </option>
+                                  ))}
+                                </select>
+                                <button
+                                  className="hover:bg-gray-300 btn btn-neutral my-3 font-medium"
+                                  onClick={handleUpdateOrderStatus}
+                                >
+                                  <div className="flex gap-1">
+                                    <MdModeEdit />
+                                    <span className="text-white">Update</span>
+                                  </div>
+                                </button>
+                              </li>
+                            </DropDown>
+                          </TableCell>
+                        </tr>
+                      );
+                    }}
+                  />
+                </table>
+              </div>
             </div>
           </div>
         </div>

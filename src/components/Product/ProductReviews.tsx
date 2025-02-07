@@ -1,18 +1,21 @@
-import { useRef, useState } from "react";
-import { GrSort } from "react-icons/gr";
-import { IoIosArrowDown } from "react-icons/io";
+import { useEffect, useRef, useState } from "react";
 import { LoaderBtn, Modal, ReviewCard } from "../component";
-import { FaRegStar, FaStar } from "react-icons/fa";
+import { FaStar } from "react-icons/fa";
 import { useSelector } from "react-redux";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
-import { deleteReview, newReview } from "../../querys/productQuery";
+import {
+  CreateNewReviewMutation,
+  DeleteReviewMutation,
+} from "../../querys/product/productQuery";
 
 export function ProductReviews({
   reviews = [],
   totalReviews = 0,
   productId = "",
 }) {
+  const reviewMutaion = CreateNewReviewMutation();
+  const reviewDeleteMutation = DeleteReviewMutation();
   const queryclient = useQueryClient();
   const { userDetails } = useSelector((store) => store.user);
   let userId = userDetails?._id;
@@ -24,48 +27,36 @@ export function ProductReviews({
   const handleStarClick = (index: number) => {
     setRating(index);
   };
-
   const handleStarHover = (index: number) => {
     setHoverRating(index);
   };
-
   const handleStarLeave = () => {
     setHoverRating(0);
   };
-  const { mutate: reviewMutaion, isPending } = useMutation({
-    mutationKey: ["addreview", productId],
-    mutationFn: ({ id, data }) => newReview({ id, data }),
-    onSuccess: (data) => {
-      modalRef.current.close();
-      toast.success(data?.data?.message);
-      setRating(0);
-      setComment("");
-      queryclient.invalidateQueries(["product", productId]);
-    },
-  });
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (comment == "") {
       return toast.info("Please enter a valid comment!!");
     }
     // Perform the form submission logic here
-    reviewMutaion({ id: productId, data: { userId, rating, comment } });
+    reviewMutaion.mutate({ id: productId, data: { userId, rating, comment } });
   };
-
-  const { mutate: reviewDeleteMutation } = useMutation({
-    mutationKey: ["deleteReview", productId],
-    mutationFn: (reviewId) => deleteReview(productId, reviewId),
-    onSuccess: (data) => {
-      toast.success(data?.data?.message);
-      queryclient.invalidateQueries(["product", productId]);
-    },
-  });
   const handleReviewDelete = async (reviewId) => {
     if (reviewId !== "") {
-      return reviewDeleteMutation(reviewId);
+      return reviewDeleteMutation.mutate({ id: productId, reviewId });
     }
   };
+  useEffect(() => {
+    if (reviewMutaion.isSuccess || reviewDeleteMutation.isSuccess) {
+      modalRef.current.close();
+      toast.success(
+        reviewMutaion.data?.message || reviewDeleteMutation.data?.message
+      );
+      setRating(0);
+      setComment("");
+      queryclient.invalidateQueries(["getproductbyid", productId]);
+    }
+  }, [reviewMutaion.isSuccess, reviewDeleteMutation.isSuccess]);
 
   return (
     <>
@@ -154,7 +145,7 @@ export function ProductReviews({
           <div className="mt-4">
             <LoaderBtn
               type="submit"
-              pending={isPending}
+              pending={reviewMutaion.isPending}
               className="w-full !text-white !btn btn-neutral"
             >
               Submit Review

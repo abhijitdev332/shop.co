@@ -1,21 +1,30 @@
 import { PrivateAxios } from "../../services/api/api";
 
 const newVariant = async (variantData) => {
-  return PrivateAxios.post("/product/variant/create", variantData);
+  let { data } = await PrivateAxios.post(
+    "/product/variant/create",
+    variantData
+  );
+  return data?.data;
 };
 const uploadImages = async (variantImages) => {
-  return PrivateAxios.post("/product/variant/uploadImages", variantImages, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  });
+  let { data } = await PrivateAxios.post(
+    "/product/variant/uploadImages",
+    variantImages,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
+  );
+  return data?.data;
 };
 const multipleNewVariant = async (variantData) => {
-  return PrivateAxios.post("/product/variant/insert", {
+  let { data } = await PrivateAxios.post("/product/variant/insert", {
     variantsArr: variantData,
   });
+  return data?.data;
 };
-
 export const deleteVariant = async (variantid) => {
   let { data } = await PrivateAxios.delete(
     `/product/variant/remove/${variantid}`

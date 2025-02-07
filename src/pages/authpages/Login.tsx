@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import authImg from "../../assets/svgs/auth/frame.svg";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { LoginMutaion } from "../../querys/authQuery";
+import { LoginMutaion } from "../../querys/auth/authQuery";
 import { useDispatch } from "react-redux";
 import { setUser } from "../../services/store/user/userSlice";
 import { loginSchema } from "./authSchema";

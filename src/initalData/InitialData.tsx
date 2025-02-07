@@ -1,17 +1,10 @@
 import { useEffect } from "react";
 import { useGetAllCategory, useGetSubCategory } from "../querys/categoryQuery";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  setArivalProducts,
-  setTopProducts,
-} from "../services/store/products/productSlice";
-import {
-  setCategory,
-  setCategoryData,
-  setSubCategory,
-} from "../services/store/category/categorySlice";
+import { setAllProducts } from "../services/store/products/productSlice";
+import { setCategoryData } from "../services/store/category/categorySlice";
 import { removeLoading, setLoading } from "../services/store/loader/loader";
-import { useVerifySession } from "../querys/authQuery";
+import { useVerifySession } from "../querys/auth/authQuery";
 import { setUser } from "../services/store/user/userSlice";
 import { getInitalCart } from "../services/store/cart/cartSlice";
 import { useNewArivals, useTopSelling } from "../querys/product/productQuery";
@@ -32,8 +25,9 @@ const InitialData = () => {
       dispatch(setLoading());
     }
     if (arivalProduct || topProduct) {
-      dispatch(setArivalProducts(arivalProduct));
-      dispatch(setTopProducts(topProduct));
+      // dispatch(setArivalProducts(arivalProduct));
+      // dispatch(setTopProducts(topProduct));
+      dispatch(setAllProducts({ arival: arivalProduct, top: topProduct }));
       dispatch(removeLoading());
     }
   }, [arivalProduct, topProduct]);

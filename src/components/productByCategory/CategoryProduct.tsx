@@ -4,7 +4,7 @@ import {
   useParams,
   useSearchParams,
 } from "react-router-dom";
-import { List, Pagintaion, ProductCard } from "../component";
+import { GridProductCard, List, Pagintaion, ProductCard } from "../component";
 import {
   MdKeyboardArrowRight,
   MdKeyboardArrowUp,
@@ -61,7 +61,7 @@ const CategoryProduct = () => {
               <FillterCard show={fillterShow} setShow={setFillterShow} />
             </div>
 
-            <div className="flex w-full h-[90%] flex-col py-3 gap-2">
+            <div className="flex w-full h-[90%] flex-col py-3 gap-2 overflow-auto">
               <div className="flex justify-between">
                 <h2 className="font-bold text-2xl capitalize">{id}</h2>
                 <div className="flex gap-4 items-center">
@@ -104,9 +104,7 @@ const CategoryProduct = () => {
               {/* view productlist */}
               <List
                 data={allProducts}
-                renderItem={(item) => (
-                  <ProductCard product={item} style="!size-full" />
-                )}
+                renderItem={(item) => <GridProductCard product={item} />}
               />
 
               <Pagintaion

@@ -4,12 +4,9 @@ import { TableBody, TableCell, TableHeader } from "../../components/component";
 import { DateFormat } from "../../utils/utils";
 import Badge from "../../components/button/Badge";
 
-const imageUrl =
-  "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
-
 const OrderDetails = () => {
   const { id } = useParams();
-  const { data: orderDetails } = useGetOrderDetails(id);
+  const { data: orderDetails } = useGetOrderDetails(id || "");
   return (
     <section>
       <ScrollRestoration />
@@ -31,7 +28,7 @@ const OrderDetails = () => {
             </ul>
           </div>
           {/* order details */}
-          <div className="p-8">
+          <div className=" p-2 sm:p-8">
             <h2 className="text-2xl font-bold text-gray-800 mb-4">
               Order Details
             </h2>

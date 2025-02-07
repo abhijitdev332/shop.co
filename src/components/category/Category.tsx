@@ -15,18 +15,15 @@ const Category = () => {
             {category?.map((ele, i) => {
               if (i + 1 == 2) {
                 return (
-                  <div
-                    className="md:col-span-2 w-full h-60 rounded-lg"
-                    style={{
-                      background: `url(${ele.categoryImage})`,
-                      backgroundSize: "cover",
-                      backgroundRepeat: "no-repeat",
-                      backgroundPosition: "top center",
-                    }}
-                  >
+                  <div className="md:col-span-2 w-full h-60 rounded-lg overflow-hidden relative">
                     <Link to={`/product/category/${ele.categoryName}`}>
+                      <img
+                        src={ele?.categoryImage}
+                        className="w-full h-full"
+                        alt="image"
+                      />
                       <div className="flex h-full justify-center items-center">
-                        <p className="text-4xl  font-bold uppercase">
+                        <p className="text-4xl absolute top-1/2 text-orange-500 font-bold uppercase">
                           {ele.categoryName}
                         </p>
                       </div>
@@ -35,16 +32,15 @@ const Category = () => {
                 );
               } else if (i + 1 == 3) {
                 return (
-                  <div
-                    className="md:col-span-2 w-full h-60 rounded-lg"
-                    style={{
-                      background: `url(${ele.categoryImage})`,
-                      backgroundPosition: "center center",
-                    }}
-                  >
+                  <div className="md:col-span-2 w-full h-60 rounded-lg relative overflow-hidden">
                     <Link to={`/product/category/${ele.categoryName}`}>
+                      <img
+                        src={ele?.categoryImage}
+                        className="w-full h-full"
+                        alt="image"
+                      />
                       <div className="flex h-full justify-center items-center">
-                        <p className="text-4xl  font-bold uppercase">
+                        <p className="text-4xl absolute top-1/2 text-orange-500 font-bold uppercase">
                           {ele.categoryName}
                         </p>
                       </div>
@@ -53,13 +49,15 @@ const Category = () => {
                 );
               } else {
                 return (
-                  <div
-                    className="h-60 w-full rounded-xl"
-                    style={{ background: `url(${ele.categoryImage})` }}
-                  >
+                  <div className="h-60 w-full rounded-lg relative overflow-hidden">
                     <Link to={`/product/category/${ele.categoryName}`}>
+                      <img
+                        src={ele?.categoryImage}
+                        className="w-full h-full"
+                        alt="image"
+                      />
                       <div className="flex h-full justify-center items-center">
-                        <p className="text-4xl  font-bold uppercase">
+                        <p className="text-4xl absolute top-1/2 text-orange-500  font-bold uppercase">
                           {ele.categoryName}
                         </p>
                       </div>

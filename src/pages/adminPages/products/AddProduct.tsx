@@ -1,21 +1,24 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { productModalScheama } from "./schema";
 import { ZodError } from "zod";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { newProduct } from "../../../querys/productQuery";
-import {
-  multipleNewVariant,
-  uploadImages,
-} from "../../../querys/variant/variant";
+import { useQueryClient } from "@tanstack/react-query";
 import { RiLoopLeftLine } from "react-icons/ri";
 import { LoaderBtn } from "../../../components/component";
+import { CreateNewProduct } from "../../../querys/product/productQuery";
+import {
+  CreateMutipleVariant,
+  UploadImagesMutaion,
+} from "../../../querys/variant/variantQuery";
 
 const ProductAddPage = () => {
   const QueryClient = useQueryClient();
   const navigate = useNavigate();
+  const productMutate = CreateNewProduct();
+  const variantMutation = CreateMutipleVariant();
+  const uploadImageMutation = UploadImagesMutaion();
   const { category, subCategory } = useSelector((store) => store.category);
   const [productDetailsState, setProductDetailsState] = useState({
     name: "",
@@ -38,7 +41,6 @@ const ProductAddPage = () => {
       salePrice: 0,
     },
   ]);
-
   const detailsModalRef = useRef(null);
   const randomSku = () => {
     let random = Math.floor(100000 + Math.random() * 900000);
@@ -57,7 +59,6 @@ const ProductAddPage = () => {
       toast.info(err);
     }
   };
-
   const handleAddVariant = () => {
     setVariants([
       ...variants,
@@ -71,13 +72,11 @@ const ProductAddPage = () => {
       },
     ]);
   };
-
   const handleRemoveVariant = (index: number) => {
     const updatedVariants = [...variants];
     updatedVariants.splice(index, 1);
     setVariants(updatedVariants);
   };
-
   const handleAddSize = (index: number, size: string) => {
     const updatedVariants = [...variants];
     if (!updatedVariants[index].sizes.includes(size)) {
@@ -85,7 +84,6 @@ const ProductAddPage = () => {
     }
     setVariants(updatedVariants);
   };
-
   const handleRemoveSize = (index: number, size: string) => {
     const updatedVariants = [...variants];
     updatedVariants[index].sizes = updatedVariants[index].sizes.filter(
@@ -93,7 +91,6 @@ const ProductAddPage = () => {
     );
     setVariants(updatedVariants);
   };
-
   const handleAddImages = (index: number, files: FileList | null) => {
     if (!files) return;
     const updatedVariants = [...variants];
@@ -106,25 +103,25 @@ const ProductAddPage = () => {
   const handleProductMoreData = (data) => {
     setProductAboutDetails({ ...data });
   };
-  const { mutateAsync: productMutate, isError: productErr } = useMutation({
-    mutationKey: ["productAdd"],
-    mutationFn: (data) => newProduct(data),
-  });
-  const {
-    mutateAsync: variantMutation,
-    isPending,
-    isError: variantErr,
-  } = useMutation({
-    mutationKey: ["variantAdd"],
-    mutationFn: (data) => multipleNewVariant(data),
-    onSettled: () => {
-      QueryClient.invalidateQueries("products");
-    },
-  });
-  const { mutateAsync: imagesMutation, isError: imagesErr } = useMutation({
-    mutationKey: ["imagesOfVariant"],
-    mutationFn: (data) => uploadImages(data),
-  });
+  // const { mutateAsync: productMutate, isError: productErr } = useMutation({
+  //   mutationKey: ["productAdd"],
+  //   mutationFn: (data) => newProduct(data),
+  // });
+  // const {
+  //   mutateAsync: variantMutation,
+  //   isPending,
+  //   isError: variantErr,
+  // } = useMutation({
+  //   mutationKey: ["variantAdd"],
+  //   mutationFn: (data) => multipleNewVariant(data),
+  //   onSettled: () => {
+  //     QueryClient.invalidateQueries("products");
+  //   },
+  // });
+  // const { mutateAsync: imagesMutation, isError: imagesErr } = useMutation({
+  //   mutationKey: ["imagesOfVariant"],
+  //   mutationFn: (data) => uploadImages(data),
+  // });
   const mapAndUploadImages = async (images) => {
     if (images?.length <= 0) {
       return toast.error("Please upload atleast one image");
@@ -138,7 +135,7 @@ const ProductAddPage = () => {
 
     try {
       // upload images through from data
-      let resData = await imagesMutation(formData);
+      let resData = await uploadImageMutation.mutateAsync(formData);
       if (resData.status == 201) {
         return resData?.data?.data;
       }
@@ -154,7 +151,7 @@ const ProductAddPage = () => {
         productDetails: { ...productAboutDetails },
       };
       // console.log(sendData);
-      let productres = await productMutate(sendData);
+      let productres = await productMutate.mutateAsync(sendData);
       let { _id, sku } = productres?.data?.data;
       // configured variant details
       const transformedVariants = [];
@@ -178,7 +175,7 @@ const ProductAddPage = () => {
         });
       }
 
-      let variationRes = await variantMutation(transformedVariants);
+      let variationRes = await variantMutation.mutateAsync(transformedVariants);
       if (variationRes.status == 201) {
         toast.success("Product Created Successfully");
         navigate(-1);
@@ -188,10 +185,18 @@ const ProductAddPage = () => {
     }
   };
   useEffect(() => {
-    if (productErr || variantErr || imagesErr) {
+    if (
+      productMutate.isError ||
+      variantMutation.isError ||
+      uploadImageMutation.isError
+    ) {
       toast.error("Something went wrong Please try after someTime!!");
     }
-  }, [productErr, variantErr, imagesErr]);
+  }, [
+    productMutate.isError,
+    variantMutation.isError,
+    uploadImageMutation.isError,
+  ]);
 
   return (
     <section>
@@ -216,8 +221,8 @@ const ProductAddPage = () => {
         </div>
         <div className="mx-auto p-6">
           {/* Top Section with Product Details and Category */}
-          <div className="flex justify-between items-start mb-6">
-            <div className="bg-white p-6 rounded-lg shadow-md flex-1 mr-4">
+          <div className="flex flex-col md:flex-row gap-3 justify-between items-start mb-4">
+            <div className="bg-white w-full md:basis-2/3 p-6 rounded-lg shadow-md flex-1 mr-4">
               <h2 className="text-xl font-semibold mb-4">Product Details</h2>
               <div className="flex justify-end">
                 <button
@@ -334,7 +339,7 @@ const ProductAddPage = () => {
             </div>
 
             {/* Category Selection */}
-            <div className="flex flex-col gap-3">
+            <div className="flex  md:flex-col md:basis-1/2 w-full gap-3">
               <div className="bg-white p-6 rounded-lg shadow-md w-72">
                 <label className="block text-sm font-medium text-gray-700">
                   Category
@@ -538,7 +543,7 @@ const ProductAddPage = () => {
           {/* Save Button */}
           <div className="mt-6">
             <LoaderBtn
-              pending={isPending}
+              pending={variantMutation.isPending}
               handleClick={handleProductAdd}
               style="text-white"
             >
