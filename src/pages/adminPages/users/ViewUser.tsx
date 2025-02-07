@@ -22,7 +22,7 @@ const ordersStatus = ["pending", "shipped", "delivered"];
 const UserProfilePage = () => {
   const { id } = useParams();
   const { data: user } = useGetUserById(id);
-  const { data: orders } = useGetUserOrders(id);
+  const { data: orders } = useGetUserOrders(id || null);
   const updateStatusMutaion = UpdateUserRoleMutaion();
   const queryClient = useQueryClient();
   const options = ["USER", "ADMIN", "MODERATOR"];
@@ -138,11 +138,13 @@ const UserProfilePage = () => {
                 </select>
               </div>
             </div>
-            <div className="flex justify-center py-5">
-              <LoaderBtn handleClick={handleUserUpdate} style="text-white">
-                Update
-              </LoaderBtn>
-            </div>
+            {currentRole && (
+              <div className="flex justify-center py-5">
+                <LoaderBtn handleClick={handleUserUpdate} style="text-white">
+                  Update
+                </LoaderBtn>
+              </div>
+            )}
           </div>
         </div>
 

@@ -16,6 +16,7 @@ export const useGetUserOrders = (userid: string) => {
   return useQuery({
     queryKey: ["userorders"],
     queryFn: () => getUserOrders(userid),
+    enabled: !!userid,
   });
 };
 export const useGetOrderDetails = (orderId: string) => {
