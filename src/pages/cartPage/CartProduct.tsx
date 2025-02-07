@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import { useCallback, useState } from "react";
 import { FaMinus, FaPlus } from "react-icons/fa";
 import { PiCurrencyDollarBold } from "react-icons/pi";
 import { RiDeleteBin6Fill } from "react-icons/ri";
@@ -12,10 +12,11 @@ import cl from "classnames";
 import { RemoveFromCartMutaion } from "../../querys/cart/cartQuery";
 import { toast } from "react-toastify";
 import { LoaderBtn } from "../../components/component";
+import { Link } from "react-router-dom";
 
 const CartProduct = ({ product }) => {
   const dispatch = useDispatch();
-  const { userDetails } = useSelector((store) => store.user);
+  const { userDetails, status } = useSelector((store) => store.user);
   const removeProductMutaion = RemoveFromCartMutaion();
   const [quantity, setQuantity] = useState(product?.quantity || 1);
   // handlers
@@ -34,6 +35,9 @@ const CartProduct = ({ product }) => {
     dispatch(removeQuantity(product?.productId));
   };
   const handleProductRemove = useCallback(() => {
+    if (!status) {
+      return dispatch(removeProduct(product?.productId));
+    }
     removeProductMutaion.mutate({
       userId: userDetails?._id,
       data: { productId: product?.productId, variantId: product?.variantId },
@@ -45,11 +49,14 @@ const CartProduct = ({ product }) => {
     <div>
       <div className="wrapper">
         <div className="flex flex-col  gap-3 sm:gap-0 sm:flex-row text-black">
-          <img
-            src={product?.imgurl}
-            alt="products image"
-            className="sm:w-24 sm:h-24 w-36 h-36 self-center   rounded-lg"
-          />
+          <Link to={`/product/${product?.productId}`} className="size-auto">
+            <img
+              src={product?.imgurl}
+              alt="products image"
+              className="sm:w-24 sm:h-24 w-36 h-36 self-center   rounded-lg"
+            />
+          </Link>
+
           <div className="flex flex-col px-3">
             <h4 className="font-semibold text-sm sm:text-xl capitalize">
               {product?.name}
@@ -98,7 +105,10 @@ const CartProduct = ({ product }) => {
                 <FaMinus />
               </button>
               <p>{quantity}</p>
-              <button onClick={addQuantityClick}>
+              <button
+                disabled={quantity == product?.stock}
+                onClick={addQuantityClick}
+              >
                 <FaPlus />
               </button>
             </div>

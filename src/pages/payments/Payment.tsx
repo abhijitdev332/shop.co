@@ -81,6 +81,10 @@ const PaymentPage = () => {
             dispatch(resetCart());
             setPaymentStatus("success");
             toast.success("Order successful!");
+          } else {
+            setPaymentStatus("canceled");
+            toast.error("Order Failed!! Try Again");
+            dispatch(resetCart());
           }
         } else if (paymentUpdate === "unpaid" || paymentUpdate === "canceled") {
           clearInterval(interval);

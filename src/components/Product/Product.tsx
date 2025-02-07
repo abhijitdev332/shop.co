@@ -41,7 +41,8 @@ const Product = () => {
     let haveProduct = cart?.products?.find(
       (ele) => ele?.productId == productData?._id
     );
-    return !!haveProduct;
+    setQuantity(haveProduct?.quantity || 1);
+    return haveProduct;
   }, [productData, cart]);
   // handle add cart
   const handleCartAdd = () => {
@@ -297,7 +298,7 @@ const Product = () => {
                       <FaPlus />
                     </button>
                   </div>
-                  {productExisted ? (
+                  {!!productExisted ? (
                     <button
                       className={cl(
                         "btn w-72 text-center  bg-black rounded-badge"
@@ -310,7 +311,7 @@ const Product = () => {
                   ) : (
                     <button
                       className={cl(
-                        "btn w-72 text-center disabled:text-black  bg-black rounded-badge"
+                        "btn  w-52 sm:w-72 text-center disabled:text-black  bg-black rounded-badge"
                       )}
                       onClick={handleCartAdd}
                       disabled={currentProductVariant?.stock <= 0}

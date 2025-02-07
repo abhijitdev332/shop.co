@@ -19,7 +19,7 @@ const ProductCard = ({ product = {}, style = "", imgStyle = "" }) => {
   };
 
   return (
-    <div className={cl("w-40 md:w-44 overflow-hidden", style)}>
+    <div className={cl("w-40 md:w-44 h-auto overflow-hidden", style)}>
       <figure className={cl("h-full max-h-[12rem]", imgStyle)}>
         <Link to={`/product/${product._id}`} className="w-full">
           <img

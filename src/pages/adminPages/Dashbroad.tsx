@@ -75,8 +75,8 @@ const Dashbroad = () => {
           />
           <DashCard
             title={"customers"}
-            count={stats?.totalCustomers}
-            today={stats?.todayCustomers}
+            count={stats?.totalUsers}
+            today={stats?.todayUsers}
             icon={<BsPersonCheckFill color="#287f8a" size={20} />}
           />
         </div>
@@ -127,7 +127,6 @@ const Dashbroad = () => {
     </section>
   );
 };
-
 function DashCard({
   icon = "",
   title,
@@ -168,7 +167,6 @@ function DashCard({
     </div>
   );
 }
-
 function Card({ style = "", children }) {
   return (
     <div

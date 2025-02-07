@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import CartProduct from "./CartProduct";
 import { IoArrowForward } from "react-icons/io5";
 import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const CartPage = () => {
   const { products, totalAmount } = useSelector((state) => state.cart);
@@ -45,9 +46,19 @@ const CartPage = () => {
 
 function CartCheckOut({ subTotal }) {
   const navigate = useNavigate();
+  const { status } = useSelector((store) => store.user);
   const [discount, setDiscount] = useState<number>(0);
   const [delhivery, setDelivery] = useState<number>(50);
   const [totalAmount, setTotalAmount] = useState(0);
+
+  const handleCheckout = () => {
+    if (!status) {
+      return toast.info("Please login!!");
+    }
+    return navigate("order", {
+      state: { discount, totalAmount, delhivery, subTotal },
+    });
+  };
 
   useEffect(() => {
     setDiscount(() => {
@@ -92,12 +103,7 @@ function CartCheckOut({ subTotal }) {
         </p>
         <button
           className="btn btn-active rounded-badge mt-auto"
-          // onClick={handleCheckout}
-          onClick={() =>
-            navigate("order", {
-              state: { discount, totalAmount, delhivery, subTotal },
-            })
-          }
+          onClick={handleCheckout}
         >
           <span className="text-white">Go To Next</span>
           <span className="text-white">

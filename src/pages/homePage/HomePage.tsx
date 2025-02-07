@@ -10,7 +10,7 @@ const HomePage = () => {
         <div className="bg-white">
           <List
             title="New Arrivals"
-            exstyle="flex justify-center"
+            exstyle="flex justify-center h-full"
             data={products?.arivalsProducts?.products}
             renderItem={(product) => <ProductCard product={product} />}
             viewLink="/product/slug?query=arrival"
@@ -19,7 +19,7 @@ const HomePage = () => {
           <div className="divider w-full"></div>
           <List
             title="TOP SELLING"
-            exstyle="flex justify-center"
+            exstyle="flex justify-center h-full"
             data={products?.topProducts?.products}
             renderItem={(item) => <ProductCard product={item} />}
             viewLink="/product/slug?query=top"
