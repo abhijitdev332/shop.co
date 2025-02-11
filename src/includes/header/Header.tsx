@@ -72,7 +72,7 @@ const Header = () => {
                       aria-label="close sidebar"
                       className="drawer-overlay"
                     ></label>
-                    <ul className="flex relative h-full flex-col bg-gray-200 w-80 gap-6 items-center py-10 text-lg">
+                    <ul className="flex relative h-full flex-col bg-gray-300 w-80 gap-6 items-center py-10 text-lg">
                       <div className="close">
                         <label
                           htmlFor="my-drawer"
@@ -80,7 +80,7 @@ const Header = () => {
                           className="drawer-overlay cursor-pointer absolute top-5 right-5 bg-base-200  p-2 rounded-btn"
                         >
                           <span>
-                            <IoClose color="white" size={30} />
+                            <IoClose color="black" size={30} />
                           </span>
                         </label>
                       </div>
@@ -196,7 +196,7 @@ const Header = () => {
               {/* searchbar */}
               <div className="flex h-full items-center justify-end  basis-2/6">
                 <label
-                  className="flex   justify-end items-center rounded-badge px-2 py-2 bg-gray-200"
+                  className="flex  w-fit justify-end items-center rounded-badge px-2 py-2 bg-gray-200"
                   onClick={() => {
                     if (searchRef?.current) {
                       searchRef?.current?.showModal();
@@ -205,7 +205,7 @@ const Header = () => {
                     }
                   }}
                 >
-                  <span className="flex gap-2 bg-gray-200 p-2 rounded-lg">
+                  <span className="flex w-60 gap-2 text-gray-800 bg-gray-100 p-2 rounded-lg ring-1">
                     <RiSearch2Line size={20} />
                     Search
                   </span>
@@ -265,9 +265,12 @@ const Header = () => {
         >
           Search
         </button> */}
-        {isLoading && (
-          <span className="loading loading-spinner loading-lg"></span>
-        )}
+        <div className="mt-5">
+          {isLoading && (
+            <span className="loading loading-spinner loading-lg"></span>
+          )}
+        </div>
+
         <List
           data={data?.products || []}
           exstyle="flex flex-nowrap flex-col !gap-2"

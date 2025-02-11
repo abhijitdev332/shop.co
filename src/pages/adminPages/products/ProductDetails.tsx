@@ -122,7 +122,7 @@ const ProductDetailsTabGroup = () => {
 // product details
 const ProductDetails = ({ setVariant, setReview }) => {
   const { id } = useParams();
-  const { data } = useGetProductById(id);
+  const { data, isLoading: productLoading } = useGetProductById(id);
   const [productData, setProductData] = useState(null);
   const [allVariants, setAllVariants] = useState([]);
   const [currentProductVariant, setCurrentProductVariant] = useState({});
@@ -190,6 +190,9 @@ const ProductDetails = ({ setVariant, setReview }) => {
           <div className="imgCon gap-3 flex-col basis-1/3 p-2 bg-white shadow-lg rounded-xl">
             {/* show current image */}
             <div className="box h-fit">
+              {productLoading && (
+                <div className="skeleton h-[20rem] w-full bg-white "></div>
+              )}
               <img
                 src={currentProductImage || ""}
                 alt="product image"
@@ -198,6 +201,9 @@ const ProductDetails = ({ setVariant, setReview }) => {
             </div>
             {/* map all images */}
             <div className="flex gap-5 mt-4">
+              {productLoading && (
+                <div className="skeleton bg-white h-60 w-32"></div>
+              )}
               {productImages?.map((img) => (
                 <img
                   src={img?.url || ""}
@@ -214,6 +220,15 @@ const ProductDetails = ({ setVariant, setReview }) => {
             </div>
           </div>
           <div className="product-dsc basis-2/3 flex flex-col p-2 shadow-lg rounded-xl">
+            {/* loading skeleton */}
+            {productLoading && (
+              <div className="flex flex-col gap-4 w-80">
+                <div className="skeleton bg-white h-4 w-full"></div>
+                <div className="skeleton bg-white h-4 w-full"></div>
+                <div className="skeleton bg-white h-4 w-full"></div>
+              </div>
+            )}
+
             <div className="title">
               <h2 className="text-2xl font-extrabold capitalize leading-tight">
                 {productData?.name}
@@ -228,7 +243,7 @@ const ProductDetails = ({ setVariant, setReview }) => {
                   color="orange"
                 />
                 <span className="text-sm font-mono">
-                  {Math.round(productData?.averageRating)}/5
+                  {Math.round(productData?.averageRating) || 1}/5
                 </span>
               </p>
               <div className="divider divider-horizontal divider-neutral"></div>
@@ -243,9 +258,9 @@ const ProductDetails = ({ setVariant, setReview }) => {
             </div>
             {/* price */}
             <div className="price flex py-4 font-bold text-2xl  items-center gap-3">
-              <span>{currentProductVariant?.sellPrice}</span>
+              <span>{currentProductVariant?.sellPrice || ""}</span>
               <span className="text-gray-500 line-through">
-                {currentProductVariant?.basePrice}
+                {currentProductVariant?.basePrice || ""}
               </span>
               {currentProductVariant?.discount && (
                 <span className="badge p-3 border-none text-red-700 bg-red-200">

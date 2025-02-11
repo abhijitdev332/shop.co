@@ -22,7 +22,9 @@ const ordersStatus = ["pending", "shipped", "delivered"];
 const UserProfilePage = () => {
   const { id } = useParams();
   const { data: user } = useGetUserById(id);
-  const { data: orders } = useGetUserOrders(id || null);
+  const { data: orders, isLoading: orderLoading } = useGetUserOrders(
+    id || null
+  );
   const updateStatusMutaion = UpdateUserRoleMutaion();
   const queryClient = useQueryClient();
   const options = ["USER", "ADMIN", "MODERATOR"];
@@ -155,7 +157,9 @@ const UserProfilePage = () => {
               <h2 className="text-xl font-bold text-center py-4">
                 Orders Of {user?.username}
               </h2>
-
+              {orderLoading && (
+                <div className="skeleton h-96 columns-1 w-full bg-gray-200 dark:bg-white "></div>
+              )}
               <div className="table__wrapper w-full">
                 <table className="w-full">
                   <TableHeader
