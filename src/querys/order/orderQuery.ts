@@ -14,7 +14,7 @@ export const CreateOrderMutation = () => {
 };
 export const useGetUserOrders = (userid: string) => {
   return useQuery({
-    queryKey: ["userorders"],
+    queryKey: ["userorders", userid],
     queryFn: () => getUserOrders(userid, 0, 0),
     enabled: !!userid,
   });
