@@ -5,7 +5,8 @@ import { MdDashboard, MdPeopleAlt, MdStorefront } from "react-icons/md";
 import { TbCategoryFilled } from "react-icons/tb";
 import { Link, NavLink } from "react-router-dom"; // Assuming React Router is used
 import { Logout } from "../../components/component";
-
+import { sidebarMenu } from "../../constant/constant";
+import cl from "classnames";
 const Sidebar: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -30,7 +31,9 @@ const Sidebar: React.FC = () => {
         <div className="flex items-center">
           {isOpen && (
             <span className="ml-4 text-2xl font-extrabold">
-              <Link to={"/"}>SHOP.CO</Link>
+              <Link to={"/"} title="Home">
+                SHOP.CO
+              </Link>
             </span>
           )}
         </div>
@@ -41,92 +44,23 @@ const Sidebar: React.FC = () => {
 
       {/* Navigation Links */}
       <div className="flex-1 px-2 py-4">
-        <NavLink
-          to="/admin"
-          className={({ isActive }) =>
-            `flex items-center  px-4 py-3 mb-2 rounded-lg transition`
-          }
-        >
-          <span className="material-icons">
-            <MdDashboard />
-          </span>
-          {isOpen && <span className="ml-4">Dashboard</span>}
-        </NavLink>
-        <NavLink
-          to="products"
-          className={({ isActive }) =>
-            `flex items-center px-4 py-3 mb-2 rounded-lg transition ${
-              isActive
-                ? "bg-gray-400"
-                : "text-gray-400 hover:bg-gray-700 hover:text-white"
-            }`
-          }
-        >
-          <span className="material-icons">
-            <MdStorefront />
-          </span>
-          {isOpen && <span className="ml-4">Products</span>}
-        </NavLink>
-        <NavLink
-          to="category"
-          className={({ isActive }) =>
-            `flex items-center px-4 py-3 mb-2 rounded-lg transition ${
-              isActive
-                ? "bg-gray-400"
-                : "text-gray-400 hover:bg-gray-700 hover:text-white"
-            }`
-          }
-        >
-          <span className="material-icons">
-            <TbCategoryFilled />
-          </span>
-          {isOpen && <span className="ml-4">Categories</span>}
-        </NavLink>
-        <NavLink
-          to="orders"
-          className={({ isActive }) =>
-            `flex items-center px-4 py-3 mb-2 rounded-lg transition ${
-              isActive
-                ? "bg-gray-400"
-                : "text-gray-400 hover:bg-gray-700 hover:text-white"
-            }`
-          }
-        >
-          <span className="material-icons">
-            <IoReceiptSharp />
-          </span>
-          {isOpen && <span className="ml-4">Orders</span>}
-        </NavLink>
-        <NavLink
-          to="users"
-          className={({ isActive }) =>
-            `flex items-center px-4 py-3 mb-2  text-black rounded-lg transition ${
-              isActive
-                ? "bg-gray-700  text-white "
-                : "text-gray-400 hover:bg-gray-500 hover:text-white"
-            }`
-          }
-        >
-          <span className="material-icons">
-            <MdPeopleAlt />
-          </span>
-          {isOpen && <span className="ml-4">Users</span>}
-        </NavLink>
-        {/* <NavLink
-          to="/stocks"
-          className={({ isActive }) =>
-            `flex items-center px-4 py-3 mb-2 rounded-lg transition ${
-              isActive
-                ? "bg-gray-400"
-                : "text-gray-400 hover:bg-gray-500 hover:text-white"
-            }`
-          }
-        >
-          <span className="material-icons">
-            <FaHouseCircleCheck />
-          </span>
-          {isOpen && <span className="ml-4">In Stock</span>}
-        </NavLink> */}
+        {sidebarMenu.map((ele) => (
+          <NavLink
+            to={ele.link}
+            className={({ isActive }) =>
+              cl(
+                `flex items-center  px-4 py-3 mb-2 rounded-lg transition hover:bg-gray-500 hover:text-orange-100`,
+                isActive ? "bg-gray-600 text-white" : ""
+              )
+            }
+            title={ele.tilte}
+          >
+            <span className="material-icons text-inherit">
+              <ele.icon />
+            </span>
+            {isOpen && <span className="ml-4 text-inherit">{ele.tilte}</span>}
+          </NavLink>
+        ))}
       </div>
 
       {/* Logout Section */}

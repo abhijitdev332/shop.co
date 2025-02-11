@@ -124,7 +124,7 @@ const router = createBrowserRouter(
           </AdminProtected>
         }
       >
-        <Route index element={<Dashbroad />} />
+        <Route path="dash" element={<Dashbroad />} />
         <Route path="products" element={<AllProducts />} />
         <Route path="products/add" element={<AddProduct />} />
         <Route path="products/edit/:id" element={<ProductEdit />} />

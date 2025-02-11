@@ -297,7 +297,7 @@ function AuthProfile() {
           {/* chekc if its admin then show admin dashbroad link */}
           {isAdmin && (
             <li>
-              <Link to={"/admin"}>
+              <Link to={"/admin/dash"}>
                 <span>
                   <MdOutlineStorage />
                 </span>

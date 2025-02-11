@@ -1,7 +1,14 @@
 import Modal from "./Modal";
 import { FaRegTrashCan } from "react-icons/fa6";
 
-const DeleteModal = ({ modalRef, style = "", func, ...others }) => {
+const DeleteModal = ({
+  modalRef,
+  style = "",
+  func,
+  title = "Delete Product and Variants!!",
+  subtitle = "Press Delete or Cancel !!",
+  ...others
+}) => {
   return (
     <Modal modalRef={modalRef} style={style}>
       <div className="card flex justify-center flex-col gap-3 items-center">
@@ -12,8 +19,8 @@ const DeleteModal = ({ modalRef, style = "", func, ...others }) => {
         </div>
 
         <div className="flex flex-col items-center">
-          <h3 className="font-bold text-xl">Delete Product and Variants!!</h3>
-          <p className="py-4">Press Delete or Cancel !!</p>
+          <h3 className="font-bold text-xl">{title}</h3>
+          <p className="py-4">{subtitle}</p>
         </div>
 
         <div className="btn-group w-full px-5 flex justify-between">

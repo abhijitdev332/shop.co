@@ -12,6 +12,7 @@ import ProductDetails from "./ProductDetails";
 import { toast } from "react-toastify";
 import { useGetProductById } from "../../querys/product/productQuery";
 import { AddToCartMutaion } from "../../querys/cart/cartQuery";
+import { removeLoading, setLoading } from "../../services/store/loader/loader";
 
 // default img url
 const imgUrl =
@@ -19,7 +20,7 @@ const imgUrl =
 const Product = () => {
   const { id } = useParams();
   const { userDetails } = useSelector((store) => store.user);
-  const { data } = useGetProductById(id);
+  const { data, isLoading: getproductLoadding } = useGetProductById(id);
   const updateCartMutaion = AddToCartMutaion();
   const dispatch = useDispatch();
   const cart = useSelector((store) => store.cart);
@@ -188,8 +189,12 @@ const Product = () => {
                 </div>
                 {/* show current image */}
                 <div className="box order-1 md:order-2  w-full h-full overflow-hidden">
+                  {getproductLoadding && (
+                    <div className="skeleton w-full h-[10rem] bg-gray-100"></div>
+                  )}
+
                   <img
-                    src={currentProductImage || imgUrl}
+                    src={currentProductImage || ""}
                     alt="product image"
                     className={cl(style.product__img__hero)}
                   />

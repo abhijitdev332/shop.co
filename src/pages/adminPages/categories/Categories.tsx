@@ -26,6 +26,7 @@ import {
 } from "../../../components/component";
 import Dropdown from "../../../components/dropdown/Dropdown";
 import { AdminPagination } from "../adminPages";
+import { DateFormat } from "../../../utils/utils";
 
 const Categories = () => {
   const { state } = useLocation();
@@ -86,7 +87,7 @@ const Categories = () => {
 };
 
 function CategoryTable() {
-  const { data: catagories } = useAdminCategories();
+  const { data: catagories, isLoading: categoryLoading } = useAdminCategories();
   const updateMutaion = UpdateCategoryMutaion();
   const deleteMutaion = DeleteCategoryMutaion();
   const queryClient = useQueryClient();
@@ -131,6 +132,9 @@ function CategoryTable() {
             <button className="btn btn-neutral">Add Category</button>
           </Link>
         </div>
+        {categoryLoading && (
+          <div className=" skeleton h-60 w-full bg-gray-100 dark:bg-white"></div>
+        )}
         {/* Table */}
         <div className="overflow-x-auto">
           <table className="w-full rounded">
@@ -239,10 +243,14 @@ function CategoryTable() {
             />
           </table>
         </div>
-        <AdminPagination totalPage={5} />
+        {/* <AdminPagination totalPage={5} /> */}
       </div>
       {/* modal */}
-      <DeleteModal modalRef={modalRef} func={handleDelete} />
+      <DeleteModal
+        modalRef={modalRef}
+        func={handleDelete}
+        title="Delete Category and Products!!"
+      />
       {/* updatemodal */}
       <Modal modalRef={updateModal}>
         <UpdateCategoryModal
@@ -256,7 +264,7 @@ function CategoryTable() {
 }
 
 function SubCategoryTable() {
-  const { data: catagories } = useGetSubCategory();
+  const { data: catagories, isLoading: categoryLoading } = useGetSubCategory();
   const updateMutaion = UpdateSubCategoryMutaion();
   const deleteMutaion = DeleteSubCategoryMutaion();
   const queryClient = useQueryClient();
@@ -299,11 +307,19 @@ function SubCategoryTable() {
             <button className="btn btn-neutral">Add Sub-Category</button>
           </Link>
         </div>
-
+        {categoryLoading && (
+          <div className=" skeleton h-60 w-full bg-gray-100 dark:bg-white"></div>
+        )}
         {/* Table */}
         <div className="overflow-x-auto">
           <table className="w-full rounded">
-            <thead className="bg-gray-100 sticky top-0 p-2 z-10">
+            <TableHeader
+              columns={["Category", "Added", "Actions"]}
+              input={true}
+              onchange={toggleSelectAll}
+              oncheck={selectedProducts?.length === catagories?.length}
+            />
+            {/* <thead className="bg-gray-100 sticky top-0 p-2 z-10">
               <tr>
                 <th className=" px-4 py-2">
                   <div className="flex gap-2">
@@ -320,128 +336,99 @@ function SubCategoryTable() {
                 <th className=" px-4 py-2 text-left">Added</th>
                 <th className=" px-4 py-2 text-left">Actions</th>
               </tr>
-            </thead>
-            <tbody>
-              {catagories?.map((cata) => (
-                <tr key={cata?._id} className="text-gray-800 text-base">
-                  {/* Product Name */}
-                  <TableCell>
-                    <div className="flex gap-2 items-center">
-                      <input
-                        type="checkbox"
-                        checked={selectedProducts?.includes(cata?._id)}
-                        onChange={() => toggleSelectProduct(cata?._id)}
-                        className="checkbox"
-                      />
+            </thead> */}
+            <TableBody
+              columnsData={catagories}
+              renderItem={(cata) => {
+                return (
+                  <tr key={cata?._id} className="text-gray-800 text-base">
+                    {/* Product Name */}
+                    <TableCell>
+                      <div className="flex gap-2 items-center">
+                        <input
+                          type="checkbox"
+                          checked={selectedProducts?.includes(cata?._id)}
+                          onChange={() => toggleSelectProduct(cata?._id)}
+                          className="checkbox"
+                        />
 
-                      <div className="flex  items-center"></div>
-                      <div className="avatar space-x-2">
-                        <div className="w-10 rounded-xl">
+                        <div className="flex  items-center"></div>
+                        <div className="avatar space-x-2">
+                          <div className="w-10 rounded-xl">
+                            <Link
+                              to={`/admin/subcategory/${cata?._id}?query=${cata?.SubCategoryName}`}
+                            >
+                              <img src={cata?.subCategoryImage} />
+                            </Link>
+                          </div>
+                          <p className="text-gray-800 text-sm md:text-base capitalize">
+                            {cata?.SubCategoryName}
+                          </p>
+                        </div>
+                      </div>
+                    </TableCell>
+
+                    <TableCell>{DateFormat(cata?.createdAt)}</TableCell>
+                    {/* Actions */}
+                    <TableCell>
+                      <Dropdown>
+                        <li>
                           <Link
                             to={`/admin/subcategory/${cata?._id}?query=${cata?.SubCategoryName}`}
+                            className="hover:bg-gray-300 font-medium"
                           >
-                            <img src={cata?.subCategoryImage} />
+                            <IoEye />
+                            View
                           </Link>
-                        </div>
-                        <p className="text-gray-800 text-sm md:text-base capitalize">
-                          {cata?.SubCategoryName}
-                        </p>
-                      </div>
-                    </div>
-                  </TableCell>
-
-                  <td className=" px-4 py-2">
-                    {new Date(cata?.createdAt).toLocaleDateString("en-GB")}
-                  </td>
-                  {/* Actions */}
-                  <td className=" px-4 py-2">
-                    <Dropdown>
-                      <li>
-                        <Link
-                          to={`/admin/subcategory/${cata?._id}?query=${cata?.SubCategoryName}`}
-                          className="hover:bg-gray-300 font-medium"
-                        >
-                          <IoEye />
-                          View
-                        </Link>
-                      </li>
-                      <li>
-                        <button
-                          className="hover:bg-gray-300 font-medium"
-                          onClick={() => {
-                            if (updateModal?.current) {
-                              setSelectedUpdateCata({
-                                name: cata?.SubCategoryName,
-                                image: cata?.subCategoryImage,
-                                id: cata?._id,
-                              });
-                              updateModal?.current?.showModal();
-                            }
-                          }}
-                        >
-                          <MdModeEdit />
-                          Edit
-                        </button>
-                      </li>
-                      <li>
-                        <button
-                          className="hover:bg-gray-300 font-medium"
-                          onClick={() => {
-                            if (modalRef?.current) {
-                              setDeleteSelect(cata?._id);
-                              modalRef?.current?.showModal();
-                            }
-                          }}
-                        >
-                          <FaRegTrashAlt />
-                          Delete
-                        </button>
-                      </li>
-                    </Dropdown>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
+                        </li>
+                        <li>
+                          <button
+                            className="hover:bg-gray-300 font-medium"
+                            onClick={() => {
+                              if (updateModal?.current) {
+                                setSelectedUpdateCata({
+                                  name: cata?.SubCategoryName,
+                                  image: cata?.subCategoryImage,
+                                  id: cata?._id,
+                                });
+                                updateModal?.current?.showModal();
+                              }
+                            }}
+                          >
+                            <MdModeEdit />
+                            Edit
+                          </button>
+                        </li>
+                        <li>
+                          <button
+                            className="hover:bg-gray-300 font-medium"
+                            onClick={() => {
+                              if (modalRef?.current) {
+                                setDeleteSelect(cata?._id);
+                                modalRef?.current?.showModal();
+                              }
+                            }}
+                          >
+                            <FaRegTrashAlt />
+                            Delete
+                          </button>
+                        </li>
+                      </Dropdown>
+                    </TableCell>
+                  </tr>
+                );
+              }}
+            />
           </table>
         </div>
-        <AdminPagination totalPage={5} />
+        {/* <AdminPagination totalPage={5} /> */}
       </div>
       {/* modal */}
-      <Modal modalRef={modalRef}>
-        <div className="card flex justify-center flex-col gap-3 items-center">
-          <div className="flex justify-center border-spacing-1 bg-red-400 w-20 rounded-full p-5">
-            <span>
-              <FaRegTrashCan size={30} color="white" />
-            </span>
-          </div>
-
-          <div className="flex flex-col items-center">
-            <h3 className="font-bold text-xl">
-              Delete Category and Its AllProducts
-            </h3>
-            <p className="py-4">Press Delete or Cancel !!</p>
-          </div>
-
-          <div className="btn-group w-full px-5 flex justify-between">
-            <button
-              className="btn btn-outline text-lg font-medium"
-              onClick={() => {
-                if (modalRef?.current) {
-                  modalRef.current?.close();
-                }
-              }}
-            >
-              Cancel
-            </button>
-            <button
-              className="btn btn-error text-lg font-medium"
-              onClick={handleDelete}
-            >
-              Delete
-            </button>
-          </div>
-        </div>
-      </Modal>
+      <DeleteModal
+        modalRef={modalRef}
+        func={handleDelete}
+        title="Delete Category and Products!!"
+      />
       <Modal modalRef={updateModal}>
         <UpdateCategoryModal
           modalRef={updateModal}
