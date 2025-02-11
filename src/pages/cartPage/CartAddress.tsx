@@ -118,14 +118,11 @@ const CartAddress = () => {
                   )}
                   onClick={() => setSelectedAddress(addr?._id)}
                 >
-                  <p className="text-gray-600  sm:text-xl  bg-transparent flex flex-wrap mt-2 capitalize justify-center leading-tight">
-                    <span>{addr?.houseNo},</span>
-                    <span>{addr?.landMark},</span>
-                    <span>{addr?.city},</span>
-                    <span>{addr?.state},</span>
-                    <span>{addr?.country},</span>
-                    <span>{addr?.mobile},</span>
-                    <span>{addr?.pin}</span>
+                  <p className="text-gray-800 text-wrap p-1 text-base   bg-transparent  mt-2 capitalize">
+                    {addr?.houseNo} {addr?.landMark}
+                    {addr?.city},{addr?.state} &nbsp;
+                    {addr?.country},{addr?.pin}
+                    {addr?.mobile}
                   </p>
                 </div>
               ))}

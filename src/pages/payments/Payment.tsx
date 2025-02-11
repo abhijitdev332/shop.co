@@ -51,7 +51,7 @@ const PaymentPage = () => {
       }
 
       let response = await verifyMutaion.mutateAsync(sessionId);
-      if (response.status == 200) {
+      if (response?.status == 200) {
         // get the paymetupdate from verifymutaion
         const paymentUpdate = response.data?.data?.payment_status;
         // paid run this
