@@ -10,7 +10,9 @@ export const getOrderDeatils = async (id) => {
   let { data } = await PrivateAxios.get(`/order/${id}`);
   return data?.data;
 };
-export const getUserOrders = async (id) => {
-  let { data } = await PrivateAxios.get(`/order/user/${id}`);
+export const getUserOrders = async (id, limit, skip) => {
+  let { data } = await PrivateAxios.get(
+    `/order/user/${id}?limit=${limit}&skip=${skip}`
+  );
   return data?.data;
 };

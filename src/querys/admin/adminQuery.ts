@@ -4,14 +4,16 @@ import {
   getAdminCategories,
   getAdminOrderByCountry,
   getAdminOrders,
-  getadminOrdersKey,
   getAdminOrderStats,
   getadminProducts,
-  getadminProductskey,
   getAdminStats,
   getAdminUsers,
 } from "./adminApi";
 
+export const getadminProductskey = "getadminproducts";
+export const getadminOrdersKey = "getadminOrders";
+export const getadminUserskey = "adminusers";
+export const getadminCategorykey = "admincategories";
 const useAdminProduct = (limit = 5, skip = 0) => {
   return useQuery({
     queryKey: [getadminProductskey, skip],
@@ -23,7 +25,7 @@ const adminProductVariant = async () => {
 };
 const useAdminAllUser = (currentPage = 1, itemsPerPage = 5) => {
   return useQuery({
-    queryKey: ["adminalluser", currentPage],
+    queryKey: [getadminUserskey, currentPage],
     queryFn: () =>
       getAdminUsers(
         currentPage * itemsPerPage,
@@ -70,7 +72,7 @@ const useAdminOrdersByCountry = () => {
 
 export const useAdminCategories = () => {
   return useQuery({
-    queryKey: ["admincategories"],
+    queryKey: [getadminCategorykey],
     queryFn: getAdminCategories,
   });
 };

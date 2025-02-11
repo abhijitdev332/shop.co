@@ -1,5 +1,5 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Children, useEffect, useRef, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { useEffect, useRef, useState } from "react";
 import { FaEdit, FaRegTrashAlt } from "react-icons/fa";
 import { IoEye } from "react-icons/io5";
 import { MdModeEdit } from "react-icons/md";
@@ -14,11 +14,6 @@ import {
 } from "../../../querys/categoryQuery";
 
 import { toast } from "react-toastify";
-import { useDispatch } from "react-redux";
-import {
-  setCategory,
-  setSubCategory,
-} from "../../../services/store/category/categorySlice";
 import { FaRegTrashCan } from "react-icons/fa6";
 import {
   DeleteModal,
@@ -52,6 +47,7 @@ const Categories = () => {
               <li>Categories</li>
             </ul>
           </div>
+          {/* breadcrumbs end */}
         </div>
         {/* tab list */}
         <div role="tablist" className="tabs tabs-bordered grid-cols-2">
@@ -82,17 +78,6 @@ const Categories = () => {
               <SubCategoryTable />
             </div>
           </div>
-
-          {/* <input
-            type="radio"
-            name="my_tabs_1"
-            role="tab"
-            className="tab"
-            aria-label="Tab 3"
-          />
-          <div role="tabpanel" className="tab-content p-10">
-            Tab content 3
-          </div> */}
         </div>
         {/* end tab list */}
       </div>
@@ -258,41 +243,6 @@ function CategoryTable() {
       </div>
       {/* modal */}
       <DeleteModal modalRef={modalRef} func={handleDelete} />
-      {/* <Modal modalRef={modalRef}>
-        <div className="card flex justify-center flex-col gap-3 items-center">
-          <div className="flex justify-center border-spacing-1 bg-red-400 w-20 rounded-full p-5">
-            <span>
-              <FaRegTrashCan size={30} color="white" />
-            </span>
-          </div>
-
-          <div className="flex flex-col items-center">
-            <h3 className="font-bold text-xl">
-              Delete Category and Its AllProducts
-            </h3>
-            <p className="py-4">Press Delete or Cancel !!</p>
-          </div>
-
-          <div className="btn-group w-full px-5 flex justify-between">
-            <button
-              className="btn btn-outline text-lg font-medium"
-              onClick={() => {
-                if (modalRef?.current) {
-                  modalRef.current?.close();
-                }
-              }}
-            >
-              Cancel
-            </button>
-            <button
-              className="btn btn-error text-lg font-medium"
-              onClick={handleDelete}
-            >
-              Delete
-            </button>
-          </div>
-        </div>
-      </Modal> */}
       {/* updatemodal */}
       <Modal modalRef={updateModal}>
         <UpdateCategoryModal
@@ -527,10 +477,11 @@ function UpdateCategoryModal({
     if (categoryState.image instanceof FileList) {
       formdata.append("image", categoryState.image[0]);
       formdata.append("name", categoryState.name);
-      return func?.mutate(formdata);
+      return func?.mutate({ id: category?.id, data: formdata });
     }
     formdata.append("name", categoryState.name);
-    return func?.mutate(formdata);
+
+    return func?.mutate({ id: category?.id, data: formdata });
   };
 
   useEffect(() => {
@@ -555,7 +506,7 @@ function UpdateCategoryModal({
           <p className="py-4">Modify the category name and press Update!</p>
           <div className="flex flex-col gap-4 w-full items-center">
             <img
-              src={imagePreview || categoryState.image}
+              src={imagePreview || categoryState?.image}
               alt="categoryimage"
               className="w-32 h-32 rounded-lg"
             />

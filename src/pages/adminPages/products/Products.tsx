@@ -6,7 +6,7 @@ import { MdModeEdit } from "react-icons/md";
 import { Link } from "react-router-dom";
 import { useAdminProduct } from "../../../querys/admin/adminQuery";
 import { toast } from "react-toastify";
-import { getadminProductskey } from "../../../querys/admin/adminApi";
+import { getadminProductskey } from "../../../querys/admin/adminQuery";
 import {
   DeleteModal,
   DropDown,

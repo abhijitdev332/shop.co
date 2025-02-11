@@ -38,7 +38,7 @@ const ProfilePage = () => {
   const {
     register,
     handleSubmit,
-    watch,
+    reset: userReset,
     formState: { errors },
   } = useForm<ProfileFormInputs>({
     resolver: zodResolver(profileSchema),
@@ -47,15 +47,16 @@ const ProfilePage = () => {
       email: userDetails?.email,
     },
   });
-  let profileImage = watch("image");
+
   const updateSubmit = async (data: ProfileFormInputs) => {
     const formData = new FormData();
     formData.append("name", data.name);
     formData.append("email", data.email);
-    if (profileImage && profileImage[0]) {
-      formData.append("image", profileImage[0]);
+    if (data.image instanceof FileList && data.image[0]) {
+      formData.append("image", data.image[0]);
+      return updateMutation.mutate({ id: userId, data: formData });
     }
-    updateMutation.mutate({ id: userId, data: formData });
+    return updateMutation.mutate({ id: userId, data: formData });
   };
   // address valdiation
   const {
@@ -85,6 +86,8 @@ const ProfilePage = () => {
     if (updateMutation.isSuccess) {
       toast.success(updateMutation?.data?.message);
       dispatch(setUser(updateMutation?.data?.data));
+      setPreviewImage(updateMutation.data?.data?.imgUrl);
+      userReset();
     }
   }, [updateMutation.isSuccess]);
   // effect to lister address success
@@ -98,6 +101,8 @@ const ProfilePage = () => {
       queryClient.invalidateQueries(["getuseraddress", userId]);
     }
   }, [addressAddMutation.isSuccess, addressDelMutaion.isSuccess]);
+
+  console.log(userDetails);
   return (
     <>
       <section>
@@ -213,7 +218,6 @@ const ProfilePage = () => {
                 </button>
               </form>
             </div>
-
             {/* user other details */}
             <div className="max-w-4xl mx-auto p-8 bg-white shadow-lg rounded-lg my-4">
               <h2 className="text-2xl font-bold text-gray-800 mb-6">

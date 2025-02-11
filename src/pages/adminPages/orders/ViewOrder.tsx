@@ -1,5 +1,5 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 
 import {
@@ -12,6 +12,8 @@ import {
   UpdateOrderStausMutaion,
   useGetOrderDetails,
 } from "../../../querys/order/orderQuery";
+import { toast } from "react-toastify";
+import { getadminOrdersKey } from "../../../querys/admin/adminQuery";
 const ordersStatus = ["pending", "shipped", "delivered"];
 const OrderDetailsPage = () => {
   const { id } = useParams();
@@ -25,6 +27,12 @@ const OrderDetailsPage = () => {
     orderUpdateMutaion.mutate({ id: id, data: { status: currentOrderStatus } });
   };
 
+  useEffect(() => {
+    if (orderUpdateMutaion.isSuccess) {
+      toast.success(orderUpdateMutaion.data?.message);
+      queryClient.invalidateQueries([getadminOrdersKey]);
+    }
+  }, [orderUpdateMutaion.isSuccess]);
   return (
     <div className="container mx-auto p-6">
       <div className="flex">

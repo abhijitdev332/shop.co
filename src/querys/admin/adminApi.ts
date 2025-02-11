@@ -1,6 +1,5 @@
 import { AdminAxios } from "../../services/api/api";
-export const getadminProductskey = "getadminproducts";
-export const getadminOrdersKey = "getadminOrders";
+
 const getadminProducts = async ({ limit, skip }) => {
   let { data } = await AdminAxios.get(`/products?limit=${limit}&skip=${skip}`);
   return data?.data;

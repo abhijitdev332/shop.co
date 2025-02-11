@@ -6,7 +6,6 @@ const useVerifySession = () => {
   return useQuery({
     queryKey: ["getusersession"],
     queryFn: verifySession,
-    retry: false,
   });
 };
 export const LoginMutaion = () => {

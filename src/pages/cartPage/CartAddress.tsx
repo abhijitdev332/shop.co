@@ -113,21 +113,31 @@ const CartAddress = () => {
               {userAddress?.map((addr: any) => (
                 <div
                   className={cl(
-                    "w-60 flex flex-col items-center h-fit sm:h-40 py-3 px-5  shadow-lg rounded-lg my-4 cursor-pointer",
+                    "w-56 flex flex-col items-center h-fit sm:h-32 py-3 px-5  shadow-lg rounded-lg my-4 cursor-pointer",
                     addr?._id == selectedAddress ? "bg-accent" : ""
                   )}
-                  onClick={() => setSelectedAddress(addr?._id)}
+                  onClick={() => {
+                    if (selectedAddress == addr?._id) {
+                      setSelectedAddress("");
+                    } else {
+                      setSelectedAddress(addr?._id);
+                    }
+                  }}
                 >
-                  <p className="text-gray-800 text-wrap p-1 text-base   bg-transparent  mt-2 capitalize">
-                    {addr?.houseNo} {addr?.landMark}
-                    {addr?.city},{addr?.state} &nbsp;
-                    {addr?.country},{addr?.pin}
-                    {addr?.mobile}
+                  <p className="text-gray-600  text-sm flex flex-wrap mt-2 capitalize justify-center leading-tight">
+                    <span>{addr?.houseNo},</span>
+                    <span>{addr?.landMark},</span>
+                    <span>{addr?.city},</span>
+                    <span>{addr?.state},</span>
+                    <span>{addr?.country},</span>
+                    <span>{addr?.pin},</span>
+                    <br />
+                    <span>{addr?.mobile}</span>
                   </p>
                 </div>
               ))}
               {/* new address modal */}
-              <div className="w-60 h-fit sm:h-40 flex justify-center items-center p-5 bg-white shadow-lg rounded-lg my-4">
+              <div className="w-56 h-fit sm:h-32 flex justify-center items-center p-5 bg-white shadow-lg rounded-lg my-4">
                 <button
                   onClick={() => {
                     if (modalRef?.current) {

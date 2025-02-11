@@ -1,8 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { IoEye } from "react-icons/io5";
 import { MdModeEdit } from "react-icons/md";
 import { Link } from "react-router-dom";
-import { useAdminOrders } from "../../../querys/admin/adminQuery";
+import {
+  getadminOrdersKey,
+  useAdminOrders,
+} from "../../../querys/admin/adminQuery";
 import {
   DropDown,
   TableBody,
@@ -14,6 +17,7 @@ import { AdminPagination } from "../adminPages";
 import { UpdateOrderStausMutaion } from "../../../querys/order/orderQuery";
 import { DateFormat } from "../../../utils/utils";
 import Badge from "../../../components/button/Badge";
+import { toast } from "react-toastify";
 const ordersStatus = ["pending", "shipped", "delivered"];
 const Orders = () => {
   const itemsPerPage = 5;
@@ -22,7 +26,7 @@ const Orders = () => {
   const queryClient = useQueryClient();
   const updateOrderMutaion = UpdateOrderStausMutaion();
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
-  const [selectedOrder, setSelectedOrder] = useState({});
+  const [selectedOrder, setSelectedOrder] = useState("");
   const [orderStatusstate, setOrdersStatus] = useState("");
   // Toggle product selection
   const toggleSelectProduct = (id: string) => {
@@ -52,11 +56,20 @@ const Orders = () => {
   //   },
   // });
   const handleUpdateOrderStatus = () => {
-    if (orderStatusstate !== "") {
-      updateOrderMutaion.mutate({ status: orderStatusstate });
+    if (orderStatusstate !== "" && selectedOrder) {
+      updateOrderMutaion.mutate({
+        id: selectedOrder,
+        data: { status: orderStatusstate },
+      });
     }
   };
 
+  useEffect(() => {
+    if (updateOrderMutaion.isSuccess) {
+      toast.success(updateOrderMutaion.data?.message);
+      queryClient.invalidateQueries([getadminOrdersKey]);
+    }
+  }, [updateOrderMutaion.isSuccess]);
   return (
     <div className="p-6 bg-white rounded-lg shadow-md">
       <div className="flex">

@@ -13,14 +13,12 @@ export const useGetUserById = (id) => {
     queryFn: () => getUser(id),
   });
 };
-
 export const CreateUserMutaion = () => {
   return useMutation({
     mutationKey: ["createuser"],
     mutationFn: (data) => createUser(data),
   });
 };
-
 export const UpdateUserMutaion = () => {
   return useMutation({
     mutationKey: ["updateuser"],

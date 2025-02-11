@@ -12,7 +12,14 @@ export const createUser = async (body) => {
   });
   return data?.data;
 };
-export const updateUser = async (id, body) => {};
+export const updateUser = async (id, body) => {
+  let { data } = await PrivateAxios.put(`/user/${id}`, body, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+  return data;
+};
 export const updateUserRole = async (id, body) => {
   let { data } = await PrivateAxios.put(`/user/role/${id}`, body);
   return data;

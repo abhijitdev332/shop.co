@@ -25,7 +25,7 @@ const Category = () => {
                     <div className="flex h-full justify-center items-center">
                       <p
                         className={cl(
-                          "text-5xl absolute top-1/2 left-0 text-gray-900  font-bold uppercase",
+                          "text-5xl absolute top-10 left-0 text-gray-900  font-bold uppercase",
                           style.title
                         )}
                       >

@@ -13,7 +13,7 @@ import {
 } from "../../../querys/variant/variantQuery";
 import { useQueryClient } from "@tanstack/react-query";
 import { LoaderBtn } from "../../../components/component";
-import { getadminProductskey } from "../../../querys/admin/adminApi";
+import { getadminProductskey } from "../../../querys/admin/adminQuery";
 
 const ProductEdit = () => {
   const { id } = useParams();

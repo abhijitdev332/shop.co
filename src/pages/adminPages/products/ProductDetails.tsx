@@ -14,7 +14,7 @@ import style from "./style.module.scss";
 import { IoEye } from "react-icons/io5";
 import { MdModeEdit } from "react-icons/md";
 import { toast } from "react-toastify";
-import { getadminOrdersKey } from "../../../querys/admin/adminApi";
+import { getadminOrdersKey } from "../../../querys/admin/adminQuery";
 import {
   useProductOrderDetails,
   useGetProductById,
