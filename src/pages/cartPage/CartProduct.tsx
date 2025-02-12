@@ -100,13 +100,17 @@ const CartProduct = ({ product }) => {
               </span>
             </LoaderBtn>
 
-            <div className="btn btn-ghost shadow bg-gray-200 flex gap-4 py-2 w-32  rounded-badge">
-              <button onClick={minusQuantityClick}>
+            <div className=" flex items-center justify-end gap-4 py-2 w-32">
+              <button
+                className=" bg-slate-900 p-2 text-white rounded-full"
+                onClick={minusQuantityClick}
+              >
                 <FaMinus />
               </button>
               <p>{quantity}</p>
               <button
                 disabled={quantity == product?.stock}
+                className=" bg-slate-900 p-2 text-white rounded-full"
                 onClick={addQuantityClick}
               >
                 <FaPlus />

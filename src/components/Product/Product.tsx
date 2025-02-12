@@ -96,6 +96,9 @@ const Product = () => {
     if (!selectedProductSize) {
       return toast.info("Please Select an size!!");
     }
+    if (quantity <= 1) {
+      return;
+    }
 
     setQuantity((prev) => prev - 1);
   };
@@ -146,6 +149,7 @@ const Product = () => {
           v?.color === currentProductColor && v?.size === selectedProductSize
       );
       setCurrentProductVariant(variant || {});
+      setQuantity(1);
     }
   }, [selectedProductSize, currentProductColor, allVariants]);
 
@@ -202,7 +206,7 @@ const Product = () => {
               </div>
               <div className="product-dsc m-0 md:m-2  basis-1/2 flex flex-col py-2">
                 <div className="title">
-                  <h2 className="text-3xl font-extrabold uppercase leading-tight">
+                  <h2 className="text-3xl font-bold capitalize leading-tight">
                     {productData?.name}
                   </h2>
                 </div>
@@ -276,8 +280,10 @@ const Product = () => {
                     {sizes.map((ele) => (
                       <button
                         className={cl(
-                          "px-3 py-2 rounded-badge  bg-gray-200 capitalize",
-                          ele == selectedProductSize ? "bg-primary" : ""
+                          "px-2 py-1 rounded-full  outline outline-1 capitalize",
+                          ele == selectedProductSize
+                            ? "bg-accent outline-accent"
+                            : ""
                         )}
                         onClick={() => {
                           setSelectedProductSize(ele);
@@ -294,19 +300,25 @@ const Product = () => {
                 </p>
                 {/* quantity and cart */}
                 <div className="flex gap-2 py-3 w-full">
-                  <div className="btn btn-ghost shadow bg-gray-200 flex gap-4 py-2 w-32  rounded-badge">
-                    <button onClick={minusClick}>
-                      <FaMinus />
+                  <div className="flex items-center gap-4 py-2 w-32">
+                    <button
+                      className=" bg-slate-900 p-2 text-white rounded-full"
+                      onClick={minusClick}
+                    >
+                      <FaMinus size={15} />
                     </button>
-                    <p>{quantity}</p>
-                    <button onClick={addClick}>
-                      <FaPlus />
+                    <p className="font-medium">{quantity}</p>
+                    <button
+                      className=" bg-slate-900 p-2 text-white rounded-full"
+                      onClick={addClick}
+                    >
+                      <FaPlus size={15} />
                     </button>
                   </div>
                   {!!productExisted ? (
                     <button
                       className={cl(
-                        "btn w-72 text-center  bg-black rounded-badge"
+                        "btn w-72 text-center  bg-black text-white rounded-badge"
                       )}
                       onClick={handleCartRemove}
                       disabled={currentProductVariant?.stock <= 0}
@@ -316,7 +328,7 @@ const Product = () => {
                   ) : (
                     <button
                       className={cl(
-                        "btn  w-52 sm:w-72 text-center disabled:text-black  bg-black rounded-badge"
+                        "btn  w-52 sm:w-72 text-center text-white disabled:text-black  bg-black rounded-badge"
                       )}
                       onClick={handleCartAdd}
                       disabled={currentProductVariant?.stock <= 0}

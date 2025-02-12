@@ -460,7 +460,7 @@ const RecentOrders = () => {
                   <TableCell>
                     <div className="flex gap-1">
                       <Link
-                        to={`orders/${ele?._id}`}
+                        to={`/admin/orders/${ele?._id}`}
                         className="btn btn-sm btn-ghost rounded-full"
                       >
                         <BsFillEyeFill />

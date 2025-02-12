@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import CartProduct from "./CartProduct";
 import { IoArrowForward } from "react-icons/io5";
 import { Link, useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 
 const CartPage = () => {
   const { products, totalAmount } = useSelector((state) => state.cart);
@@ -111,6 +111,7 @@ function CartCheckOut({ subTotal }) {
           </span>
         </button>
       </div>
+      <ToastContainer style={{ zIndex: 30 }} />
     </>
   );
 }
