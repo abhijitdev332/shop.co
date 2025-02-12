@@ -57,7 +57,7 @@ const Categories = () => {
             role="tab"
             className="tab text-lg font-medium text-black"
             aria-label="Category"
-            defaultChecked={page == "category"}
+            defaultChecked={page == "category" || true}
           />
           <div role="tabpanel" className="tab-content ">
             <div className="wrapper">
