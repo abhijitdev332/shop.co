@@ -1,6 +1,7 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { FaRegTrashAlt } from "react-icons/fa";
+import { CgAdd } from "react-icons/cg";
 import { IoEye } from "react-icons/io5";
 import { MdModeEdit } from "react-icons/md";
 import { Link } from "react-router-dom";
@@ -206,6 +207,16 @@ const AllProductsTable = () => {
                           >
                             <IoEye />
                             View
+                          </Link>
+                        </li>
+                        <li>
+                          <Link
+                            to={`variant/add/${item?._id}`}
+                            state={{ sku: item?.sku }}
+                            className="hover:bg-gray-500 text-start font-medium"
+                          >
+                            <CgAdd />
+                            Add Variant
                           </Link>
                         </li>
                         <li>

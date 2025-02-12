@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { SyntheticEvent, useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { productModalScheama } from "./schema";
 import { ZodError } from "zod";
@@ -12,14 +12,18 @@ import {
   CreateMutipleVariant,
   UploadImagesMutaion,
 } from "../../../querys/variant/variantQuery";
+import { RootState } from "../../../services/store/store";
+import { getadminProductskey } from "../../../querys/admin/adminQuery";
 
 const ProductAddPage = () => {
-  const QueryClient = useQueryClient();
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
   const productMutate = CreateNewProduct();
   const variantMutation = CreateMutipleVariant();
   const uploadImageMutation = UploadImagesMutaion();
-  const { category, subCategory } = useSelector((store) => store.category);
+  const { category, subCategory } = useSelector(
+    (store: RootState) => store.category
+  );
   const [productDetailsState, setProductDetailsState] = useState({
     name: "",
     sku: "",
@@ -49,14 +53,14 @@ const ProductAddPage = () => {
       sku: random,
     }));
   };
-  const handleProductDetailsChange = (ev) => {
+  const handleProductDetailsChange = (ev: SyntheticEvent<EventTarget>) => {
     try {
       setProductDetailsState((prev) => ({
         ...prev,
         [ev.target.name]: ev.target.value,
       }));
     } catch (err) {
-      toast.info(err);
+      console.log(err);
     }
   };
   const handleAddVariant = () => {
@@ -91,8 +95,12 @@ const ProductAddPage = () => {
     );
     setVariants(updatedVariants);
   };
+  // handleaddimages
   const handleAddImages = (index: number, files: FileList | null) => {
     if (!files) return;
+    if (files.length > 4) {
+      return toast.info("Upto 4 images Allowed!!.");
+    }
     const updatedVariants = [...variants];
     updatedVariants[index].images = [
       ...updatedVariants[index].images,
@@ -100,29 +108,12 @@ const ProductAddPage = () => {
     ];
     setVariants(updatedVariants);
   };
-  const handleProductMoreData = (data) => {
+  // product moredata
+  const handleProductMoreData = (data: {}) => {
     setProductAboutDetails({ ...data });
   };
-  // const { mutateAsync: productMutate, isError: productErr } = useMutation({
-  //   mutationKey: ["productAdd"],
-  //   mutationFn: (data) => newProduct(data),
-  // });
-  // const {
-  //   mutateAsync: variantMutation,
-  //   isPending,
-  //   isError: variantErr,
-  // } = useMutation({
-  //   mutationKey: ["variantAdd"],
-  //   mutationFn: (data) => multipleNewVariant(data),
-  //   onSettled: () => {
-  //     QueryClient.invalidateQueries("products");
-  //   },
-  // });
-  // const { mutateAsync: imagesMutation, isError: imagesErr } = useMutation({
-  //   mutationKey: ["imagesOfVariant"],
-  //   mutationFn: (data) => uploadImages(data),
-  // });
-  const mapAndUploadImages = async (images) => {
+  // upload variant images request
+  const mapAndUploadImages = async (images: FileList | null) => {
     if (images?.length <= 0) {
       return toast.error("Please upload atleast one image");
     }
@@ -143,6 +134,7 @@ const ProductAddPage = () => {
       toast.error(err?.response?.data?.message);
     }
   };
+  // product and variant add request
   const handleProductAdd = async () => {
     try {
       // configured product details
@@ -178,10 +170,12 @@ const ProductAddPage = () => {
       let variationRes = await variantMutation.mutateAsync(transformedVariants);
       if (variationRes.status == 201) {
         toast.success("Product Created Successfully");
+        queryClient.invalidateQueries(getadminProductskey);
         navigate(-1);
       }
     } catch (err) {
       console.log(err);
+      toast.error("failed to add product!!");
     }
   };
   useEffect(() => {
@@ -543,7 +537,11 @@ const ProductAddPage = () => {
           {/* Save Button */}
           <div className="mt-6">
             <LoaderBtn
-              pending={variantMutation.isPending}
+              pending={
+                variantMutation.isPending ||
+                productMutate.isPending ||
+                uploadImageMutation.isPending
+              }
               handleClick={handleProductAdd}
               style="text-white"
             >

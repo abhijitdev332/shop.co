@@ -34,7 +34,6 @@ const ProductEdit = () => {
   const [variants, setVariants] = useState(productData?.productVariants || []);
   const [productMoreData, setProductMoreData] = useState({});
   const modalRef = useRef(null);
-  const [isPending, setIsPending] = useState(false);
   // Handle input changes for product details
   const handleProductChange = (e) => {
     setProductDetails((prev) => ({
@@ -92,8 +91,26 @@ const ProductEdit = () => {
     productUpdateMutaion.mutate({ id: id, data: { ...productDataFormat } });
     variantUpdateMutaion.mutate({ variants: variantDataformat });
   };
-  const handleVariantDelete = (variantId) => {
-    variantDeleteMutation.mutate(variantId);
+  // const handleVariantDelete = (variantId) => {
+  //   variantDeleteMutation.mutate(variantId);
+  // };
+  const handleAddVariant = () => {
+    setVariants([
+      ...variants,
+      {
+        color: "",
+        sizes: [],
+        images: [],
+        stock: 0,
+        basePrice: 0,
+        salePrice: 0,
+      },
+    ]);
+  };
+  const handleRemoveVariant = (index: number) => {
+    const updatedVariants = [...variants];
+    updatedVariants.splice(index, 1);
+    setVariants(updatedVariants);
   };
   // check for sucess and invalidate query
   useEffect(() => {
@@ -272,7 +289,7 @@ const ProductEdit = () => {
               <div className="flex justify-end">
                 <button
                   className="ms-auto hover:scale-125 duration-300 bg-red-500 p-2 rounded-full"
-                  onClick={() => handleVariantDelete(variant?._id)}
+                  onClick={() => handleRemoveVariant(index)}
                 >
                   <BsTrashFill size={25} color="white" />
                 </button>
@@ -379,6 +396,7 @@ const ProductEdit = () => {
                 <input
                   type="file"
                   accept="image/*"
+                  multiple
                   onChange={(e) => handleVariantImageChange(index, e)}
                   className="file-input file-input-bordered w-full"
                   placeholder="Add Image"
@@ -386,12 +404,21 @@ const ProductEdit = () => {
               </div> */}
             </div>
           ))}
+
+          <button
+            onClick={handleAddVariant}
+            className="mt-4 btn btn-neutral transition"
+          >
+            Add Variant
+          </button>
         </div>
 
         {/* Submit Button */}
         <div className="mt-6">
           <LoaderBtn
-            pending={productUpdateMutaion?.isPending}
+            pending={
+              productUpdateMutaion?.isPending || variantUpdateMutaion.isPending
+            }
             handleClick={handleProductUpdate}
           >
             Update Product

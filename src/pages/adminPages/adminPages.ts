@@ -14,6 +14,7 @@ import AddSubCategory from "./categories/AddSubCategory.tsx";
 import CategoryProducts from "./categories/CategoryProducts.tsx";
 import SubCategoryProducts from "./categories/SubCategoryProducts.tsx";
 import AdminPagination from "./pagination/Pagination.tsx";
+import VariantAddPage from "./products/VariantAdd.tsx";
 export {
   Dashbroad,
   AllProducts,
@@ -31,4 +32,5 @@ export {
   AddSubCategory,
   SubCategoryProducts,
   ProductEdit,
+  VariantAddPage,
 };

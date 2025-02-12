@@ -202,7 +202,11 @@ const ProductDetails = ({ setVariant, setReview }) => {
             {/* map all images */}
             <div className="flex gap-5 mt-4">
               {productLoading && (
-                <div className="skeleton bg-white h-60 w-32"></div>
+                <>
+                  <div className="skeleton bg-white h-40 w-32"></div>
+                  <div className="skeleton bg-white h-40 w-32"></div>
+                  <div className="skeleton bg-white h-40 w-32"></div>
+                </>
               )}
               {productImages?.map((img) => (
                 <img

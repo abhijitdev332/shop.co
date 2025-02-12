@@ -32,5 +32,6 @@ const store = configureStore({
 });
 // persist the store
 // const persisStore = persistStore(store);
+export type RootState = ReturnType<typeof combinedReducers>;
 
 export { store };

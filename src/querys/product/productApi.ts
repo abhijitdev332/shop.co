@@ -59,8 +59,7 @@ export let getProductByCategory = async (query = "") => {
   }
 };
 export let newProduct = async (productData) => {
-  let { data } = await PrivateAxios.post("/product/create", productData);
-  return data?.data;
+  return await PrivateAxios.post("/product/create", productData);
 };
 export let deleteProduct = async (id) => {
   let { data } = await PrivateAxios.delete(`/product/remove/${id}`);

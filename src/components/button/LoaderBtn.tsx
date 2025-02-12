@@ -12,7 +12,9 @@ const LoaderBtn = ({
       onClick={handleClick}
       {...others}
     >
-      {pending && <span className="loading loading-spinner loading-md"></span>}
+      {pending && (
+        <span className="loading loading-spinner text-white loading-md"></span>
+      )}
       {children}
     </button>
   );

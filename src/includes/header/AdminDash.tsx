@@ -15,25 +15,22 @@ const AdminDashboardHeader = () => {
   const [_, toggleTheme] = useTheme();
   const { userDetails } = useSelector((store) => store.user);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [inputFull, setInputFull] = useState(false);
   const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
-  const toggleInput = () => setInputFull(!inputFull);
   const handleTheme = () => {
     toggleTheme();
   };
   return (
     <header className="flex items-center justify-between bg-white dark:bg-slate-900  shadow-md p-2 sm:px-6 sm:py-4 sticky top-0 z-10">
       {/* Left Section - Search Bar */}
-      <div className="flex items-center w-fit  sm:px-5">
+      {/* <div className="flex items-center w-fit  sm:px-5">
         <input
           type="text"
           placeholder="Search..."
           className={cl(
             "md:w-96 w-auto sm:px-4 py-2 border bg-transparent rounded-lg transition-all focus:ring-2 focus:ring-slate-500"
           )}
-          onClick={toggleInput}
         />
-      </div>
+      </div> */}
 
       {/* Right Section - Notifications and Profile */}
       <div className="flex w-full gap-2 px-2 sm:justify-end items-center">
