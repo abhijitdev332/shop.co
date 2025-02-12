@@ -30,6 +30,7 @@ const Pagination = ({
     setSearchParam({ page: Number(e) });
     return setPage(e);
   };
+
   return (
     <div className="pagination ">
       <div className="outline outline-1 outline-slate-300"></div>

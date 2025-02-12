@@ -5,7 +5,6 @@ const GuestProtected = ({ children }) => {
   const [_, status] = useUser();
   return status ? children : <Navigate to={"/"} />;
 };
-
 const UserProtected = ({ children }) => {
   const [_, status] = useUser();
   return status ? <Navigate to={"/"} /> : children;

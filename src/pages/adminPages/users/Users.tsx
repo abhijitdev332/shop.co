@@ -65,10 +65,10 @@ const UsersTable = () => {
             <div className="breadcrumbs text-sm">
               <ul>
                 <li>
-                  <Link to={"/Admin"}>Admin</Link>
+                  <Link to={"/admin"}>Admin</Link>
                 </li>
                 <li>
-                  <Link to={"/admin"}>Dashbroad</Link>
+                  <Link to={-1}>Dashbroad</Link>
                 </li>
                 <li>Users</li>
               </ul>

@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { IoEye } from "react-icons/io5";
 import { MdModeEdit } from "react-icons/md";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import {
   getadminOrdersKey,
   useAdminOrders,
@@ -20,9 +20,11 @@ import Badge from "../../../components/button/Badge";
 import { toast } from "react-toastify";
 const ordersStatus = ["pending", "shipped", "delivered"];
 const Orders = () => {
+  const [searchParams] = useSearchParams();
+  const page = searchParams.get("page") || 1;
   const itemsPerPage = 5;
   const [currentPage, setCurrentPage] = useState(1);
-  const { data, isLoading } = useAdminOrders(currentPage, itemsPerPage);
+  const { data, isLoading } = useAdminOrders(+page, itemsPerPage);
   const queryClient = useQueryClient();
   const updateOrderMutaion = UpdateOrderStausMutaion();
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
@@ -78,10 +80,10 @@ const Orders = () => {
           <div className="breadcrumbs text-sm">
             <ul>
               <li>
-                <Link to={"/Admin"}>Admin</Link>
+                <Link to={"/admin/dash"}>Admin</Link>
               </li>
               <li>
-                <Link to={"/admin"}>Dashbroad</Link>
+                <Link to={-1}>Dashbroad</Link>
               </li>
               <li>Orders</li>
             </ul>
@@ -157,7 +159,10 @@ const Orders = () => {
                   </TableCell>
                   {/* Products Name */}
                   <TableCell>
-                    <div className="flex gap-1">
+                    <Link
+                      to={`/admin/products/${order?.firstProduct?.id}`}
+                      className="flex gap-1"
+                    >
                       <div className="avatar">
                         <div className="w-12 rounded">
                           <img
@@ -176,7 +181,7 @@ const Orders = () => {
                           </span>
                         )}
                       </div>
-                    </div>
+                    </Link>
                   </TableCell>
 
                   {/* date */}
@@ -248,7 +253,7 @@ const Orders = () => {
         </table>
       </div>
       <AdminPagination
-        currentPage={currentPage}
+        currentPage={+page}
         setPage={setCurrentPage}
         totalPage={Math.ceil(data?.totalOrders / itemsPerPage)}
         itemperPage={itemsPerPage}

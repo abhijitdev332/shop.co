@@ -4,7 +4,7 @@ import { FaRegTrashAlt } from "react-icons/fa";
 import { CgAdd } from "react-icons/cg";
 import { IoEye } from "react-icons/io5";
 import { MdModeEdit } from "react-icons/md";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { useAdminProduct } from "../../../querys/admin/adminQuery";
 import { toast } from "react-toastify";
 import { getadminProductskey } from "../../../querys/admin/adminQuery";
@@ -30,11 +30,13 @@ const productTableHead = [
   "Actions",
 ];
 const AllProductsTable = () => {
+  const [searchParmas] = useSearchParams();
+  let page = searchParmas.get("page") || 1;
   const itemsPerPage = 5;
   const [currentPage, setCurrentPage] = useState(1);
   let { data: productData, isLoading } = useAdminProduct(
-    currentPage * itemsPerPage,
-    (currentPage - 1) * itemsPerPage
+    +page * itemsPerPage,
+    (+page - 1) * itemsPerPage
   );
   const deleteMutation = DeleteProductMutaion();
   const queryClient = useQueryClient();
@@ -77,13 +79,14 @@ const AllProductsTable = () => {
         <div className="flex">
           <div className=" mb-6">
             <p className="text-gray-800 text-2xl font-bold">All Products</p>
+            {/* breadcrumbs */}
             <div className="breadcrumbs text-sm">
               <ul>
                 <li>
-                  <Link to={"/Admin"}>Admin</Link>
+                  <Link to={"/admin/dash"}>Admin</Link>
                 </li>
                 <li>
-                  <Link to={"/admin"}>Dashbroad</Link>
+                  <Link to={-1}>Dashbroad</Link>
                 </li>
                 <li>Products</li>
               </ul>
@@ -126,7 +129,7 @@ const AllProductsTable = () => {
                           className="checkbox"
                         />
                         <div className="flex space-x-3">
-                          <div className="avatar">
+                          <Link to={`${item?._id}`} className="avatar">
                             <div className="w-12 rounded-full">
                               <img
                                 src={
@@ -136,7 +139,7 @@ const AllProductsTable = () => {
                                 alt="Tailwind-CSS-Avatar-component"
                               />
                             </div>
-                          </div>
+                          </Link>
                           <p className="inline-flex flex-col">
                             <span className="capitalize text-sm md:text-base text-gray-800 font-medium">
                               {item?.name}
@@ -154,9 +157,14 @@ const AllProductsTable = () => {
 
                     {/* Category */}
                     <TableCell>
-                      <span className="rounded p-1 capitalize  text-white bg-gray-700">
+                      <Link
+                        to={`/admin/category/${
+                          item?.categoryDetails?.[0]?._id
+                        }?query=${item?.categoryDetails?.[0]?.categoryName.toLowerCase()}`}
+                        className="rounded p-1 capitalize  text-white bg-gray-700"
+                      >
                         {item?.categoryDetails?.[0]?.categoryName || "category"}
-                      </span>
+                      </Link>
                     </TableCell>
 
                     {/* Stock */}
@@ -252,7 +260,7 @@ const AllProductsTable = () => {
         </div>
         <AdminPagination
           totalPage={Math.ceil(productData?.totalProductsLen / itemsPerPage)}
-          currentPage={currentPage}
+          currentPage={+page}
           setPage={setCurrentPage}
           itemperPage={itemsPerPage}
           totalLen={productData?.totalProductsLen}

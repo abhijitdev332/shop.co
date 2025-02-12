@@ -53,14 +53,17 @@ const SubCategoryProducts = () => {
     deleteMutation(deleteSelect);
     // setProducts((prev) => prev.filter((product) => product.id !== id));
   };
-  console.log(products);
+
   return (
     <>
       <div className="p-6 bg-white rounded-lg shadow-md">
         {/* bread */}
         <div className="flex">
           <div className=" mb-6">
-            <p className="text-gray-800 text-2xl font-bold">All Products</p>
+            <p className="text-gray-800 text-2xl font-bold">
+              Subcategory Products
+            </p>
+            {/* breadcrumbs */}
             <div className="breadcrumbs text-sm">
               <ul>
                 <li>

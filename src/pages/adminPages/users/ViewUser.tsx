@@ -53,7 +53,7 @@ const UserProfilePage = () => {
       <div className="p-6 bg-white rounded-lg shadow-md">
         <div className="flex">
           <div className=" mb-6">
-            <p className="text-gray-800 text-2xl font-bold">All Products</p>
+            <p className="text-gray-800 text-2xl font-bold">User Details</p>
             {/* breadcrumbs */}
             <div className="breadcrumbs text-sm">
               <ul>
@@ -188,13 +188,19 @@ const UserProfilePage = () => {
                             />
                           </TableCell> */}
                           <TableCell>
-                            <Link to={order._id} title={order?._id}>
+                            <Link
+                              to={`/admin/orders/${order._id}`}
+                              title={order?._id}
+                            >
                               {order._id.slice(0, 8)}
                             </Link>
                           </TableCell>
                           {/* Products Name */}
                           <TableCell>
-                            <div className="flex gap-1">
+                            <Link
+                              to={`/admin/products/${order?.products?.[0]?.productId?._id}`}
+                              className="flex gap-1"
+                            >
                               <div className="avatar">
                                 <div className="w-12 rounded">
                                   <img
@@ -217,7 +223,7 @@ const UserProfilePage = () => {
                                   </span>
                                 )}
                               </div>
-                            </div>
+                            </Link>
                           </TableCell>
                           {/* totalAmount */}
                           <TableCell>${order?.totalAmount}</TableCell>

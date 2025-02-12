@@ -54,12 +54,12 @@ const AddCategory = () => {
     <div className="p-6">
       <div className="flex">
         <div className=" mb-6">
-          <p className="text-gray-800 text-2xl font-bold">All Category</p>
+          <p className="text-gray-800 text-2xl font-bold">Add Category</p>
           {/* breadcrumbs */}
           <div className="breadcrumbs text-sm">
             <ul>
               <li>
-                <Link to={"/Admin"}>Admin</Link>
+                <Link to={"/admin/dash"}>Admin</Link>
               </li>
               <li>
                 <Link to={-1}>Categories</Link>

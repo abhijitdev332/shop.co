@@ -202,7 +202,7 @@ const ProductAddPage = () => {
             <div className="breadcrumbs text-sm">
               <ul>
                 <li>
-                  <Link to={"/Admin"}>Admin</Link>
+                  <Link to={"/admin/dash"}>Admin</Link>
                 </li>
                 <li>
                   <Link to={-1}>Products</Link>

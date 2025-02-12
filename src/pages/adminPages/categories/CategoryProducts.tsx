@@ -62,14 +62,17 @@ const CategoryProducts = () => {
         {/* bread */}
         <div className="flex">
           <div className=" mb-6">
-            <p className="text-gray-800 text-2xl font-bold">All Products</p>
+            <p className="text-gray-800 text-2xl font-bold">
+              Category Products
+            </p>
+            {/* breadcrumbs */}
             <div className="breadcrumbs text-sm">
               <ul>
                 <li>
-                  <Link to={"/Admin"}>Admin</Link>
+                  <Link to={"/admin/dash"}>Admin</Link>
                 </li>
                 <li>
-                  <Link to={"/admin"}>Dashbroad</Link>
+                  <Link to={-2}>Dashbroad</Link>
                 </li>
                 <li>
                   <Link to={-1}>Categories</Link>

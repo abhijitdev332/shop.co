@@ -406,7 +406,10 @@ function ProductOrders({ id = "", color = "" }) {
                       />
                     </TableCell>
                     <TableCell>
-                      <Link to={order._id} title={order?._id}>
+                      <Link
+                        to={`/admin/orders/${order._id}`}
+                        title={order?._id}
+                      >
                         {order._id.slice(0, 8)}
                       </Link>
                     </TableCell>

@@ -37,11 +37,11 @@ const OrderDetailsPage = () => {
     <div className="container mx-auto p-6">
       <div className="flex">
         <div className=" mb-6">
-          <p className="text-gray-800 text-2xl font-bold">All Orders</p>
+          <p className="text-gray-800 text-2xl font-bold">View Order</p>
           <div className="breadcrumbs text-sm">
             <ul>
               <li>
-                <Link to={"/Admin"}>Admin</Link>
+                <Link to={"/admin/dash"}>Admin</Link>
               </li>
               <li>
                 <Link to={-1}>Orders</Link>

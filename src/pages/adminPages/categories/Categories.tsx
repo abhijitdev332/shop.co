@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { FaEdit, FaRegTrashAlt } from "react-icons/fa";
 import { IoEye } from "react-icons/io5";
 import { MdModeEdit } from "react-icons/md";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useSearchParams } from "react-router-dom";
 import { useAdminCategories } from "../../../querys/admin/adminQuery";
 import {
   DeleteCategoryMutaion,
@@ -14,7 +14,6 @@ import {
 } from "../../../querys/categoryQuery";
 
 import { toast } from "react-toastify";
-import { FaRegTrashCan } from "react-icons/fa6";
 import {
   DeleteModal,
   DropDown,
@@ -25,11 +24,11 @@ import {
   TableHeader,
 } from "../../../components/component";
 import Dropdown from "../../../components/dropdown/Dropdown";
-import { AdminPagination } from "../adminPages";
 import { DateFormat } from "../../../utils/utils";
 
 const Categories = () => {
-  const { state } = useLocation();
+  const [searchParams] = useSearchParams();
+  const page = searchParams.get("page");
 
   return (
     <div className="p-6 bg-white rounded-lg shadow-md">
@@ -40,10 +39,10 @@ const Categories = () => {
           <div className="breadcrumbs text-sm">
             <ul>
               <li>
-                <Link to={"/Admin"}>Admin</Link>
+                <Link to={"/admin/dash"}>Admin</Link>
               </li>
               <li>
-                <Link to={"/admin"}>Dashbroad</Link>
+                <Link to={-1}>Dashbroad</Link>
               </li>
               <li>Categories</li>
             </ul>
@@ -58,7 +57,7 @@ const Categories = () => {
             role="tab"
             className="tab text-lg font-medium text-black"
             aria-label="Category"
-            defaultChecked={!state}
+            defaultChecked={page == "category"}
           />
           <div role="tabpanel" className="tab-content ">
             <div className="wrapper">
@@ -72,7 +71,7 @@ const Categories = () => {
             role="tab"
             className="tab text-lg font-medium text-black"
             aria-label="Sub Category"
-            defaultChecked={state}
+            defaultChecked={page == "sub"}
           />
           <div role="tabpanel" className="tab-content">
             <div className="wrapper">
@@ -87,6 +86,7 @@ const Categories = () => {
 };
 
 function CategoryTable() {
+  const [_, setSearchParmas] = useSearchParams();
   const { data: catagories, isLoading: categoryLoading } = useAdminCategories();
   const updateMutaion = UpdateCategoryMutaion();
   const deleteMutaion = DeleteCategoryMutaion();
@@ -129,7 +129,14 @@ function CategoryTable() {
         {/* add button */}
         <div className="ms-auto flex ">
           <Link to={"add"}>
-            <button className="btn btn-neutral">Add Category</button>
+            <button
+              className="btn btn-neutral"
+              onClick={() => {
+                setSearchParmas({ page: "category" });
+              }}
+            >
+              Add Category
+            </button>
           </Link>
         </div>
         {categoryLoading && (
@@ -264,6 +271,7 @@ function CategoryTable() {
 }
 
 function SubCategoryTable() {
+  const [_, setSearchParmas] = useSearchParams();
   const { data: catagories, isLoading: categoryLoading } = useGetSubCategory();
   const updateMutaion = UpdateSubCategoryMutaion();
   const deleteMutaion = DeleteSubCategoryMutaion();
@@ -304,7 +312,14 @@ function SubCategoryTable() {
         {/* add button */}
         <div className="ms-auto flex ">
           <Link to={"/admin/subcategory/add"}>
-            <button className="btn btn-neutral">Add Sub-Category</button>
+            <button
+              className="btn btn-neutral"
+              onClick={() => {
+                setSearchParmas({ page: "sub" });
+              }}
+            >
+              Add Sub-Category
+            </button>
           </Link>
         </div>
         {categoryLoading && (
