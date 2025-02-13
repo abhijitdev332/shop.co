@@ -11,7 +11,7 @@ function NewsLetter() {
           <div className="flex flex-col justify-center items-center gap-2 basis-1/3">
             <label
               htmlFor=""
-              className="flex items-center gap-2   !bg-white w-[18rem] py-2 rounded-badge px-2  h-fit"
+              className="flex items-center gap-2   !bg-white w-fit sm:w-[18rem] py-2 rounded-badge px-2  h-fit"
             >
               <span>
                 <FiMail />
@@ -23,7 +23,7 @@ function NewsLetter() {
               />
             </label>
 
-            <button className="capitalize w-[18rem] bg-white  btn hover:text-white rounded-badge px-7">
+            <button className="capitalize w-fit sm:w-[18rem] bg-white text-black  btn hover:text-white rounded-badge px-7">
               Subscribe to NewsLetter
             </button>
           </div>

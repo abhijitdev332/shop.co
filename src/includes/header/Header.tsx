@@ -45,10 +45,10 @@ const Header = () => {
 
   return (
     <>
-      <header className="bg-white z-[10] sticky top-0">
+      <header className="bg-white relative z-[10]  overflow-hidden">
         <div className="lg:container mx-auto md:px-10">
           <div className="wrapper py-4 px-2 md:px-10">
-            <div className="flex gap-1 sm:gap-3 items-center justify-between">
+            <div className="flex gap-1 sm:gap-3 items-center sm:justify-between">
               <div className="ham md:hidden flex items-center cursor-pointer">
                 {/* responsive side bar */}
                 <div className="drawer">
@@ -62,7 +62,7 @@ const Header = () => {
                       htmlFor="my-drawer"
                       className="btn btn-ghost drawer-button"
                     >
-                      <GiHamburgerMenu size={25} className="drawer-button" />
+                      <GiHamburgerMenu size={20} className="drawer-button" />
                     </label>
                   </span>
 
@@ -142,7 +142,7 @@ const Header = () => {
               {/* home logo */}
               <Link
                 to={"/"}
-                className="logo flex items-center justify-center sm:justify-start font-extrabold text-3xl"
+                className="logo flex items-center justify-center sm:justify-start font-extrabold text-lg sm:text-3xl"
               >
                 <span>SHOP</span>
                 <span>.CO</span>
@@ -196,7 +196,7 @@ const Header = () => {
               {/* searchbar */}
               <div className="flex h-full items-center justify-end  basis-2/6">
                 <label
-                  className="flex  w-fit justify-end items-center rounded-badge px-2 py-2 bg-gray-200"
+                  className="flex  w-24 sm:w-fit justify-end items-center rounded-badge px-2  sm:py-2 bg-gray-200"
                   onClick={() => {
                     if (searchRef?.current) {
                       searchRef?.current?.showModal();
@@ -205,14 +205,14 @@ const Header = () => {
                     }
                   }}
                 >
-                  <span className="flex w-60 gap-2 text-gray-800 bg-gray-100 p-2 rounded-lg ring-1">
+                  <span className="flex w-60 gap-2 text-gray-800 bg-gray-100 sm:p-2 p-1 rounded-lg ring-1">
                     <RiSearch2Line size={20} />
                     Search
                   </span>
                 </label>
               </div>
               {/* user actions */}
-              <div className="userAction flex gap-8 items-end">
+              <div className="userAction w-fit flex gap-3 sm:gap-8 ms-auto px-2 items-center">
                 <div className="cart relative">
                   {cartProduct?.products?.length > 0 && (
                     <span className="badge px-1 top-0 left-[100%]">
@@ -224,7 +224,6 @@ const Header = () => {
                     <RiShoppingCartLine fontSize={"1.5rem"} />
                   </Link>
                 </div>
-
                 {status ? <AuthProfile /> : <GuestProfile />}
               </div>
             </div>
@@ -286,17 +285,13 @@ function AuthProfile() {
   const [isAdmin, setAdmin] = useState(userDetails?.roles?.includes("ADMIN"));
   return (
     <>
-      <div className="profile cursor-pointer dropdown dropdown-end">
-        <RiAccountCircleLine
-          fontSize={"1.5rem"}
-          role="button"
-          className=""
-          tabIndex={0}
-        />
-        <ul
-          tabIndex={0}
-          className="dropdown-content  menu bg-white  rounded-md z-[1] w-40 p-2 shadow"
-        >
+      <div className="profile  cursor-pointer ">
+        <div className="avatar">
+          <div className="w-8 rounded-full" role="button">
+            <img src={userDetails?.imgUrl || ""} />
+          </div>
+        </div>
+        <ul className=" bg-white menu  absolute top-0 right-5 rounded-md z-[10] w-fit p-2 shadow">
           {/* chekc if its admin then show admin dashbroad link */}
           {isAdmin && (
             <li>
@@ -340,17 +335,14 @@ function AuthProfile() {
 }
 function GuestProfile() {
   return (
-    <div className="profile cursor-pointer dropdown dropdown-end">
+    <div className="profile cursor-pointer">
       <RiAccountCircleLine
         fontSize={"1.5rem"}
         role="button"
         className=""
         tabIndex={0}
       />
-      <ul
-        tabIndex={0}
-        className="dropdown-content menu bg-white text-white rounded-md z-[1] w-40 p-2 shadow"
-      >
+      <ul className="  bg-white text-white rounded-md z-[10] w-fit p-2 shadow">
         <li>
           <Link to={"/auth"}>
             <span>

@@ -1,6 +1,6 @@
 {
-  "name": "React PWA",
-  "short_name": "PWA",
+  "name": "shop.co",
+  "short_name": "Shop",
   "icons": [
     {
       "src": "./icons/favicon.png",
