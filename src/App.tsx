@@ -1,4 +1,4 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import {
   createBrowserRouter,
   createRoutesFromElements,
@@ -148,6 +148,14 @@ const router = createBrowserRouter(
 );
 
 function App() {
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker
+        .register("/serviceWorker.js", { type: "module" }) // Ensures correct MIME type
+        .then((registration) => console.log("SW registered:", registration))
+        .catch((error) => console.error("SW registration failed:", error));
+    });
+  }
   return (
     <Suspense fallback={<LoaderScreen />}>
       <RouterProvider router={router} />

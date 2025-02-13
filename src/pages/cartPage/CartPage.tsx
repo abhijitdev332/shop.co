@@ -9,38 +9,41 @@ import { toast, ToastContainer } from "react-toastify";
 const CartPage = () => {
   const { products, totalAmount } = useSelector((state) => state.cart);
   return (
-    <section className="bg-white">
-      <div className="wrapper px-2 sm:px-10">
-        {/* breadcrumbs */}
-        <div className="breadcrumbs text-sm">
-          <ul>
-            <li>
-              <Link to={"/"}>Home</Link>
-            </li>
-            <li>Cart</li>
-          </ul>
-        </div>
-        <h2 className="font-extrabold  text-3xl py-7 ">YOUR CART</h2>
-        {/* map products */}
-        <div className="flex flex-col md:flex-row  gap-4">
-          <div className="flex  w-full flex-col rounded-2xl outline outline-1 p-2 sm:p-4">
-            {products?.length > 0 ? (
-              products?.map((ele) => (
-                <>
-                  <CartProduct product={ele} />
-                  <div className="divider"></div>
-                </>
-              ))
-            ) : (
-              <>
-                <CartEmpty />
-              </>
-            )}
+    <>
+      <section className="bg-white">
+        <div className="wrapper px-2 sm:px-10">
+          {/* breadcrumbs */}
+          <div className="breadcrumbs text-sm">
+            <ul>
+              <li>
+                <Link to={"/"}>Home</Link>
+              </li>
+              <li>Cart</li>
+            </ul>
           </div>
-          {products?.length > 0 && <CartCheckOut subTotal={totalAmount} />}
+          <h2 className="font-extrabold  text-3xl py-7 ">YOUR CART</h2>
+          {/* map products */}
+          <div className="flex flex-col md:flex-row  gap-4">
+            <div className="flex  w-full flex-col rounded-2xl outline outline-1 p-2 sm:p-4">
+              {products?.length > 0 ? (
+                products?.map((ele) => (
+                  <>
+                    <CartProduct product={ele} />
+                    <div className="divider"></div>
+                  </>
+                ))
+              ) : (
+                <>
+                  <CartEmpty />
+                </>
+              )}
+            </div>
+            {products?.length > 0 && <CartCheckOut subTotal={totalAmount} />}
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+      <ToastContainer />
+    </>
   );
 };
 

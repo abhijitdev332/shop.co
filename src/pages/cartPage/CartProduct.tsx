@@ -56,7 +56,6 @@ const CartProduct = ({ product }) => {
               className="sm:w-24 sm:h-24 w-36 h-36 self-center   rounded-lg"
             />
           </Link>
-
           <div className="flex flex-col px-3">
             <h4 className="font-semibold text-sm sm:text-xl capitalize">
               {product?.name}
@@ -109,7 +108,6 @@ const CartProduct = ({ product }) => {
               </button>
               <p>{quantity}</p>
               <button
-                disabled={quantity == product?.stock}
                 className=" bg-slate-900 p-2 text-white rounded-full"
                 onClick={addQuantityClick}
               >
