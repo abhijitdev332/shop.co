@@ -1,4 +1,4 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import {
   createBrowserRouter,
   createRoutesFromElements,
@@ -58,6 +58,26 @@ const AdminLayout = lazy(() => import("./layouts/Admin"));
 const ErrorLayout = lazy(() => import("./layouts/Error"));
 // funcs
 function SuspenseLayout() {
+  const enableFullscreen = () => {
+    if (document.documentElement.requestFullscreen) {
+      document.documentElement.requestFullscreen();
+    } else if ((document.documentElement as any).webkitRequestFullscreen) {
+      (document.documentElement as any).webkitRequestFullscreen();
+    }
+  };
+  useEffect(() => {
+    let abort = new AbortController();
+    window.addEventListener(
+      "load",
+      () => {
+        enableFullscreen();
+      },
+      { signal: abort.signal }
+    );
+    return () => {
+      abort.abort();
+    };
+  }, []);
   return (
     <>
       <Suspense fallback={<LoaderScreen />}>

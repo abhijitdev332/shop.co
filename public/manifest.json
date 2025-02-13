@@ -1,16 +1,30 @@
 {
-  "name": "shop.co",
+  "name": "Shop.co",
   "short_name": "Shop",
   "icons": [
     {
-      "src": "./icons/favicon.png",
-      "sizes": "192x192",
+      "src": "./icons/icon65.png",
+      "sizes": "64x64",
+      "type": "image/png"
+    },
+    {
+      "src": "./icons/icon-100.png",
+      "sizes": "100x100",
       "type": "image/png"
     }
   
   ],
   "start_url": "/",
-  "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "display": "fullscreen",
+  "theme_color": "#ffffff",
+  "background_color": "#678924",
+  "shortcuts": [
+  {
+    "name": "Men Shirt",
+    "short_name": "Men shirt",
+    "description": "Men Collections",
+    "url": "/product/category/male",
+    "icons": [{ "src": "/icons/icon-jacket.png", "sizes": "100x100", "type": "image/png" }]
+  }
+]
 }
