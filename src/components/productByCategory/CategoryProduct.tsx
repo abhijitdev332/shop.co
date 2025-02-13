@@ -8,9 +8,10 @@ import { GridProductCard, List, Pagintaion, ProductCard } from "../component";
 import {
   MdKeyboardArrowRight,
   MdKeyboardArrowUp,
+  MdOutlineCloseFullscreen,
   MdSort,
 } from "react-icons/md";
-import { RiFilter3Line } from "react-icons/ri";
+
 import { useRef, useState } from "react";
 import cl from "classnames";
 import {
@@ -208,7 +209,7 @@ function FillterCard({ show, setShow }) {
                   setShow((prev) => !prev);
                 }}
               >
-                <RiFilter3Line fontSize={25} />
+                <MdOutlineCloseFullscreen fontSize={25} />
               </span>
             </div>
             <div className="outline outline-1 outline-slate-300"></div>

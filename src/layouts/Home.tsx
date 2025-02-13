@@ -6,7 +6,7 @@ import DataLoader from "../components/dataLoader/DataLoader";
 
 const Home = () => {
   return (
-    <>
+    <div className="overflow-auto mb-10 sm:m-0">
       <section>
         <Header />
         <div className="lg:container mx-auto">
@@ -19,7 +19,7 @@ const Home = () => {
       </section>
       <DataLoader />
       <ToastContainer />
-    </>
+    </div>
   );
 };
 

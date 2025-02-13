@@ -7,7 +7,7 @@ import { ToastContainer } from "react-toastify";
 const User = () => {
   return (
     <>
-      <div className="lg:container lg:mx-auto">
+      <div className="lg:container lg:mx-auto  mb-10 sm:m-0">
         <Header />
         <Outlet />
         <NewsLetter />

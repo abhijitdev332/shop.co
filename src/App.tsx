@@ -47,6 +47,7 @@ import {
   GuestProtected,
   UserProtected,
 } from "./utils/ProtectedRoute";
+import { SnackBar } from "./includes/includes";
 
 // lazy loadings
 const HomeLayout = lazy(() => import("./layouts/Home"));
@@ -61,6 +62,7 @@ function SuspenseLayout() {
     <>
       <Suspense fallback={<LoaderScreen />}>
         <Outlet />
+        <SnackBar />
       </Suspense>
     </>
   );

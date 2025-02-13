@@ -22,7 +22,7 @@ const GridProductCard = ({ product = {}, style = "", imgStyle = "" }) => {
     <div className={cl("h-fit overflow-hidden", style)}>
       <figure
         className={cl(
-          "h-[10rem]  w-auto sm:h-[12rem] lg:h-[15rem] overflow-hidden rounded-lg",
+          " h-[15rem] w-auto sm:h-[12rem] lg:h-[15rem] overflow-hidden rounded-lg",
           imgStyle
         )}
       >

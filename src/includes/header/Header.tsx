@@ -45,7 +45,7 @@ const Header = () => {
 
   return (
     <>
-      <header className="bg-white relative z-[10]  overflow-hidden">
+      <header className="bg-white z-10">
         <div className="lg:container mx-auto md:px-10">
           <div className="wrapper py-4 px-2 md:px-10">
             <div className="flex gap-1 sm:gap-3 items-center sm:justify-between">
@@ -129,7 +129,7 @@ const Header = () => {
                         <Link to={"/product/category/brands"}>Brands</Link>
                       </li> */}
 
-                      <li className="mt-auto">
+                      <li>
                         {status && (
                           <Logout style={"btn-error text-white"}>Logout</Logout>
                         )}
@@ -285,13 +285,16 @@ function AuthProfile() {
   const [isAdmin, setAdmin] = useState(userDetails?.roles?.includes("ADMIN"));
   return (
     <>
-      <div className="profile  cursor-pointer ">
+      <div className="profile  cursor-pointer dropdown dropdown-end ">
         <div className="avatar">
-          <div className="w-8 rounded-full" role="button">
+          <div className="w-8 rounded-full" tabIndex={0} role="button">
             <img src={userDetails?.imgUrl || ""} />
           </div>
         </div>
-        <ul className=" bg-white menu  absolute top-0 right-5 rounded-md z-[10] w-fit p-2 shadow">
+        <ul
+          tabIndex={0}
+          className=" bg-white menu dropdown-content rounded-box z-[5] w-44 p-2 shadow"
+        >
           {/* chekc if its admin then show admin dashbroad link */}
           {isAdmin && (
             <li>
@@ -335,14 +338,9 @@ function AuthProfile() {
 }
 function GuestProfile() {
   return (
-    <div className="profile cursor-pointer">
-      <RiAccountCircleLine
-        fontSize={"1.5rem"}
-        role="button"
-        className=""
-        tabIndex={0}
-      />
-      <ul className="  bg-white text-white rounded-md z-[10] w-fit p-2 shadow">
+    <div className="profile  cursor-pointer dropdown dropdown-end">
+      <RiAccountCircleLine fontSize={"1.5rem"} tabIndex={0} role="button" />
+      <ul className=" bg-white menu dropdown-content rounded-box z-[5] w-44 p-2 shadow">
         <li>
           <Link to={"/auth"}>
             <span>

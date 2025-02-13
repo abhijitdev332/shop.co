@@ -17,7 +17,7 @@ const Sidebar: React.FC = () => {
 
   return (
     <div
-      className={`flex flex-col h-screen dark:bg-gray-900 dark:text-white bg-gray-200 text-black ${
+      className={`flex flex-col h-screen dark:bg-gray-900 dark:text-white bg-gray-200 text-black sm:p-0 pb-10 ${
         isOpen ? "w-64" : "w-15"
       } transition-all duration-300`}
     >

@@ -15,7 +15,7 @@ const Hero = () => {
       <div className="">
         <div className="relative h-fit">
           <div className="flex flex-col bg-[#F2F0F1] sm:bg-transparent">
-            <div className="flex flex-col items-center md:items-start gap-8 p-5 lg:p-20 z-[2]">
+            <div className="flex flex-col items-center md:items-start gap-8 p-5 lg:p-20 z-[1]">
               <h2
                 className={cl(
                   "text-center text-2xl font-extrabold capitalize md:text-start md:text-5xl md:w-2/4"
@@ -48,7 +48,7 @@ const Hero = () => {
             </div>
             <img
               src={heroImg}
-              className={cl("relative md:absolute", style.hero__img)}
+              className={cl("relative md:absolute z-0", style.hero__img)}
               alt=""
             />
           </div>

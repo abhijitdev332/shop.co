@@ -33,7 +33,7 @@ const AdminDashboardHeader = () => {
       </div> */}
 
       {/* Right Section - Notifications and Profile */}
-      <div className="flex w-full gap-2 px-2 sm:justify-end items-center">
+      <div className="flex w-full gap-2 px-2 justify-end  items-center">
         {/* theme change  */}
         <div className="flex">
           <span className="cursor-pointer" onClick={handleTheme}>
