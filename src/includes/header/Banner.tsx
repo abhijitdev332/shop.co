@@ -12,7 +12,7 @@ const Banner = () => {
         !isOnline ? "bg-[#00021f] block " : "hidden"
       )}
     >
-      <p className="text-white text-center ">Please Check Network! </p>
+      <p className="text-white text-center ">Offline!!</p>
     </div>
   );
 };

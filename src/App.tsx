@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import {
   createBrowserRouter,
   createRoutesFromElements,
@@ -61,6 +61,43 @@ const ErrorLayout = lazy(() => import("./layouts/Error"));
 const OfflineLayout = lazy(() => import("./layouts/Offline"));
 // funcs
 function SuspenseLayout() {
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
+
+  useEffect(() => {
+    const handleBeforeInstallPrompt = (event) => {
+      // Prevent the default prompt
+      event.preventDefault();
+      // Save the event to trigger it later
+      setDeferredPrompt(event);
+
+      // Automatically show the prompt after a delay or some other condition
+      setTimeout(() => {
+        if (deferredPrompt) {
+          deferredPrompt.prompt();
+          // Handle user response
+          deferredPrompt.userChoice.then((choiceResult) => {
+            if (choiceResult.outcome === "accepted") {
+              console.log("User accepted the install prompt");
+            } else {
+              console.log("User dismissed the install prompt");
+            }
+            // Reset the deferredPrompt so it doesn't show again
+            setDeferredPrompt(null);
+          });
+        }
+      }, 1000); // You can adjust the timeout as needed
+    };
+
+    // Listen for the beforeinstallprompt event
+    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+
+    return () => {
+      window.removeEventListener(
+        "beforeinstallprompt",
+        handleBeforeInstallPrompt
+      );
+    };
+  }, [deferredPrompt]);
   useEffect(() => {
     let abort = new AbortController();
     window.addEventListener(
