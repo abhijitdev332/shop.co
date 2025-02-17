@@ -45,6 +45,7 @@ import InitialData from "./initalData/InitialData";
 import {
   AdminProtected,
   GuestProtected,
+  OfflineStatusProtected,
   UserProtected,
 } from "./utils/ProtectedRoute";
 import { SnackBar } from "./includes/includes";
@@ -57,6 +58,7 @@ const AuthLayout = lazy(() => import("./layouts/Auth"));
 const UserLayout = lazy(() => import("./layouts/User"));
 const AdminLayout = lazy(() => import("./layouts/Admin"));
 const ErrorLayout = lazy(() => import("./layouts/Error"));
+const OfflineLayout = lazy(() => import("./layouts/Offline"));
 // funcs
 function SuspenseLayout() {
   useEffect(() => {
@@ -159,6 +161,14 @@ const router = createBrowserRouter(
         <Route path="subcategory/add" element={<AddSubCategory />} />
         <Route path="subcategory/:id" element={<SubCategoryProducts />} />
       </Route>
+      <Route
+        path="/offline"
+        element={
+          <OfflineStatusProtected>
+            <OfflineLayout />
+          </OfflineStatusProtected>
+        }
+      />
       <Route path="/*" element={<ErrorLayout />} />
     </Route>
   )

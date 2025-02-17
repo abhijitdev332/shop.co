@@ -1,3 +1,4 @@
+import { useOnlineStatus } from "../hooks/useOnlineStatus";
 import useUser from "../hooks/useUser";
 import { Navigate } from "react-router-dom";
 
@@ -14,4 +15,14 @@ const AdminProtected = ({ children }) => {
   return user?.roles?.includes("ADMIN") ? children : <Navigate to={"/"} />;
 };
 
-export { GuestProtected, UserProtected, AdminProtected };
+const OfflineStatusProtected = ({ children }) => {
+  const online = useOnlineStatus();
+  return online ? <Navigate to={"/"} /> : children;
+};
+
+export {
+  GuestProtected,
+  UserProtected,
+  AdminProtected,
+  OfflineStatusProtected,
+};

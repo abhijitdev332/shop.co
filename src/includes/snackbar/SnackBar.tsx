@@ -19,7 +19,7 @@ const SnackBar = () => {
   }, [userDetails]);
 
   return (
-    <div className="btm-nav bg-slate-200 sm:hidden">
+    <div className="btm-nav z-50 bg-slate-200 sm:hidden">
       <NavLink
         to={"/"}
         className={({ isActive }) =>

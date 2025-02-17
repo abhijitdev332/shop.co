@@ -8,9 +8,8 @@ const Banner = () => {
     <div
       id="offline-banner"
       className={cl(
-        !isOnline
-          ? "bg-[#00021f] block duration-200 transition-all py-1"
-          : "hidden"
+        "duration-200 transition-all py-1",
+        !isOnline ? "bg-[#00021f] block " : "hidden"
       )}
     >
       <p className="text-white text-center ">Please Check Network! </p>
