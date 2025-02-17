@@ -170,14 +170,18 @@ const router = createBrowserRouter(
 );
 
 function App() {
-  if ("serviceWorker" in navigator) {
-    window.addEventListener("load", () => {
-      navigator.serviceWorker
-        .register("/serviceWorker.js", { type: "module" }) // Ensures correct MIME type
-        .then((registration) => console.log("SW registered:", registration))
-        .catch((error) => console.error("SW registration failed:", error));
-    });
-  }
+  // if ("serviceWorker" in navigator) {
+  //   window.addEventListener("load", () => {
+  //     navigator.serviceWorker
+  //       .register("/serviceWorker.js", { type: "module" }) // Ensures correct MIME type
+  //       .then((registration) => console.log("SW registered:", registration))
+  //       .catch((error) => console.error("SW registration failed:", error));
+  //   });
+  // }
+  navigator.serviceWorker.getRegistrations().then((registrations) => {
+    registrations.forEach((registration) => registration.unregister());
+  });
+
   return (
     <Suspense fallback={<LoaderScreen />}>
       <RouterProvider router={router} />
