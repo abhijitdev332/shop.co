@@ -20,6 +20,7 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { MdOutlineStorage } from "react-icons/md";
 import { useQueryItems } from "../../querys/product/productQuery";
+import Banner from "./Banner";
 const Header = () => {
   const cartProduct = useSelector((state) => state.cart);
   const { status } = useSelector((store) => store.user);
@@ -45,6 +46,7 @@ const Header = () => {
 
   return (
     <>
+      <Banner />
       <header className="bg-white z-10">
         <div className="lg:container mx-auto md:px-10">
           <div className="wrapper py-4 px-2 md:px-10">

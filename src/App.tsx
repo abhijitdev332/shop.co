@@ -48,6 +48,7 @@ import {
   UserProtected,
 } from "./utils/ProtectedRoute";
 import { SnackBar } from "./includes/includes";
+import { enableFullscreen } from "./utils/utils";
 
 // lazy loadings
 const HomeLayout = lazy(() => import("./layouts/Home"));
@@ -58,13 +59,6 @@ const AdminLayout = lazy(() => import("./layouts/Admin"));
 const ErrorLayout = lazy(() => import("./layouts/Error"));
 // funcs
 function SuspenseLayout() {
-  const enableFullscreen = () => {
-    if (document.documentElement.requestFullscreen) {
-      document.documentElement.requestFullscreen();
-    } else if ((document.documentElement as any).webkitRequestFullscreen) {
-      (document.documentElement as any).webkitRequestFullscreen();
-    }
-  };
   useEffect(() => {
     let abort = new AbortController();
     window.addEventListener(
@@ -74,6 +68,7 @@ function SuspenseLayout() {
       },
       { signal: abort.signal }
     );
+
     return () => {
       abort.abort();
     };
@@ -170,18 +165,6 @@ const router = createBrowserRouter(
 );
 
 function App() {
-  // if ("serviceWorker" in navigator) {
-  //   window.addEventListener("load", () => {
-  //     navigator.serviceWorker
-  //       .register("/serviceWorker.js", { type: "module" }) // Ensures correct MIME type
-  //       .then((registration) => console.log("SW registered:", registration))
-  //       .catch((error) => console.error("SW registration failed:", error));
-  //   });
-  // }
-  navigator.serviceWorker.getRegistrations().then((registrations) => {
-    registrations.forEach((registration) => registration.unregister());
-  });
-
   return (
     <Suspense fallback={<LoaderScreen />}>
       <RouterProvider router={router} />

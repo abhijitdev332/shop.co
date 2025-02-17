@@ -25,3 +25,32 @@ export const DateFormat = (date) => {
     return "00";
   }
 };
+export function updateNetworkStatus() {
+  const banner = document.getElementById("offline-banner");
+  if (navigator.onLine) {
+    banner.style.display = "none";
+  } else {
+    banner.style.display = "block";
+  }
+}
+
+export const enableFullscreen = () => {
+  const minWidth = 640; // Set minimum width required for fullscreen
+  // const minHeight = 600; // Set minimum height required for fullscreen
+
+  const screenWidth = window.innerWidth || screen.width;
+  const screenHeight = window.innerHeight || screen.height;
+
+  console.log(`Screen size: ${screenWidth}x${screenHeight}`);
+
+  if (screenWidth <= minWidth) {
+    // Device meets the requirement, enter fullscreen
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch((err) => {
+        console.log("Error entering fullscreen:", err);
+      });
+    }
+  } else {
+    console.log("Screen size too small for fullscreen mode.");
+  }
+};
