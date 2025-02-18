@@ -1,6 +1,10 @@
 import { precacheAndRoute } from "workbox-precaching";
 import { registerRoute } from "workbox-routing";
-import { StaleWhileRevalidate, CacheFirst } from "workbox-strategies";
+import {
+  StaleWhileRevalidate,
+  CacheFirst,
+  NetworkFirst,
+} from "workbox-strategies";
 import { ExpirationPlugin } from "workbox-expiration";
 
 // Precache files (Workbox will inject manifest here)
@@ -22,6 +26,16 @@ registerRoute(
     cacheName: "image-cache",
     plugins: [
       new ExpirationPlugin({ maxEntries: 50, maxAgeSeconds: 7 * 24 * 60 * 60 }),
+    ],
+  })
+);
+registerRoute(
+  ({ url }) => url.origin === import.meta.env.VITE_API_BASE_URL, // Adjust to match your API domain
+  new NetworkFirst({
+    cacheName: "api-cache",
+    networkTimeoutSeconds: 5, // Wait 5s before using cache fallback
+    plugins: [
+      new ExpirationPlugin({ maxEntries: 50, maxAgeSeconds: 60 * 60 }), // Cache API responses for 1 hour
     ],
   })
 );

@@ -1,0 +1,31 @@
+$primary: #04001f;
+$secondary: #fff;
+
+.active {
+  transform: scale(1.2) translateY(-1rem);
+  div {
+    background-color: $primary;
+    border-radius: 50%;
+    padding: 10px;
+    color: white;
+    box-shadow: 0 0 10px 1px $primary;
+  }
+  span {
+    color: $primary;
+    font-weight: 500;
+  }
+}
+
+.link {
+  transform: scale(1) translateY(0);
+  div {
+    background-color: transparent;
+    border-radius: 0;
+    padding: 0;
+    color: inherit;
+  }
+  span {
+    color: black;
+    font-weight: 500;
+  }
+}
