@@ -46,7 +46,13 @@ self.addEventListener("install", (event) => {
 });
 
 self.addEventListener("activate", (event) => {
-  event.waitUntil(self.clients.claim());
+  event.waitUntil(
+    self.clients.claim().then(() => {
+      self.clients.matchAll().then((clients) => {
+        clients.forEach((client) => client.navigate(client.url)); // Force refresh
+      });
+    })
+  );
 });
 
 // import { BackgroundSyncPlugin } from "workbox-background-sync";

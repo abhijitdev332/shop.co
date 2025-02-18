@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { FaHome, FaPlus, FaShoppingBag, FaUserCircle } from "react-icons/fa";
+import { FaUserCircle } from "react-icons/fa";
 import { MdDashboard } from "react-icons/md";
 import { NavLink, useLocation } from "react-router-dom";
 import cl from "classnames";
@@ -23,6 +23,9 @@ const SnackBar = () => {
     setAdmin(userDetails?.roles?.includes("ADMIN"));
   }, [userDetails]);
 
+  useEffect(() => {
+    setPaths(pathname.split("/"));
+  }, [pathname]);
   return (
     <div className="btm-nav justify-around  py-2 z-50 bg-gray-50 sm:hidden">
       <NavLink
@@ -77,7 +80,7 @@ const SnackBar = () => {
           className={({ isActive }) =>
             cl(
               "basis-0 h-fit  transition-all duration-200 relative",
-              isActive || paths.includes("/admin") ? style.active : style.link
+              isActive || paths.includes("admin") ? style.active : style.link
             )
           }
         >

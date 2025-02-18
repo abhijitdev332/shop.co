@@ -14,6 +14,7 @@ import "react-toastify/dist/ReactToastify.css";
 registerSW({
   onNeedRefresh() {
     console.log("New content available, reload required.");
+    window.location.reload();
   },
   onOfflineReady() {
     console.log("App is ready to work offline!");

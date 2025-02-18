@@ -160,7 +160,7 @@ const UserProfilePage = () => {
               {orderLoading && (
                 <div className="skeleton h-96 columns-1 w-full bg-gray-200 dark:bg-white "></div>
               )}
-              <div className="table__wrapper w-full">
+              <div className="table__wrapper w-full overflow-x-auto">
                 <table className="w-full">
                   <TableHeader
                     columns={[
